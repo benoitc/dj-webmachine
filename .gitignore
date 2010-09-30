@@ -1,0 +1,10 @@
+.DS_Store
+*.pyc
+*.db
+*.swp
+*.pyo
+.installed.cfg
+dj_apipoint.egg-info
+dist
+build
+
