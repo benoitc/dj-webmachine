@@ -16,10 +16,12 @@ string_concat
 from apipoint.acceptparse import get_accept_hdr, MIMEAccept, \
         MIMENilAccept, NoAccept
 from apipoint.datetime_util import parse_date
-from apipoint.decisions import b13, TRANSITIONS
 from apipoint.etag import get_etag, AnyETag, NoETag
 from apipoint.exc import HTTPException, HTTPInternalServerError
 from apipoint.util import coerce_put_post, serialize_list
+from apipoint.resource.decisions import b13, TRANSITIONS
+
+
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 
