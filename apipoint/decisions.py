@@ -49,8 +49,7 @@ def b10(res, req, resp):
     "Is method allowed?"
     if req.method in res.allowed_methods(req, resp):
         return True
-    resp.allowed = res.allowed_methods(req, resp)
-    return False
+    return False 
 
 def b11(res, req, resp):
     "URI too long?"

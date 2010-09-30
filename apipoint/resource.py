@@ -6,6 +6,7 @@
 import re
 import types
 
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
 from apipoint.acceptparse import get_accept_hdr, MIMEAccept, \
@@ -24,6 +25,9 @@ CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 # equivalent in Django. 
 class Resource(object):
     base_url = None
+    csrf_exempt = True
+
+
 
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD"]
@@ -156,8 +160,9 @@ class Resource(object):
     ###################
 
     def get_urls(self):
-        pass
-
+        return (
+            (r"$", "index")
+        )
 
     def __call__(self, req, *args, **kwargs):
         """ Process request and return the response """
@@ -200,7 +205,9 @@ class Resource(object):
         resp.content_type = None 
         resp.vary = []
         resp.charset = None
-
+        resp.etag = None
+        resp.last_modified = None
+        resp.expires = None
 
         ctypes = [ct for (ct, func) in (self.content_types_provided(req, resp) or [])]
         if len(ctypes):
@@ -215,7 +222,8 @@ class Resource(object):
                     state = TRANSITIONS[state][1]
                 if not isinstance(state, (int, types.FunctionType)):
                     raise HTTPInternalServerError("Invalid state: %r" % state)
-            resp.status = state
+
+            resp.status_code = state
         except HTTPException, e:
             # Error while processing request
             # Return HTTP response
@@ -240,3 +248,4 @@ class Resource(object):
                 resp['Content-Type'] = header
 
         return resp
+

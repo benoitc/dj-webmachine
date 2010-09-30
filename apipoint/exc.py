@@ -22,9 +22,9 @@ class DjangoHttpException(HttpResponse, HTTPException):
     title = None
     explanation = ''
     body_template = """\
-{{explanation}}<br><br>
-{{detail}}
-{{comment}}"""
+{{explanation|safe}}<br><br>
+{{detail|safe}}
+{{comment|safe}}"""
 
     ## Set this to True for responses that should have no request body
     empty_body = False
@@ -48,9 +48,9 @@ class DjangoHttpException(HttpResponse, HTTPException):
 
         if not self.empty_body:
             t = template.Template(self.body_template)
-            c = template.context(dict(
+            c = template.Context(dict(
                 detail=detail,
-                explanation= self.explanation,
+                explanation=self.explanation,
                 comment=comment))
 
             self._container = [t.render(c)]
