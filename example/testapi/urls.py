@@ -1,9 +1,12 @@
 from django.conf.urls.defaults import *
-from testapi.foo import views
+
+import apipoint
+
+
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
-# admin.autodiscover()
+apipoint.autodiscover()
 
 urlpatterns = patterns('',
     # Example:
@@ -14,6 +17,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
-    (r'^hello$', views.HelloRes()),
-    )
+    (r'^api/', include(apipoint.api_site.urls)),
+)
 

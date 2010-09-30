@@ -1,7 +1,7 @@
 # Create your views here.
 
-
 from apipoint.resource import Resource
+from apipoint.sites import api_site
 
 import json
 
@@ -19,3 +19,5 @@ class HelloRes(Resource):
     def to_json(self, req, resp):
         return json.dumps({"message": "hello world!", "ok": True})
 
+
+api_site.register(HelloRes)
