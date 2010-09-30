@@ -47,7 +47,7 @@ def autodiscover():
 
     for app in settings.INSTALLED_APPS:
         mod = import_module(app)
-        # Attempt to import the app's admin module.
+        # Attempt to import the app's resource module.
         try:
             before_import_registry = copy.copy(api_site._registry)
             import_module('%s.resource' % app)

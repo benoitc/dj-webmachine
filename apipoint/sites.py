@@ -46,5 +46,5 @@ class ApiSite(object):
     def index(self, request):
         return HttpResponse("api index")
 
-# This global object represent main api site
+# This global object represent the main api site
 api_site = ApiSite()
