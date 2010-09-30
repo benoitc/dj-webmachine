@@ -10,7 +10,7 @@ class ApiSite(object):
 
     def __init__(self, name=None, app_name='apipoint'):
         self._registry = []
-        self.name = name or 'admin'
+        self.name = name or 'api'
         self.app_name = app_name
 
     def register(self, *ress):
