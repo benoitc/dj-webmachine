@@ -28,7 +28,7 @@ class CrudResource(base.Resource):
 
 
     def post_is_create(self, req, resp):
-        if req.method == "POST" or ieq.url_kwargs.get('action') == "create"):
+        if req.method == "POST" or req.url_kwargs.get('action') == "create":
             return self.create(req, resp)
         return False
 
