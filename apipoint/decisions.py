@@ -356,6 +356,7 @@ def handle_response_body(res, req, resp):
         resp._is_string = False
     else:
         resp._container = [resp.body]
+        
         resp._is_string = True
 
 

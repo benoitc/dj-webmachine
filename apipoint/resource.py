@@ -197,7 +197,7 @@ class Resource(object):
         
         # add missing features we need in response
         resp.content_encoding = None
-        resp.content_type = None
+        resp.content_type = None 
         resp.vary = []
         resp.charset = None
 
@@ -224,10 +224,11 @@ class Resource(object):
         # set other headers 
         for attr_name in ('vary', 'etag', 'content_type', \
                 'content_encoding', 'last_modified', 'expires'):
-            
-            if hasattr(resp, attr_name):
+           
+            val = serialize_list(getattr(resp, attr_name))
+            if val and val is not None:
                 header_name = attr_name.replace('_', '-').title()
-                resp[header_name] = getattr(resp, attr_name)
+                resp[header_name] = val 
 
         if resp.charset is not None:
             header = resp.get('Content-Type')

@@ -60,10 +60,12 @@ def coerce_put_post(request):
         request.PUT = request.POST
 
 def serialize_list(value):
+    if value is None:
+        return
     if isinstance(value, unicode):
         return str(value)
     elif isinstance(value, str):
         return value
     else:
-        return ', '.join(map(str, value))
+        return ', '.join([str(v) for v in value])
 
