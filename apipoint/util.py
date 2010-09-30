@@ -59,3 +59,11 @@ def coerce_put_post(request):
             
         request.PUT = request.POST
 
+def serialize_list(value):
+    if isinstance(value, unicode):
+        return str(value)
+    elif isinstance(value, str):
+        return value
+    else:
+        return ', '.join(map(str, value))
+

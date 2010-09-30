@@ -14,23 +14,16 @@ from apipoint.datetime_util import parse_date
 from apipoint.decisions import b13, TRANSITIONS
 from apipoint.etag import get_etag, AnyETag, NoETag
 from apipoint.exc import HTTPException, HTTPInternalServerError
-from apipoint.util import coerce_put_post
+from apipoint.util import coerce_put_post, serialize_list
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
-
-def serialize_list(value):
-    if isinstance(value, unicode):
-        return str(value)
-    elif isinstance(value, str):
-        return value
-    else:
-        return ', '.join(map(str, value))
 
 
 # FIXME: we should propbably wrap full HttpRequest object instead of
 # adding properties to it in __call__ . Also datetime_utils has surely
 # equivalent in Django. 
 class Resource(object):
+    base_url = None
 
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD"]
@@ -164,6 +157,7 @@ class Resource(object):
 
     def get_urls(self):
         pass
+
 
     def __call__(self, req, *args, **kwargs):
         """ Process request and return the response """
