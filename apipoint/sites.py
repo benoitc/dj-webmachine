@@ -4,7 +4,6 @@
 # See the NOTICE for more information.
 
 from django.http import HttpResponse
-from django.utils.datastructures import SortedDict
 
 class ApiSite(object):
 

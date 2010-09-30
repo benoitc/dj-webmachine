@@ -9,7 +9,7 @@ Does parsing of ETag-related headers: If-None-Matches, If-Matches
 Also If-Range parsing
 """
 
-from apipoint.datetime_util import serialize_date, parse_date 
+from apipoint.util.datetime_util import serialize_date, parse_date 
 
 __all__ = ['AnyETag', 'NoETag', 'ETagMatcher', 'IfRange', 'NoIfRange', 'get_etag']
 

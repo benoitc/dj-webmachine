@@ -33,14 +33,14 @@ class CrudResource(base.Resource):
         return False
 
     def process_post(self, req, resp):
-        return self.update(req, post) 
+        return self.update(req, resp) 
 
     def delete_resource(self, req, resp):
         return self.delete(req, resp)
 
 
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url, include
+        from django.conf.urls.defaults import patterns, url
 
         
         urlpatterns = patterns('',
@@ -48,4 +48,5 @@ class CrudResource(base.Resource):
             url(r'^(?P<action>\w+)$', self, name="use"),
         )
 
-        return urlpatterns += super(CrudResource, self).get_urls()
+        urlpatterns += super(CrudResource, self).get_urls()
+        return urlpatterns

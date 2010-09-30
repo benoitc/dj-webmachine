@@ -11,14 +11,15 @@ from django.db.models.options import get_verbose_name
 from django.http import HttpResponse
 from django.utils.translation import activate, deactivate_all, get_language, \
 string_concat
+from django.utils.encoding import smart_str, force_unicode
 
 
 from apipoint.acceptparse import get_accept_hdr, MIMEAccept, \
         MIMENilAccept, NoAccept
-from apipoint.datetime_util import parse_date
 from apipoint.etag import get_etag, AnyETag, NoETag
 from apipoint.exc import HTTPException, HTTPInternalServerError
 from apipoint.util import coerce_put_post, serialize_list
+from apipoint.util.datetime_util import parse_date
 from apipoint.resource.decisions import b13, TRANSITIONS
 
 
@@ -39,8 +40,6 @@ class Options(object):
         self.meta = meta
     
     def contribute_to_class(self, cls, name):
-        from django.db.backends.util import truncate_name
-
         cls._meta = self
 
         # First, construct the default values for these options.
@@ -259,7 +258,7 @@ class Resource(object):
     ###################
 
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url, include
+        from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('', 
             url(r'^$', self, name="%s_index" % self.__class__.__name__),
         )
@@ -346,7 +345,7 @@ class Resource(object):
                 match = CHARSET_RE.search(header)
                 if match:
                     header = header[:match.start()] + header[match.end():]
-                header += '; charset=%s' % charset
+                header += '; charset=%s' % resp.charset
                 resp['Content-Type'] = header
 
         return resp

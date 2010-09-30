@@ -5,7 +5,7 @@
 
 import datetime
 
-from apipoint.datetime_util import UTC
+from apipoint.util.datetime_util import UTC
 import apipoint.exc
 
 def b03(res, req, resp):
