@@ -125,8 +125,6 @@ class Resource(object):
     base_url = None
     csrf_exempt = True
 
-
-
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD"]
 
@@ -266,7 +264,6 @@ class Resource(object):
 
     def __call__(self, req, *args, **kwargs):
         """ Process request and return the response """
-
 
         # add path args to the request
         setattr(req, "url_args", args or [])
