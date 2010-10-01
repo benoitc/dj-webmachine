@@ -251,7 +251,12 @@ def m16(res, req, resp):
     return req.method == "DELETE"
 
 def m20(res, req, resp):
-    "Delete enacted?"
+    """Delete enacted immediayly?
+    Also where DELETE is forced."""
+    return res.delete_resource(req, resp)
+
+def m20b(res, req, resp):
+    """ Delete completed """
     return res.delete_completed(req, resp)
 
 def n05(res, req, resp):
@@ -404,6 +409,8 @@ TRANSITIONS = {
     m05: (n05, 410), # POST?
     m07: (n11, 404), # Server permits POST to missing resource?
     m16: (m20, n16), # DELETE?
+    m20: (m20b, 500), # DELETE enacted immediately?
+    m20b: (o20, 202), # Delete completeed?
     m20: (o20, 202), # Delete enacted?
     n05: (n11, 410), # Server permits POST to missing resource?
     n11: (303, p11), # Redirect?
