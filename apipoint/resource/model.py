@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the Apache 2 license. 
+# This file is part of dj-apipoint released under the MIT license. 
 # See the NOTICE for more information.
 
 
@@ -45,11 +45,11 @@ class ModelResource(base.Resource):
 
         if self.form is not None:
             # we specified a form 
-            ret += [(
-                    ("application/x-www-form-urlencoded ",
-                        self.from_form),
-                    ("multipart/form-data", self.from_form)
-            )]
+            ret += [
+                ("application/x-www-form-urlencoded ",
+                    self.from_form),
+                ("multipart/form-data", self.from_form)
+            ]
         return ret
 
     def resource_exists(self, req, resp):
@@ -68,6 +68,11 @@ class ModelResource(base.Resource):
         if req.obj:
             req.obj.delete()
         return False
+
+    def get_urls(self):
+        from django.conf.urls.defaults import patterns, url
+        urlpatterns = patterns('',
+            url('e
 
     
         
