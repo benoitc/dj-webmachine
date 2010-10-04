@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT. 
+# This file is part of dj-webmachine released under the MIT. 
 # See the NOTICE for more information.
 
 

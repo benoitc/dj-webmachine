@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
 from django.http import HttpResponse
 
 class ApiSite(object):
 
-    def __init__(self, name=None, app_name='apipoint'):
+    def __init__(self, name=None, app_name='webmachine'):
         self._registry = []
         self.name = name or 'api'
         self.app_name = app_name

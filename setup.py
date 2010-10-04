@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# This file is part of dj-apipoint released under the Apache 2 license. 
+# This file is part of dj-webmachine released under the Apache 2 license. 
 # See the NOTICE for more information.
 
 import os
@@ -12,12 +12,12 @@ if not hasattr(sys, 'version_info') or sys.version_info < (2, 5, 0, 'final'):
 
 from setuptools import setup, find_packages
 
-from apipoint import __version__
+from webmachine import __version__
 
 setup(
-    name = 'dj-apipoint',
+    name = 'dj-webmachine',
     version = __version__,
-    description = 'Minimal Django API framework.',
+    description = 'Minimal Django Resource framework.',
     long_description = file(
         os.path.join(
             os.path.dirname(__file__),
@@ -27,7 +27,7 @@ setup(
     author = 'Benoit Chesneau',
     author_email = 'benoitc@e-engura.org',
     license = 'BSD',
-    url = 'http://github.com/benoitc/dj-apipoint',
+    url = 'http://github.com/benoitc/dj-webmachine',
     classifiers = [
         'License :: OSI Approved :: Apache Software License',
         'Intended Audience :: Developers',

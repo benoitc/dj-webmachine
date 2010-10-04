@@ -1,9 +1,9 @@
-dj-apipoint
+dj-webmachine
 -----------
 
 2010 (c) Benoît Chesneau <benoitc@e-engura.org>
 
-dj-apipoint is released under the MIT license. See the LICENSE
+dj-webmachine is released under the MIT license. See the LICENSE
 file for the complete license.
 
 
@@ -13,9 +13,9 @@ Adapted from py-webmachine under MIT license.
 Copyright (c) 2009-2010 Paul J. Davis <paul.joseph.davis@gmail.com>
 
 
-apipoint.acceptparse,
-apipoint.util.datetimeutil,
-apipoint.etag
+webmachine.acceptparse,
+webmachine.util.datetimeutil,
+webmachine.etag
 ---------------------------
 
 http://pythonpaste.org/webob/

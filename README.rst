@@ -1,5 +1,5 @@
-dj-apipoint
-----------
+dj-webmachine
+-------------
 
 Minimal Django API framework.
 

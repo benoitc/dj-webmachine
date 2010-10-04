@@ -1,7 +1,7 @@
 # Create your views here.
 
-from apipoint.resource import Resource
-from apipoint.sites import api_site
+from webmachine.resource import Resource
+from webmachine.sites import api_site
 
 import json
 

@@ -1,12 +1,12 @@
 from django.conf.urls.defaults import *
 
-import apipoint
+import webmachine
 
 
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
-apipoint.autodiscover()
+webmachine.autodiscover()
 
 urlpatterns = patterns('',
     # Example:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
 
@@ -10,7 +10,7 @@ if os.environ.get('release') != "true":
 
     minor_tag = ""
     try:
-        from apipoint.util import popen3
+        from webmachine.util import popen3
 
         stdin, stdout, stderr = popen3("git rev-parse --short HEAD --")
         error = stderr.read()
@@ -28,7 +28,7 @@ __version__ = ".".join(map(str, version_info))
 
 
 try:
-    from apipoint.sites import ApiSite, api_site
+    from webmachine.sites import ApiSite, api_site
 except ImportError:
     import traceback
     traceback.print_exc()

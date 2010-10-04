@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
 import re
@@ -14,13 +14,13 @@ string_concat
 from django.utils.encoding import smart_str, force_unicode
 
 
-from apipoint.acceptparse import get_accept_hdr, MIMEAccept, \
+from webmachine.acceptparse import get_accept_hdr, MIMEAccept, \
         MIMENilAccept, NoAccept
-from apipoint.etag import get_etag, AnyETag, NoETag
-from apipoint.exc import HTTPException, HTTPInternalServerError
-from apipoint.util import coerce_put_post, serialize_list
-from apipoint.util.datetime_util import parse_date
-from apipoint.resource.decisions import b13, TRANSITIONS
+from webmachine.etag import get_etag, AnyETag, NoETag
+from webmachine.exc import HTTPException, HTTPInternalServerError
+from webmachine.util import coerce_put_post, serialize_list
+from webmachine.util.datetime_util import parse_date
+from webmachine.resource.decisions import b13, TRANSITIONS
 
 
 

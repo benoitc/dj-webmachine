@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT. 
+# This file is part of dj-webmachine released under the MIT. 
 # See the NOTICE for more information.
 
 """
@@ -9,7 +9,7 @@ Does parsing of ETag-related headers: If-None-Matches, If-Matches
 Also If-Range parsing
 """
 
-from apipoint.util.datetime_util import serialize_date, parse_date 
+from webmachine.util.datetime_util import serialize_date, parse_date 
 
 __all__ = ['AnyETag', 'NoETag', 'ETagMatcher', 'IfRange', 'NoIfRange', 'get_etag']
 
