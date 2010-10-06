@@ -48,7 +48,6 @@ class Options(object):
         self.module_name = self.object_name.lower()
         self.verbose_name = get_verbose_name(self.object_name)
         self.resource_prefix = self.module_name
-
         # Next, apply any overridden values from 'class Meta'.
         if self.meta:
             meta_attrs = self.meta.__dict__.copy()
@@ -113,10 +112,16 @@ class ResourceMeta(type):
             app_label = document_module.__name__.split('.')[-2]
         else:
             app_label = getattr(meta, 'app_label')
-        setattr(new_class, '_meta',  Options(meta, app_label=app_label))
 
+        
+        new_class.add_to_class('_meta',  Options(meta, app_label=app_label))
         return new_class
     
+    def add_to_class(cls, name, value):
+        if hasattr(value, 'contribute_to_class'):
+            value.contribute_to_class(cls, name)
+        else:
+            setattr(cls, name, value)
 
 # FIXME: we should propbably wrap full HttpRequest object instead of
 # adding properties to it in __call__ . Also datetime_utils has surely
@@ -269,7 +274,7 @@ class Resource(object):
 
         # add path args to the request
         setattr(req, "url_args", args or [])
-        setattr(req, "url_kwargs", kwargs or [])
+        setattr(req, "url_kwargs", kwargs or {})
 
 
         # django isn't restful

@@ -13,17 +13,16 @@ class ModelResourceMeta(base.ResourceMeta):
         parents = [b for b in bases if isinstance(b, ModelResourceMeta)]
         if not parents:
             return super_new(cls, name, bases, attrs)
-            
         model = attrs.get('model', False)
         if not model:
             raise AttributeError("model attribute isn't set")
         
-        return super_new(cls, name, bases, attrs)
+        new_class = super_new(cls, name, bases, attrs)
+        return new_class
 
         
 class ModelResource(base.Resource):
     __metaclass__ = ModelResourceMeta
-
 
     model = None
     form = None
@@ -97,6 +96,12 @@ class ModelResource(base.Resource):
             self.unknow_method(objs[0], req, resp)
         
     def allowed_methods(self, req, resp):
+        action = req.url_kwargs.get('action')
+
+        print "action %s" % action 
+        if not action:
+            return ['POST']
+
         return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
 
     def content_types_accepted(self, req, resp):
