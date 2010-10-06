@@ -5,7 +5,7 @@
 
 from django.http import HttpResponse
 
-class ApiSite(object):
+class Site(object):
 
     def __init__(self, name=None, app_name='webmachine'):
         self._registry = []
@@ -31,9 +31,15 @@ class ApiSite(object):
 
         for res in self._registry:
             instance = res()
+            if not res._meta.resource_prefix:
+                pattern = r'^%s/' % res._meta.app_label
+            else:
+                pattern = r'^%s/%s/' % (res._meta.app_label,
+                    res._meta.resource_prefix)
+            
+
             urlpatterns += patterns('',
-                url(r'^%s/' % res._meta.app_label,
-                    include(instance.get_urls()))
+                url(pattern, include(instance.get_urls())),
             )
         return urlpatterns
 
@@ -46,4 +52,4 @@ class ApiSite(object):
         return HttpResponse("api index")
 
 # This global object represent the main api site
-api_site = ApiSite()
+site = Site() 

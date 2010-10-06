@@ -29,7 +29,7 @@ setup(
     license = 'BSD',
     url = 'http://github.com/benoitc/dj-webmachine',
     classifiers = [
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Development Status :: 4 - Beta',

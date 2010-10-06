@@ -28,7 +28,7 @@ __version__ = ".".join(map(str, version_info))
 
 
 try:
-    from webmachine.sites import ApiSite, api_site
+    from webmachine.sites import Site, site
 except ImportError:
     import traceback
     traceback.print_exc()
@@ -49,9 +49,9 @@ def autodiscover():
         mod = import_module(app)
         # Attempt to import the app's resource module.
         try:
-            before_import_registry = copy.copy(api_site._registry)
+            before_import_registry = copy.copy(site._registry)
             import_module('%s.resource' % app)
         except:
-            api_site._registry = before_import_registry
+            site._registry = before_import_registry
             if module_has_submodule(mod, 'resource'):
                 raise

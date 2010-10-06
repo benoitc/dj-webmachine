@@ -1,11 +1,16 @@
 # Create your views here.
 
-from webmachine.resource import Resource
-from webmachine.sites import api_site
+from webmachine.resource import Resource, ModelResource
+from webmachine.sites import site
+
+from testapi.hello.models import Entry
 
 import json
 
-class HelloRes(Resource):
+class Hello(Resource):
+
+    class Meta:
+        resource_prefix = ''
 
     def content_types_provided(self, req, resp):
         return ( 
@@ -20,4 +25,8 @@ class HelloRes(Resource):
         return json.dumps({"message": "hello world!", "ok": True})
 
 
-api_site.register(HelloRes)
+class Entry(ModelResource):
+
+    model = Entry
+
+site.register(Hello, Entry)

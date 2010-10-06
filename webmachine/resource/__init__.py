@@ -4,3 +4,4 @@
 # See the NOTICE for more information.
 
 from webmachine.resource.base import Resource
+from webmachine.resource.model import ModelResource 
