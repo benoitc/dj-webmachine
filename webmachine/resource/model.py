@@ -7,8 +7,23 @@ from django.core import serializers
 
 from webmachine.resource import base
 
+class ModelResourceMeta(base.ResourceMeta):
+    def __new__(cls, name, bases, attrs):
+        super_new = super(ModelResourceMeta, cls).__new__
+        parents = [b for b in bases if isinstance(b, ModelResourceMeta)]
+        if not parents:
+            return super_new(cls, name, bases, attrs)
+            
+        model = attrs.get('model', False)
+        if not model:
+            raise AttributeError("model attribute isn't set")
+        
+        return super_new(cls, name, bases, attrs)
 
+        
 class ModelResource(base.Resource):
+    __metaclass__ = ModelResourceMeta
+
 
     model = None
     form = None
@@ -125,8 +140,7 @@ class ModelResource(base.Resource):
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
-        for attr_name in self.__dict__.keys():
-            print attr_name
+
 
         urlpatterns = patterns('',
             url(r'^(?P<action>\w+)/(?P<id>\w+)$', self, name="%s_action_edit"  %

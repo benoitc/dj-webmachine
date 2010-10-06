@@ -26,7 +26,6 @@ class Hello(Resource):
 
 
 class Entry(ModelResource):
-
     model = Entry
 
 site.register(Hello, Entry)
