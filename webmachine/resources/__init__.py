@@ -3,5 +3,4 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from webmachine.resource.base import Resource
-from webmachine.resource.model import ModelResource 
+from webmachine.resources.model import ModelResource 

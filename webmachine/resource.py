@@ -20,7 +20,7 @@ from webmachine.etag import get_etag, AnyETag, NoETag
 from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.util import coerce_put_post, serialize_list
 from webmachine.util.datetime_util import parse_date
-from webmachine.resource.decisions import b13, TRANSITIONS
+from webmachine.decisions import b13, TRANSITIONS
 
 
 

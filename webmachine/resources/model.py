@@ -78,8 +78,6 @@ class ModelResource(base.Resource):
     def from_json(self, req, resp):
         objs = list(serializers.deserialize("json", req.body))
         
-        print type(obj)
-        print objs[0]
         self._handle_request_body(obj, req, resp)
 
     def from_xml(self, req, resp):
@@ -98,7 +96,6 @@ class ModelResource(base.Resource):
     def allowed_methods(self, req, resp):
         action = req.url_kwargs.get('action')
 
-        print "action %s" % action 
         if not action:
             return ['POST']
 
