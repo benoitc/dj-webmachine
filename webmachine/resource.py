@@ -386,11 +386,13 @@ class Resource(object):
         """
         return []
 
-    ###################
-    # PRIVATE METHODS #
-    ###################
 
     def get_urls(self):
+        """
+        method used to register utls in django urls routing.
+
+        return urlpattern
+        """
         from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('',
             url(r'^\.(?P<%s>\w*)$' % self.format_sufx_param, self, 
@@ -400,6 +402,13 @@ class Resource(object):
             
         )
         return urlpatterns
+
+
+    ###################
+    # PRIVATE METHODS #
+    ###################
+
+    
 
     def __call__(self, req, *args, **kwargs):
         """ Process request and return the response """
