@@ -25,7 +25,7 @@ class Hello(Resource):
 
     def to_html(self, req, resp):
         return "<html><body>Hello world!</body></html>"
-
+    
     def to_json(self, req, resp):
         return json.dumps({"message": "hello world!", "ok": True})
 
@@ -34,10 +34,10 @@ class Crud(CrudResource):
     provides = ["application/json"]
 
     def read(self, req, resp):
-        print "ici"
         return {"message": "hello world!", "ok": True}
 
-
+    def delete(self, req, resp):
+        return {"ok":True}
 
 class Entry(ModelResource):
     model = Entry

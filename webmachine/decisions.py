@@ -282,7 +282,10 @@ def n16(res, req, resp):
 
 def o14(res, req, resp):
     "Is conflict?"
-    return res.is_conflict(req, resp)
+    if not res.is_conflict(req, resp):
+        handle_response_body(res, req, resp)
+        return False
+    return True
 
 def o16(res, req, resp):
     "PUT?"
@@ -290,7 +293,7 @@ def o16(res, req, resp):
 
 def o18(res, req, resp):
     "Multiple representations? (Build GET/HEAD body)"
-    if req.method not in ["GET", "HEAD"]:
+    if req.method not in ["GET", "HEAD", "DELETE"]:
         return res.multiple_choices(req, resp)
 
     handle_response_body(res, req, resp)

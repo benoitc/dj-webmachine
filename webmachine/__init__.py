@@ -55,4 +55,4 @@ def autodiscover():
         except:
             site._registry = before_import_registry
             if module_has_submodule(mod, 'resource'):
-                raise
+                raise 

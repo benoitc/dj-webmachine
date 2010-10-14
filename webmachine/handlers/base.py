@@ -7,7 +7,7 @@ METHODS_CRUD = {
     "POST": "create",
     "GET": "read",
     "PUT": "update",
-    "DELETE": "delete"
+    "HEAD": "read"
 }
 
 class Handler(object):
@@ -31,6 +31,7 @@ class Handler(object):
             meth = getattr(self.resource, METHODS_CRUD[req.method])
             body  = meth(req, resp)
             return self.encode(body)
-        elif req.method == "HEAD":
-            return ""
+        elif req.method == "DELETE":
+            return self.encode(resp._container)
         return False
+
