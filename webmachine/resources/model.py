@@ -5,9 +5,9 @@
 
 from django.core import serializers
 
-from webmachine.resource import base
+from webmachine import resource
 
-class ModelResourceMeta(base.ResourceMeta):
+class ModelResourceMeta(resource.ResourceMeta):
     def __new__(cls, name, bases, attrs):
         super_new = super(ModelResourceMeta, cls).__new__
         parents = [b for b in bases if isinstance(b, ModelResourceMeta)]
@@ -16,12 +16,14 @@ class ModelResourceMeta(base.ResourceMeta):
         model = attrs.get('model', False)
         if not model:
             raise AttributeError("model attribute isn't set")
+
+        attrs['form'] = attrs.get('form')
         
         new_class = super_new(cls, name, bases, attrs)
         return new_class
 
         
-class ModelResource(base.Resource):
+class ModelResource(resource.Resource):
     __metaclass__ = ModelResourceMeta
 
     model = None
@@ -70,10 +72,12 @@ class ModelResource(base.Resource):
         return '<html></html>'
 
     def to_json(self, req, resp):
+        serializers.to_json(req).obj
+
         return '{}'
 
     def to_xml(self, req, resp):
-        return 'xml'
+        serializers.to_xml(req.obj or '<xml>')
 
     def from_json(self, req, resp):
         objs = list(serializers.deserialize("json", req.body))
@@ -130,7 +134,7 @@ class ModelResource(base.Resource):
         if not resource_id:
             return True
 
-        obj = self.find(reource_id)
+        obj = self.find(resource_id)
         if not obj:
             return False
         req.obj = obj

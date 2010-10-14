@@ -20,7 +20,7 @@ from webmachine.etag import get_etag, AnyETag, NoETag
 from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.util import coerce_put_post, serialize_list
 from webmachine.util.datetime_util import parse_date
-from webmachine.decisions import b13, TRANSITIONS
+from webmachine.decisions import b13, TRANSITIONS, first_match
 
 
 
@@ -131,6 +131,7 @@ class Resource(object):
 
     base_url = None
     csrf_exempt = True
+    format_sufx_param = "FORMAT_SUFX"
 
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD"]
@@ -183,6 +184,19 @@ class Resource(object):
 
     def forbidden(self, req, resp):
         return False
+
+    def format_suffix_accepted(self, req, resp):
+        """
+        Allows you to force the accepted format depending on path
+        suffix.
+
+        Ex:  return [("json", "application/json")]
+        will allows to force `Accept` header to `application/json` on
+        url `/some/url.json` 
+
+        return None by default
+        """
+        return []
     
     def generate_etag(self, req, resp):
         return None
@@ -264,18 +278,30 @@ class Resource(object):
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
-        urlpatterns = patterns('', 
-            url(r'^$', self, name="%s_index" % self.__class__.__name__),
+        urlpatterns = patterns('',
+            url(r'^\.(?P<%s>\w*)$' % self.format_sufx_param, self, 
+                name="%s_index_fmt" % self.__class__.__name__), 
+            url(r'^', self, name="%s_index" % self.__class__.__name__),
+            
+            
         )
         return urlpatterns
 
     def __call__(self, req, *args, **kwargs):
         """ Process request and return the response """
 
-        # add path args to the request
+        # initialize response object
+        resp = HttpResponse()
+
+        # add path args args to the request
         setattr(req, "url_args", args or [])
         setattr(req, "url_kwargs", kwargs or {})
 
+        # force format depending on suffix ?
+        fmt_sufx = first_match(self.format_suffix_accepted, req, resp,
+                kwargs.get(self.format_sufx_param))
+        if fmt_sufx is not None:
+            req.META['HTTP_ACCEPT'] = fmt_sufx
 
         # django isn't restful
         req.method = req.method.upper()
@@ -302,9 +328,7 @@ class Resource(object):
         req.if_unmodified_since = parse_date(req.META.get('HTTP_IF_UNMODIFIED_SINCE'))
         req.pragma = req.META.get('pragma')
 
-        # start to build response
-        resp = HttpResponse()
-        
+                
         # add missing features we need in response
         resp.content_encoding = None
         resp.content_type = None 

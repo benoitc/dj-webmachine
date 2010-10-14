@@ -5,8 +5,8 @@
 
 import datetime
 
-from apipoint.util.datetime_util import UTC
-import apipoint.exc
+from webmachine.util.datetime_util import UTC
+import webmachine.exc
 
 def b03(res, req, resp):
     "Options?"

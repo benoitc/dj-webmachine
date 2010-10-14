@@ -32,9 +32,9 @@ class Site(object):
         for res in self._registry:
             instance = res()
             if not res._meta.resource_prefix:
-                pattern = r'^%s/' % res._meta.app_label
+                pattern = r'^%s' % res._meta.app_label
             else:
-                pattern = r'^%s/%s/' % (res._meta.app_label,
+                pattern = r'^%s/%s' % (res._meta.app_label,
                     res._meta.resource_prefix)
             
 

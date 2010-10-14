@@ -1,6 +1,7 @@
 # Create your views here.
 
-from webmachine.resource import Resource, ModelResource
+from webmachine import Resource
+from webmachine.resources import ModelResource
 from webmachine.sites import site
 
 from testapi.hello.models import Entry
@@ -11,6 +12,9 @@ class Hello(Resource):
 
     class Meta:
         resource_prefix = ''
+
+    def format_suffix_accepted(self, req, resp):
+        return [("json", "application/json")]
 
     def content_types_provided(self, req, resp):
         return ( 
