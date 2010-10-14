@@ -3,8 +3,22 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+
+
 from webmachine import resource
-from webmachine import serializers
+from webmachine import handlers
+
+
+
+METHODS_CRUD = { 
+    "POST": "create",
+    "GET": "read",
+    "PUT": "update",
+    "DELETE": "delete"
+}
+
+
+
 
 class CrudResource(resource.Resource):
     """ simple resource to manage crud action, it take care of
@@ -20,7 +34,8 @@ class CrudResource(resource.Resource):
         return None
 
     def read(self, req, resp):
-        """ do something ong GET or head """
+        """ do something ong GET or head 
+        """
         return None
 
     def update(self, req, resp):
@@ -37,24 +52,23 @@ class CrudResource(resource.Resource):
     # private methods
 
     def format_suffix_accepted(self, req, resp):
-        return [
-            ("json", "application/json"),
-            ("xml", "application/xml")
-        ]
-
-    def content_type_accepted(self, req, resp):
         accepted = []
+        for ctype in self.provides:
+            accepted.append((ctype, handlers.get_suffix(ctype)))
+        return accepted
 
+    def content_types_accepted(self, req, resp):
+        accepted = []
         for ctype in self.accept:
-            accepted.append(ctype,
-                    serializers.get_serializer("from", self, ctype))
+            hdl = handlers.get_handler(ctype, self)
+            accepted.append((ctype, hdl.handle_request))
         return accepted 
 
-    def content_type_provided(self, req, resp):
+    def content_types_provided(self, req, resp):
         provided = []
         for ctype in self.provides:
-            provided.append(ctype, serializers.get_serializer("to",
-                self, ctype))
+            hdl = handlers.get_handler(ctype, self)
+            provided.append((ctype, hdl.handle_response))
         return provided
 
     def delete_resource(self, req, resp):
@@ -82,6 +96,3 @@ class CrudResource(resource.Resource):
         )
 
         return urlpatterns
-
-        
-        
