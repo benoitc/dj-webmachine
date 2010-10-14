@@ -419,10 +419,16 @@ class Resource(object):
         setattr(req, "url_kwargs", kwargs or {})
 
         # force format depending on suffix ?
-        fmt_sufx = first_match(self.format_suffix_accepted, req, resp,
-                kwargs.get(self.format_sufx_param))
-        if fmt_sufx is not None:
-            req.META['HTTP_ACCEPT'] = fmt_sufx
+        if self.format_sufx_param in kwargs:
+            fmt =kwargs.get(self.format_sufx_param)
+            fmt_sufx = first_match(self.format_suffix_accepted, req,
+                    resp, fmt)
+            if fmt_sufx is not None:
+                req.META['HTTP_ACCEPT'] = fmt_sufx
+            else:
+                resp.status_code = 406 
+                resp._container = ["format %s not accepted" % fmt] 
+                return resp
 
         # django isn't restful
         req.method = req.method.upper()

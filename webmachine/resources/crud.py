@@ -45,7 +45,7 @@ class CrudResource(resource.Resource):
     def format_suffix_accepted(self, req, resp):
         accepted = []
         for ctype in self.provides:
-            accepted.append((ctype, handlers.get_suffix(ctype)))
+            accepted.append((handlers.get_suffix(ctype), ctype))
         return accepted
 
     def content_types_accepted(self, req, resp):
@@ -79,7 +79,7 @@ class CrudResource(resource.Resource):
         
         urlpatterns = patterns('',
             # update or delete, format suffix given
-            url(r'^(?P<id>\w+)\.(?P<%s>\w*)$' % self.format_sufx_param, self, 
+            url(r'^(?P<id>[^.]+)\.(?P<%s>\w*)$' % self.format_sufx_param, self, 
                 name="%s_action_edit_fmt"  % self.__class__.__name__),
 
             # update or delete 
