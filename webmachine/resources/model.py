@@ -6,6 +6,10 @@
 from django.core import serializers
 
 from webmachine import resource
+from webmachine.resources.crud import CrudResource
+
+
+__all__ = ['ModelResource']
 
 class ModelResourceMeta(resource.ResourceMeta):
     def __new__(cls, name, bases, attrs):
@@ -23,7 +27,7 @@ class ModelResourceMeta(resource.ResourceMeta):
         return new_class
 
         
-class ModelResource(resource.Resource):
+class ModelResource(CrudResource):
     __metaclass__ = ModelResourceMeta
 
     model = None
@@ -64,70 +68,6 @@ class ModelResource(resource.Resource):
         obj.delete()
         return True
 
-    def unkown_method(self, obj, req, resp):
-        return
-    
-    # these methods below shouldn't be edited most of the time. 
-    def to_html(self, req, resp):
-        return '<html></html>'
-
-    def to_json(self, req, resp):
-        serializers.to_json(req).obj
-
-        return '{}'
-
-    def to_xml(self, req, resp):
-        serializers.to_xml(req.obj or '<xml>')
-
-    def from_json(self, req, resp):
-        objs = list(serializers.deserialize("json", req.body))
-        
-        self._handle_request_body(obj, req, resp)
-
-    def from_xml(self, req, resp):
-        objs = list(serializers.deserialize("xml", req.body))
-        self._handle_request_body(obj, req, resp)
-
-
-    def _handle_request_body(self, obj, req, resp):
-        if req.method == "POST":
-            self.create(objs[0], req, resp)
-        elif req.method == "PUT":
-            self.update(objs[0], req, resp)
-        else:
-            self.unknow_method(objs[0], req, resp)
-        
-    def allowed_methods(self, req, resp):
-        action = req.url_kwargs.get('action')
-
-        if not action:
-            return ['POST']
-
-        return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
-
-    def content_types_accepted(self, req, resp):
-        ret = [
-            ("application/xml", self.from_xml),
-            ("application/json", self.from_json)
-        ]
-
-        if self.form is not None:
-            # we specified a form 
-            ret += [
-                ("application/x-www-form-urlencoded ",
-                    self.from_form),
-                ("multipart/form-data", self.from_form)
-            ]
-        return ret
-    
-    def content_types_provided(self, req, resp):
-        return ( 
-            ("", self.to_html),
-            ("text/html", self.to_html),
-            ("application/xhtml+xml", self.to_html),
-            ("application/json", self.to_json),
-            ("application/xml", self.to_xml)
-        )
 
     def resource_exists(self, req, resp):
         resource_id = req.url_kwargs.get("id")
@@ -140,24 +80,4 @@ class ModelResource(resource.Resource):
         req.obj = obj
         return True
 
-
-    def delete_resource(self, req, resp):
-        return self.delete(req.obj, req, resp)
-
-    def get_urls(self):
-        from django.conf.urls.defaults import patterns, url
-
-
-        urlpatterns = patterns('',
-            url(r'^(?P<action>\w+)/(?P<id>\w+)$', self, name="%s_action_edit"  %
-                self.__class__.__name__),
-            url(r'^(?P<action>\w+)$', self, name="%s_action"  %
-                self.__class__.__name__),
-            url(r'^$', self, name="%s_index" % self.__class__.__name__),
-        )
-        return urlpatterns
-
-    
-        
-    
 

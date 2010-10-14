@@ -4,7 +4,7 @@
 *.swp
 *.pyo
 .installed.cfg
-dj_apipoint.egg-info
+dj_webmachine.egg-info/
 dist
 build
 

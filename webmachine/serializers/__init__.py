@@ -3,5 +3,7 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from webmachine.resources.crud import CrudResource
-from webmachine.resources.model import ModelResource 
+
+def get_serializers(action, res, ctype):
+    
+    return []
