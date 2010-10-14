@@ -14,14 +14,15 @@ except ImportError:
     except ImportError:
         import django.utils.simplejson as _json
 
+from django.core.serializers.json import DjangoJSONEncoder
 
 from webmachine.handlers import base
 
 def json_decode(data, model=None):
-    return _json.loads(req.raw_post_data)
+    return _json.loads(data)
 
 def json_encode(obj):
-    return _json.dumps(obj)
+    return _json.dumps(obj, cls=DjangoJSONEncoder)
 
 class JsonHandler(base.Handler):
 
