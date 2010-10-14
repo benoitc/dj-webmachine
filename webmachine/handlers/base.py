@@ -3,16 +3,12 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-
-
-
 METHODS_CRUD = { 
     "POST": "create",
     "GET": "read",
     "PUT": "update",
     "DELETE": "delete"
 }
-
 
 class Handler(object):
 

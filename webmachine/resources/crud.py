@@ -3,12 +3,8 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-
-
 from webmachine import resource
 from webmachine import handlers
-
-
 
 METHODS_CRUD = { 
     "POST": "create",
@@ -17,9 +13,6 @@ METHODS_CRUD = {
     "DELETE": "delete"
 }
 
-
-
-
 class CrudResource(resource.Resource):
     """ simple resource to manage crud action, it take care of
     deserialization, serialization to xml or json by default """
@@ -27,7 +20,6 @@ class CrudResource(resource.Resource):
 
     accept = ['application/json', 'application/xml']
     provides = ['application/json', 'application/xml']
-
 
     def create(self, req, resp):
         """ do something on POST """
@@ -47,7 +39,6 @@ class CrudResource(resource.Resource):
 
     def allowed_methods(self, req, resp):
         return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
-
 
     # private methods
 
@@ -73,7 +64,6 @@ class CrudResource(resource.Resource):
 
     def delete_resource(self, req, resp):
         return self.delete(req, resp)
-
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
