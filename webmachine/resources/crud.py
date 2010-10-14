@@ -38,7 +38,9 @@ class CrudResource(resource.Resource):
         return ""
 
     def allowed_methods(self, req, resp):
-        return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
+        if "id" in req.url_kwargs:
+            return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
+        return ['GET', 'HEAD', 'POST']
 
     # private methods
 
