@@ -408,9 +408,7 @@ class Resource(object):
     # PRIVATE METHODS #
     ###################
 
-    
-
-    def __call__(self, req, *args, **kwargs):
+    def process(self, req, *args, **kwargs):
         """ Process request and return the response """
 
         # initialize response object
@@ -501,3 +499,5 @@ class Resource(object):
 
         return resp
 
+    def __call__(self, request, *args, **kwargs):
+        return self.process(request, *args, **kwargs)
