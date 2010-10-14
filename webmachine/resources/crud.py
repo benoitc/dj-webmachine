@@ -23,19 +23,19 @@ class CrudResource(resource.Resource):
 
     def create(self, req, resp):
         """ do something on POST """
-        return None
+        return ""
 
     def read(self, req, resp):
         """ do something ong GET or head 
         """
-        return None
+        return ""
 
     def update(self, req, resp):
         """ do something on PUT """
 
     def delete(self, req, resp):
         """ do something on DELETE """
-        return True
+        return ""
 
     def allowed_methods(self, req, resp):
         return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
@@ -61,9 +61,6 @@ class CrudResource(resource.Resource):
             hdl = handlers.get_handler(ctype, self)
             provided.append((ctype, hdl.handle_response))
         return provided
-
-    def delete_resource(self, req, resp):
-        return self.delete(req, resp)
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
