@@ -42,6 +42,14 @@ class ModelResource(CrudResource):
         if not self.model:
             raise ValueError("You should specify a form")
 
+    def get_resource_id(self, obj):
+        """ methode used to retrieve the resource id from a model or
+        decoded data. Can be overrided to manage specific key """
+        if isinstance(obj, dict): # create:
+            return obj.get("id")
+        
+        # model
+        return obj.pk
 
     def find(self, key):
         """ this method is used to get the object to read, delete or
@@ -57,16 +65,17 @@ class ModelResource(CrudResource):
     def create(self, req, resp):
         instance = self.model(**req.decoded_data)
         instance.save()
-        return instance
+        return {"ok": True, "id": self.get_resource_id(instance)}
 
     def read(self, req, resp):
+        # we just return the model
         return req.obj
 
     def update(self, req, resp):
         instance = req.obj
         for k, v in req.decoded_data.items():
             setattr(instance, k, v)
-        return {"ok", True, "id": req.id}
+            return {"ok": True, "id": req.id}
 
 
     def delete(self, req, resp):
