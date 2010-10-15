@@ -43,8 +43,8 @@ class ModelResource(CrudResource):
             raise ValueError("You should specify a form")
 
     def get_resource_id(self, obj):
-        """ methode used to retrieve the resource id from a model or
-        decoded data. Can be overrided to manage specific key """
+        """ method used to retrieve the resource id from a model or
+        decoded data. Can be overrided to manage specific key name"""
         if isinstance(obj, dict): # create:
             return obj.get("id")
         
