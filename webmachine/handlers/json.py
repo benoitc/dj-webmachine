@@ -15,7 +15,6 @@ except ImportError:
         import django.utils.simplejson as _json
 
 from django.core.serializers.json import DjangoJSONEncoder
-
 from webmachine.handlers import base
 
 def json_decode(data, model=None):
@@ -28,7 +27,6 @@ class JsonHandler(base.Handler):
 
     def encode(self, data):
         return json_encode(data)
-
 
     def decode(self, data):
         return json_decode(data)

@@ -17,7 +17,6 @@ class CrudResource(resource.Resource):
     """ simple resource to manage crud action, it take care of
     deserialization, serialization to xml or json by default """
 
-
     accept = ['application/json', 'application/xml']
     provides = ['application/json', 'application/xml']
 
@@ -41,7 +40,6 @@ class CrudResource(resource.Resource):
         return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
 
     # private methods
-
     def format_suffix_accepted(self, req, resp):
         accepted = []
         for ctype in self.provides:
@@ -72,8 +70,7 @@ class CrudResource(resource.Resource):
         else:
             resp._container = result
             return True
-
-
+    
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
         
