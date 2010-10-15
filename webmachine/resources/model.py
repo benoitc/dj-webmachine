@@ -54,20 +54,29 @@ class ModelResource(CrudResource):
             raise HTTPBadRequest(str(e))
 
     
-    def create(self, obj, req, resp):
-        pass
+    def create(self, req, resp):
+        instance = self.model(**req.decoded_data)
+        instance.save()
+        return instance
 
     def read(self, req, resp):
-        pass
+        return req.obj
+
+    def update(self, req, resp):
+        instance = req.obj
+        for k, v in req.decoded_data.items():
+            setattr(instance, k, v)
+        return {"ok", True, "id": req.id}
 
 
-    def update(self, obj, req, resp):
-        pass
+    def delete(self, req, resp):
+        req.obj.delete()
+        return {"ok": True, "id": req.obj_id}
 
-    def delete(self, obj, req, resp):
-        obj.delete()
-        return True
-
+    def allowed_methods(self, req, resp):
+        if "id" in req.url_kwargs:
+            return ['DELETE', 'GET', 'HEAD', 'POST', 'PUT']
+        return ['GET', 'HEAD', 'POST']
 
     def resource_exists(self, req, resp):
         resource_id = req.url_kwargs.get("id")
@@ -77,7 +86,6 @@ class ModelResource(CrudResource):
         obj = self.find(resource_id)
         if not obj:
             return False
+        req.obj_id = resource_id
         req.obj = obj
         return True
-
-
