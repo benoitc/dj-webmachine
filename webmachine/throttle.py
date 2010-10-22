@@ -7,16 +7,6 @@ import time
 
 from django.core.cache import cache
 
-class Throttle(object):
-
-    def __init__(self, resource_instance, **options):
-        self.resource_instance = resource_instance
-    
-
-    def resource_identifier(self):
-        return str(self.resource_instance)
-
-
 class Limiter(object):
 
     def __init__(self, res, **options):
