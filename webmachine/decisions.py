@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-apipoint released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
 import datetime
@@ -269,7 +269,7 @@ def n11(res, req, resp):
         handle_request_body(res, req, resp)
     else:
         if not res.process_post(req, resp):
-            raise apipoint.exc.HTTPInternalServerError("Failed to process POST.")
+            raise webmachine.exc.HTTPInternalServerError("Failed to process POST.")
         return False
     resp.location = res.created_location(req, resp)
     if resp.location:
@@ -327,7 +327,7 @@ def handle_request_body(res, req, resp):
 
     func = first_match(res.content_types_accepted, req, resp, mtype)
     if func is None:
-        raise apipoint.exc.HTTPUnsupportedMediaType()
+        raise webmachine.exc.HTTPUnsupportedMediaType()
 
     return func(req, resp)
 
@@ -339,7 +339,7 @@ def handle_response_body(res, req, resp):
     # Generate the body
     func = first_match(res.content_types_provided, req, resp, resp.content_type)
     if func is None:
-        raise apipoint.exc.HTTPInternalServerError()
+        raise webmachine.exc.HTTPInternalServerError()
     
     body = func(req, resp)
 
@@ -354,7 +354,7 @@ def handle_response_body(res, req, resp):
     if encoding:
         func = first_match(res.encodings_provided, req, resp, encoding)
         if func is None:
-            raise apipoint.exc.HTTPInternalServerError()
+            raise webmachine.exc.HTTPInternalServerError()
         resp.body = func(resp.body)
         resp['Content-Encoding'] = encoding
 
