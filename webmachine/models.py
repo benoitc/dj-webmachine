@@ -11,6 +11,8 @@ import uuid
 from django.contrib.auth.models import User
 from django.db import models
 
+from webmachine.util import keygen
+
 KEY_SIZE = 32
 SECRET_SIZE = 256
 VERIFIER_SIZE = 16
@@ -45,7 +47,7 @@ class Nonce(models.models):
 class Consumer(models.Model):
 
     key = models.CharField(max_length=KEY_SIZE)
-    secret = models.CharField(max_length=SECRET_KEY)
+    secret = models.CharField(max_length=SECRET_SIZE)
     user = models.ForeignKey(User, null=True, blank=True)
 
     def __str__(self):
@@ -57,7 +59,7 @@ class Consumer(models.Model):
 class Token(models.Models):
 
     key = models.CharField(max_length=KEY_SIZE)
-    secret = models.CharField(max_length=SECRET_KEY)
+    secret = models.CharField(max_length=SECRET_SIZE)
     callback = models.CharField(max_length=2048) #URL
     callback_confirmed = models.BooleanField(default=False)
     verifier = models.CharField(max_length=VERIFIER_SIZE)

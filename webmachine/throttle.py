@@ -20,10 +20,10 @@ class Limiter(object):
             return False
         return True
 
-    def whitelisted(request):
+    def whitelisted(self, request):
         return False
 
-    def blacklisted(request):
+    def blacklisted(self, request):
         return False
 
     def client_identifier(self, request):
@@ -68,7 +68,7 @@ class Interval(Limiter):
                 return Interval(self).allowed(req)
     """
 
-    def allowed(request):
+    def allowed(self, request):
         t1 = time.time()
         key = self.cache_key(request)
         t0 = self.cache_get(key)

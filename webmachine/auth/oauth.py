@@ -10,7 +10,7 @@ from django.utils.importlib import import_module
 try:
     from restkit.utils import oauth2
 except ImportError:
-    try
+    try:
         import oauth2
     except ImportError:
         raise ImportError("oauth2 module is needed. Install restkit or"
@@ -21,8 +21,8 @@ from webmachine.auth.base import Auth
 def load_oauth_datastore(self):
     datastore = getattr(settings, 'OAUTH_DATASTORE', 
             'webmachine.auth.oauth_store.DataStore')
-    i = path.rfind('.')
-    module, clsname = path[:i], path[i+1:]
+    i = datastore.rfind('.')
+    module, clsname = datastore[:i], datastore[i+1:]
     try:
         mod = import_module(module)
     except ImportError:
@@ -30,23 +30,23 @@ def load_oauth_datastore(self):
             "isn't valid" % module)
 
     try:
-        cls = getattr(mod, clsname
+        cls = getattr(mod, clsname)
     except AttributeError:
         raise ImproperlyConfigured("oauth datastore '%s' doesn't exist"
                 " in '%s' module" % (clsname, module))
     return cls
 
 
-class OauthServer(oauth2.Server):
+class OAuthServer(oauth2.Server):
 
     def __init__(self, datastore):
         self.datastore = datastore
-        super(OauthServer, self).__init__()
+        super(OAuthServer, self).__init__()
     
-    def verify_request(self, request):
-        consumer = self._get_consumer(request)
+    def verify_request(self, oauth_request):
+        consumer = self._get_consumer(oauth_request)
         token = self._get_token(oauth_request, 'access')
-        parameters = super(OauthServer, self).verify_request(request,
+        parameters = super(OAuthServer, self).verify_request(oauth_request,
                 consumer, token)
         return consumer, token, parameters
 
@@ -69,7 +69,7 @@ class OauthServer(oauth2.Server):
 class Oauth(Auth):
 
     def __init__(self, realm="OAuth"):
-        self.oauth_datastore = load_oauth_datastore()
+        oauth_datastore = load_oauth_datastore()
         self.realm = realm
         self.oauth_server = OAuthServer(oauth_datastore())
         self.oauth_server.add_signature_method(oauth2.OAuthSignatureMethod_PLAINTEXT())
@@ -89,7 +89,7 @@ class Oauth(Auth):
         oauth_request = oauth2.Request.from_request(req.method, 
             req.build_absolute_uri(), headers=headers,
             parameters=params,
-            query_string=request.META.get('QUERY_STRING'))
+            query_string=req.META.get('QUERY_STRING'))
 
         if not oauth_request:
             return False
@@ -100,5 +100,5 @@ class Oauth(Auth):
             resp.content = str(err)
             return 'OAuth realm="%s"' % self.realm 
        
-        request.user = consumer.user
+        req.user = consumer.user
         return True

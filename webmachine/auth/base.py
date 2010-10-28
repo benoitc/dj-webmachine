@@ -3,6 +3,10 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+import binascii
+
+from django.contrib.auth import authenticate, AnonymousUser
+
 from webmachine.exc import HTTPClientError
 
 class Auth(object):
@@ -26,12 +30,12 @@ class BasicAuth(Auth):
             if meth.lower() != "basic":
                 # bad method
                 return False
-            auth = auth.strip().decode('base64')
-            (user, pwd) = auth.split(":", 1)
+            auth1 = auth.strip().decode('base64')
+            (user, pwd) = auth1.split(":", 1)
         except (ValueError, binascii.Error):
             raise HTTPClientError()
 
-        req.user = self.func(username=username, password=pwd)
+        req.user = self.func(username=user, password=pwd)
         if not req.user:
             req.user = AnonymousUser()
             return 'Basic realm="%s"' % self.realm
