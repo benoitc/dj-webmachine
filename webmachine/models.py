@@ -18,15 +18,6 @@ SECRET_SIZE = 256
 VERIFIER_SIZE = 16
 TOKEN_TYPES = ('access', 'request')
 
-def generate_nonce(length=8):
-    """Generate pseudorandom number."""
-    return ''.join([str(random.randint(0, 9)) for i in range(length)])
-
-def generate_verifier(length=8):
-    """Generate pseudorandom number."""
-    return ''.join([str(random.randint(0, 9)) for i in range(length)])
-
-
 def create_consumer(user=None):
     key = uuid.UUID4().hex
     secret = keygen(SECRET_SIZE)

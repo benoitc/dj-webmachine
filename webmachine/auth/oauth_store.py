@@ -3,8 +3,9 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from webmachine.models import Nonce, Consumer, Token, generate_nonce, \
+from webmachine.models import Nonce, Consumer, Token, \
 create_consumer, create_token
+from webmachine.util import keygen
 
 class OAuthDataStore(object):
     """A database abstraction used to lookup consumers and tokens."""
