@@ -7,7 +7,6 @@ import re
 import sys
 import types
 
-from django.db.models.options import get_verbose_name
 from django.http import HttpResponse
 from django.utils.translation import activate, deactivate_all, get_language, \
 string_concat
@@ -23,9 +22,8 @@ from webmachine.util.datetime_util import parse_date
 from webmachine.decisions import b13, TRANSITIONS, first_match
 
 
-
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
-
+get_verbose_name = lambda class_name: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).lower().strip()
 
 DEFAULT_NAMES = ('verbose_name', 'app_label', 'resource_prefix')
 

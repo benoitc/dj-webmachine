@@ -4,6 +4,7 @@
 # See the NOTICE for more information.
 
 import os
+import random 
 
 try:#python 2.6, use subprocess
     import subprocess
@@ -20,6 +21,9 @@ except ImportError:
     subprocess = None
     popen3 = os.popen3
 
+CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+def keygen(len):
+    return ''.join([random.choice(CHARS) for i in range(len)])
 
 def coerce_put_post(request):
     """

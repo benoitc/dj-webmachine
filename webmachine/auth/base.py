@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -
+#
+# This file is part of dj-webmachine released under the MIT license. 
+# See the NOTICE for more information.
 
 from webmachine.exc import HTTPClientError
 
@@ -12,8 +16,8 @@ class BasicAuth(Auth):
         self.func = func
         self.realm = realm
 
-    def authorized(self, request):
-        auth_str = request.META.get("HTTP_AUTHORIZATION")
+    def authorized(self, req, resp):
+        auth_str = req.META.get("HTTP_AUTHORIZATION")
         if not auth_str:
             return False
 
@@ -27,10 +31,9 @@ class BasicAuth(Auth):
         except (ValueError, binascii.Error):
             raise HTTPClientError()
 
-        request.user = self.func(username=username, password=pwd)
-        if not request.user:
-            request.user = AnonymousUser()
-            return False
-
+        req.user = self.func(username=username, password=pwd)
+        if not req.user:
+            req.user = AnonymousUser()
+            return 'Basic realm="%s"' % self.realm
         return True
 

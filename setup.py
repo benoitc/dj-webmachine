@@ -47,7 +47,7 @@ setup(
     
     install_requires = [
         'setuptools',
-        'django',
+        'django'
     ],
     
     test_suite = 'nose.collector',
