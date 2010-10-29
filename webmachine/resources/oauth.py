@@ -4,6 +4,7 @@
 # See the NOTICE for more information.
 
 from django.template import loader, RequestContext
+import oauth2
 
 from webmachine.forms import OAuthAuthenticationForm
 from webmachine.resource import Resource
