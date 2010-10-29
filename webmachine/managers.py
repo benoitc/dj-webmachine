@@ -5,11 +5,9 @@
 
 import uuid
 
+from django.const import SECRET_SIZE
 from django.contrib.auth.models import User
 from django.db import models
-
-KEY_SIZE = 32
-SECRET_SIZE = 32 
 
 class KeyManager(models.Manager):
 
@@ -31,12 +29,11 @@ class ConsumerManager(KeyManager):
         )
         return consumer
 
-
 class TokenManager(KeyManager):
 
     def create_token(self, consumer, token_type, timestamp, user=None):
         key, secret = self.generate_key_secret()
-        token = Token.objects.create(
+        token = self.create(
                 key=key, 
                 secret=secret, 
                 token_type=token_type,

@@ -16,6 +16,8 @@ except ImportError:
         raise ImportError("oauth2 module is needed. Install restkit or python-oauth2.")
 
 from webmachine.auth.base import Auth
+from webmachine.const import TOKEN_REQUEST, TOKEN_ACCESS
+
 
 def load_oauth_datastore(self):
     datastore = getattr(settings, 'OAUTH_DATASTORE', 
@@ -46,15 +48,15 @@ class OAuthServer(oauth2.Server):
         """
         try:
             # Get the request token for authorization.
-            token = self._get_token(oauth_request, 'request')
-        except OAuthError:
+            token = self._get_token(oauth_request, TOKEN_REQUEST)
+        except oauth2.Error:
             # No token required for the initial token request.
             timestamp = self._get_timestamp(oauth_request)
             version = self._get_version(oauth_request)
             consumer = self._get_consumer(oauth_request)
             try:
                 callback = self.get_callback(oauth_request)
-            except OAuthError:
+            except oauth2.Error:
                 callback = None # 1.0, no callback specified.
             self._check_signature(oauth_request, consumer, None)
             # Fetch a new token.
@@ -71,15 +73,15 @@ class OAuthServer(oauth2.Server):
         consumer = self._get_consumer(oauth_request)
         verifier = self._get_verifier(oauth_request)
         # Get the request token.
-        token = self._get_token(oauth_request, 'request')
+        token = self._get_token(oauth_request, TOKEN_REQUEST)
         self._check_signature(oauth_request, consumer, token)
         new_token = self.data_store.fetch_access_token(consumer, token,
-                verifier, )
+                verifier, timestamp)
         return new_token
 
     def verify_request(self, oauth_request):
         consumer = self._get_consumer(oauth_request)
-        token = self._get_token(oauth_request, 'access')
+        token = self._get_token(oauth_request, TOKEN_ACCESS)
         parameters = super(OAuthServer, self).verify_request(oauth_request,
                 consumer, token)
         return consumer, token, parameters
@@ -99,7 +101,7 @@ class OAuthServer(oauth2.Server):
             raise oauth2.Error('Invalid consumer.')
         return consumer
 
-    def _get_token(self, oauth_request, token_type='access'):
+    def _get_token(self, oauth_request, token_type=TOKEN_ACCESS):
         """Try to find the token for the provided request token key."""
         token_field = oauth_request.get_parameter('oauth_token')
         token = self.datastore.lookup_token(token_type, token_field)
@@ -111,10 +113,10 @@ class OAuthServer(oauth2.Server):
         """Verify that the nonce is uniqueish."""
         nonce = self.data_store.lookup_nonce(consumer, token, nonce)
         if nonce:
-            raise OAuthError('Nonce already used: %s' % str(nonce))
+            raise oauth2.Error('Nonce already used: %s' % str(nonce))
 
     def _get_timestamp(self, oauth_request):
-        return request.get_parameter('oauth_timestamp')
+        return int(oauth_request.get_parameter('oauth_timestamp'))
 
 class Oauth(Auth):
 

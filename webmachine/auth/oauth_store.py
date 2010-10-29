@@ -3,7 +3,8 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from webmachine.models import Nonce, Consumer, Token, VERIFIER_SIZE
+from webmachine.const import VERIFIER_SIZE, TOKEN_REQUEST, TOKEN_ACCESS
+from webmachine.models import Nonce, Consumer, Token
 
 from webmachine.util import generate_random
 
@@ -45,7 +46,7 @@ class DataStore(OAuthDataStore):
             self.consumer = Consumer.objects.get(key=key)
         except Consumer.DoesNotExist:
             return None
-        retun self.consumer
+        return self.consumer
 
     def lookup_token(self, token_type, key):
         try:
@@ -75,12 +76,12 @@ class DataStore(OAuthDataStore):
         if consumer.key == self.consumer.key:
             request_token = Token.objects.create_token(
                     consumer=self.consumer,
-                    token_type="request",
+                    token_type=TOKEN_REQUEST,
                     timestamp=timestamp
             )
                 
-            if oauth_callback:
-                self.request_token.set_callback(oauth_callback)
+            if callback:
+                self.request_token.set_callback(callback)
             
             self.request_token = request_token
             return request_token
@@ -93,7 +94,7 @@ class DataStore(OAuthDataStore):
         and self.request_token.is_approved:
             self.access_token = Token.objects.create_token(
                     consumer=self.consumer,
-                    token_type="access",
+                    token_type=TOKEN_ACCESS,
                     timestamp=timestamp,
                     user=self.request_token.user)
             return self.access_token

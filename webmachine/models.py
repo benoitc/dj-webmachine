@@ -3,27 +3,16 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-import random
 import urllib
 import urlparse
-import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 
-from webmachine.managers import ConsumerManager, TokenManager, KEY_SIZE, \
-SECRET_SIZE
-from webmachine.util import keygen
+from webmachine.const import KEY_SIZE, SECRET_SIZE, VERIFIER_SIZE, \
+TOKEN_TYPES, PENDING, CONSUMER_STATES
 
-VERIFIER_SIZE = 16
-TOKEN_TYPES = ('access', 'request')
-CONSUMER_STATES = (
-    (PENDING,  _('Pending')),
-    (ACCEPTED, _('Accepted')),
-    (CANCELED, _('Canceled')),
-    (REJECTED, _('Rejected')),
-)
+from webmachine.managers import ConsumerManager, TokenManager
 
 def generate_random(length=SECRET_SIZE):
     return User.objects.make_random_password(length=length)
@@ -40,8 +29,8 @@ class Consumer(models.Model):
     description = models.TextField()
     user = models.ForeignKey(User, null=True, blank=True,
             related_name="consumers_user")
-    status = models.CharField(max_length=16, choices=CONSUMER_STATES, 
-            default='pending')
+    status = models.SmallIntegerField(choices=CONSUMER_STATES, 
+            default=PENDING)
 
     objects = ConsumerManager()
 
@@ -54,7 +43,7 @@ class Consumer(models.Model):
 class Token(models.Models):
     key = models.CharField(max_length=KEY_SIZE)
     secret = models.CharField(max_length=SECRET_SIZE),
-    token_type = models.CharField(max_length=10)
+    token_type = models.SmallIntegerField(choices=TOKEN_TYPES)
     callback = models.CharField(max_length=2048) #URL
     callback_confirmed = models.BooleanField(default=False)
     verifier = models.CharField(max_length=VERIFIER_SIZE)
@@ -74,7 +63,7 @@ class Token(models.Models):
         if verifier is not None:
             self.verifier = verifier
         else:
-            self.verifier = generate_verifier()
+            self.verifier = generate_random(VERIFIER_SIZE)
         self.save()
 
     def get_callback_url(self):
