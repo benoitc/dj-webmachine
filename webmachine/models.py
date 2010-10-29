@@ -78,3 +78,19 @@ class Token(models.Models):
             return urlparse.urlunparse((scheme, netloc, path, params,
                 query, fragment))
         return self.callback
+
+
+    def to_string(self, only_key=False):
+        token_dict = {
+                'oauth_token': self.key, 
+                'oauth_token_secret': self.secret,
+                'oauth_callback_confirmed': 'true',
+        }
+
+        if self.verifier:
+            token_dict.update({ 'oauth_verifier': self.verifier })
+
+        if only_key:
+            del token_dict['oauth_token_secret']
+
+        return urllib.urlencode(token_dict)
