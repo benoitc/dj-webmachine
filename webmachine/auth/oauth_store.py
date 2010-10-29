@@ -3,9 +3,9 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from webmachine.models import Nonce, Consumer, Token, \
-create_consumer, create_token
-from webmachine.util import keygen
+from webmachine.models import Nonce, Consumer, Token, VERIFIER_SIZE
+
+from webmachine.util import generate_random
 
 class OAuthDataStore(object):
     """A database abstraction used to lookup consumers and tokens."""
@@ -22,11 +22,13 @@ class OAuthDataStore(object):
         """-> OAuthToken."""
         raise NotImplementedError
 
-    def fetch_request_token(self, oauth_consumer, oauth_callback):
+    def fetch_request_token(self, oauth_consumer, oauth_callback,
+            oauth_timestamp):
         """-> OAuthToken."""
         raise NotImplementedError
 
-    def fetch_access_token(self, oauth_consumer, oauth_token, oauth_verifier):
+    def fetch_access_token(self, oauth_consumer, oauth_token,
+            oauth_verifier, oauth_timestamp):
         """-> OAuthToken."""
         raise NotImplementedError
 
@@ -39,9 +41,70 @@ class OAuthDataStore(object):
 class DataStore(OAuthDataStore):
 
     def lookup_consumer(self, key):
-        return Consumer.objects.get(key=key)
+        try:
+            self.consumer = Consumer.objects.get(key=key)
+        except Consumer.DoesNotExist:
+            return None
+        retun self.consumer
 
     def lookup_token(self, token_type, key):
-        return Token.objects.get(token_type, key)
+        try:
+            self.request_token = Token.objects.get(
+                    token_type=token_type, 
+                    key=key
+            )
+        except Consumer.DoesNotExist:
+            return None
+        return self.request_token
 
+    def lookup_nonce(self, consumer, token, nonce):
+        if not token:
+            return
 
+        nonce, created = Nonce.objects.get_or_create(
+                consumer_key=consumer.key,
+                token_key=token.key,
+                nonce=nonce
+        )
+
+        if created:
+            return None
+        return nonce
+
+    def fetch_request_token(self, consumer, callback, timestamp):
+        if consumer.key == self.consumer.key:
+            request_token = Token.objects.create_token(
+                    consumer=self.consumer,
+                    token_type="request",
+                    timestamp=timestamp
+            )
+                
+            if oauth_callback:
+                self.request_token.set_callback(oauth_callback)
+            
+            self.request_token = request_token
+            return request_token
+        return None
+
+    def fetch_access_token(self, consumer, token, verifier, timestamp):
+        if consumer.key == self.consumer.key \
+        and token.key == self.request_token.key \
+        and verifier == self.request_token.verifier \
+        and self.request_token.is_approved:
+            self.access_token = Token.objects.create_token(
+                    consumer=self.consumer,
+                    token_type="access",
+                    timestamp=timestamp,
+                    user=self.request_token.user)
+            return self.access_token
+        return None
+
+    def authorize_request_token(self, oauth_token, user):
+        if oauth_token.key == self.request_token.key:
+            # authorize the request token in the store
+            self.request_token.is_approved = True
+            self.request_token.user = user
+            self.request_token.verifier = generate_random(VERIFIER_SIZE)
+            self.request_token.save()
+            return self.request_token
+        return None

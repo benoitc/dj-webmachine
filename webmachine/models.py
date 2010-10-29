@@ -10,25 +10,23 @@ import uuid
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
+from webmachine.managers import ConsumerManager, TokenManager, KEY_SIZE, \
+SECRET_SIZE
 from webmachine.util import keygen
 
-KEY_SIZE = 32
-SECRET_SIZE = 256
 VERIFIER_SIZE = 16
 TOKEN_TYPES = ('access', 'request')
+CONSUMER_STATES = (
+    (PENDING,  _('Pending')),
+    (ACCEPTED, _('Accepted')),
+    (CANCELED, _('Canceled')),
+    (REJECTED, _('Rejected')),
+)
 
-def create_consumer(user=None):
-    key = uuid.UUID4().hex
-    secret = keygen(SECRET_SIZE)
-    consumer = Consumer.objects.create(key=key, secret=secret, user=user)
-    return consumer
-
-def create_token():
-    key = uuid.UUID4().hex
-    secret = keygen(SECRET_SIZE)
-    token = Token.objects.create(key=key, secret=secret)
-    return token
+def generate_random(length=SECRET_SIZE):
+    return User.objects.make_random_password(length=length)
 
 class Nonce(models.models):
     token_key = models.CharField(max_length=KEY_SIZE)
@@ -36,10 +34,16 @@ class Nonce(models.models):
     key = models.CharField(max_length=255)
 
 class Consumer(models.Model):
-
+    name = models.CharField(max_length=255)
     key = models.CharField(max_length=KEY_SIZE)
     secret = models.CharField(max_length=SECRET_SIZE)
-    user = models.ForeignKey(User, null=True, blank=True)
+    description = models.TextField()
+    user = models.ForeignKey(User, null=True, blank=True,
+            related_name="consumers_user")
+    status = models.CharField(max_length=16, choices=CONSUMER_STATES, 
+            default='pending')
+
+    objects = ConsumerManager()
 
     def __str__(self):
         data = {'oauth_consumer_key': self.key,
@@ -48,12 +52,18 @@ class Consumer(models.Model):
         return urllib.urlencode(data)
 
 class Token(models.Models):
-
     key = models.CharField(max_length=KEY_SIZE)
-    secret = models.CharField(max_length=SECRET_SIZE)
+    secret = models.CharField(max_length=SECRET_SIZE),
+    token_type = models.CharField(max_length=10)
     callback = models.CharField(max_length=2048) #URL
     callback_confirmed = models.BooleanField(default=False)
     verifier = models.CharField(max_length=VERIFIER_SIZE)
+    timestamp = models.IntegerField(default=time.time())
+    user = models.ForeignKey(numm=True, blank=True,
+            related_name="tokens_user")
+    is_approved = models.BooleanField(default=False)
+    
+    objects = TokenManager()
 
     def set_callback(self, callback):
         self.callback = callback

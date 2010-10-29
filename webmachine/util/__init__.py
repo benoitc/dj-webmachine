@@ -4,7 +4,8 @@
 # See the NOTICE for more information.
 
 import os
-import random 
+import random
+import time
 
 try:#python 2.6, use subprocess
     import subprocess
@@ -24,6 +25,11 @@ except ImportError:
 CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 def keygen(len):
     return ''.join([random.choice(CHARS) for i in range(len)])
+
+def generate_timestamp():
+    """Get seconds since epoch (UTC)."""
+    return int(time.time())
+
 
 def coerce_put_post(request):
     """
