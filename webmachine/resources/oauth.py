@@ -13,7 +13,7 @@ from webmachine.resource import Resource
 class Oauth(Resource):
 
     def __init__(self, realm='OAuth', 
-            auth_template='authorize_token.html', 
+            auth_template='webmachine/authorize_token.html', 
             auth_form=OAuthAuthenticationForm, name=None, 
             app_name='webmachine'):
 
@@ -131,7 +131,12 @@ class Oauth(Resource):
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('', 
-            url(r'^(?P<action>\w+)$', self, name="oauth"), 
+                url(r'^authorize$', self, {"action": "authorize"}, 
+                    name="oauth_authorize"),
+                url(r'^access_token$', self, {"action": "access_token"},
+                    name="oauth_access_token"),
+                url(r'^request_token$', self, {"action": "request_token"},
+                    name="oauth_request_token")
         )
         return urlpatterns
 
