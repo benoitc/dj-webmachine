@@ -4,7 +4,14 @@
 # See the NOTICE for more information.
 
 from django.template import loader, RequestContext
-import oauth2
+
+try:
+    from restkit.utils import oauth2
+except ImportError:
+    try:
+        import oauth2
+    except ImportError:
+        raise ImportError("oauth2 module is needed. Install restkit or python-oauth2.")
 
 from webmachine.forms import OAuthAuthenticationForm
 from webmachine.resource import Resource
