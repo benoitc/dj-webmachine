@@ -7,4 +7,4 @@
 dj_webmachine.egg-info/
 dist
 build
-
+doc/build/*

@@ -24,10 +24,9 @@ class Hello(Resource):
         )
 
     def to_html(self, req, resp):
-        return "<html><body>Hello world!</body></html>"
+        return "<html><body>Hello world!</body></html>\n"
     
     def to_json(self, req, resp):
-        return json.dumps({"message": "hello world!", "ok": True})
+        return "%s\n" % json.dumps({"message": "hello world!", "ok": True})
 
 
-site.register(Hello)
