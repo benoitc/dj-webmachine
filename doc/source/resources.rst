@@ -13,12 +13,14 @@ all dj-webmachine resources should inherit from the Resource object:
         """ my app resource """
 
 
-All Resource methods are of the signature::
+All Resource methods are of the signature:
+
+.. code-block:: python
 
     def f(self, req, resp):
-        pass
+        return result
 
-req is a :class:django.http.HttpRequest instance, and resp a
+``req`` is a :class:django.http.HttpRequest instance, and ``resp`` a
 :class:django.http.HttpResource instance. This instances have been
 :ref:`improved to support more HTTP semantics <http>`. At any time you
 can manipulate this object to return the response you want or pass
@@ -31,5 +33,5 @@ Each methods are described below:
 
 .. autoclass:: webmachine.Resource
    :members:
-   :inherited-members:
+   :undoc-members:
    
