@@ -3,6 +3,35 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+
+"""
+all dj-webmachine resources should inherit from the Resource object:
+
+.. code-block:: python
+
+    from webmachine import Resource
+
+    class MyResource(Resource):
+        pass 
+
+
+All Resource methods are of the signature:
+
+.. code-block:: python
+
+    def f(self, req, resp):
+        return result
+
+``req`` is a :class:`django.http.HttpRequest` instance, and ``resp`` a
+:class:`django.http.HttpResource` instance. This instances have been
+:ref:`improved to support more HTTP semantics <http>`. At any time you
+can manipulate this object to return the response you want or pass
+values to other methods.
+
+There are over 30 Resource methods you can define, but any of them can 
+be omitted as they have reasonable defaults.
+"""
+
 import re
 import sys
 import types
@@ -125,18 +154,6 @@ class ResourceMeta(type):
 # adding properties to it in __call__ . Also datetime_utils has surely
 # equivalent in Django. 
 class Resource(object):
-    """
-    All django webmachines resources are derived from this object.
-
-    All webmachines resource methodes are on the form 
-
-        fun(self, request, response) -> result
-
-    where request is an `django.http.HttpRequest` instance and response
-    a `django.http.HttpResponse` instance.
-
-    """
-
     __metaclass__ = ResourceMeta
 
     base_url = None
@@ -148,6 +165,8 @@ class Resource(object):
         If a Method not in this list is requested, then a 
         405 Method Not Allowed will be sent. Note that 
         these are all-caps and are string. 
+
+        :return: [Method] 
         """
         return ["GET", "HEAD"]
 
@@ -155,10 +174,15 @@ class Resource(object):
         """
         If the resource accepts POST requests to nonexistent resources, 
         then this should return True.
+
+        :return: True or False
         """
         return False
 
     def auth_required(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
     
     def charsets_provided(self, req, resp):
@@ -174,6 +198,8 @@ class Resource(object):
         
         Returning None prevents the character set negotiation
         logic.
+
+        :return: [(Charset, Handler)]
         """
         return None
 
@@ -182,6 +208,8 @@ class Resource(object):
         This is used similarly to content_types_provided, 
         except that it is for incoming resource representations
         -- for example, PUT requests.
+
+        :return: [(MediaType, Handler)] or None
         """
         return None
 
@@ -195,12 +223,17 @@ class Resource(object):
         includes an Accept header with a value that does not appear as a 
         first element in any of the return tuples, then a 406 Not Acceptable 
         will be sent.
+
+        :return: [(MediaType, Handler)] or None
         """
         return [
             ("text/html", self.to_html)
         ]
 
     def created_location(self, req, resp):
+        """
+        :return: Path or None
+        """
         return None
 
     def delete_completed(self, req, resp):
@@ -208,6 +241,8 @@ class Resource(object):
         This is only called after a successful delete_resource 
         call, and should return false if the deletion was accepted
         but cannot yet be guaranteed to have finished.
+
+        :return: True or False
         """
         return True
     
@@ -215,6 +250,8 @@ class Resource(object):
         """
         This is called when a DELETE request should be enacted, 
         and should return true if the deletion succeeded.
+
+        :return: True or False
         """
         return False
 
@@ -228,13 +265,18 @@ class Resource(object):
         check on method, and on GET requests return [("identity", lambda x: x)] 
         as this is all that is needed to support identity encoding.
 
-        return [("identity", lambda x: x)]
+            return [("identity", lambda x: x)]
 
         Returning None prevents the encoding negotiation logic.
+
+        :return: [(Encoding, Encoder)]
         """
         return None
 
     def expires(self, req, resp):
+        """
+        :return: Nonr or Date string
+        """
         return None
     
     def finish_request(self, req, resp):
@@ -243,10 +285,15 @@ class Resource(object):
         response is constructed and sent. The Result is ignored, so
         any effect of this function must be by returning a modified 
         request.
+
+        :return: True or False
         """
         return True
 
     def forbidden(self, req, resp):
+        """
+        :return: True or False
+        """
         return False
 
     def format_suffix_accepted(self, req, resp):
@@ -258,7 +305,7 @@ class Resource(object):
         will allows to force `Accept` header to `application/json` on
         url `/some/url.json` 
 
-        return None by default
+        :return: [(Suffix, MediaType)] or None
         """
         return []
     
@@ -266,6 +313,8 @@ class Resource(object):
         """
         If this returns a value, it will be used as the value of the ETag 
         header and for comparison in conditional requests.
+
+        :return: Str or None
         """
         return None
 
@@ -274,19 +323,29 @@ class Resource(object):
         If this returns anything other than true, the response will 
         be 401 Unauthorized. The AuthHead return value will be used 
         as the value in the WWW-Authenticate header.
+
+        :return: True or False
         """
         return True
     
     def is_conflict(self, req, resp):
         """
         If this returns true, the client will receive a 409 Conflict.
+
+        :return: True or False
         """
         return False
 
     def known_content_type(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
 
     def known_methods(self, req, resp):
+        """
+        :return: set([Method])
+        """
         return set([
             "GET", "HEAD", "POST", "PUT", "DELETE",
             "TRACE", "CONNECT", "OPTIONS"
@@ -297,19 +356,33 @@ class Resource(object):
         return ["en", "es", "en-gb"]
         
         returning None short circuits the language negotiation
+
+        :return: [Language]
         """
         return None
 
     def last_modified(self, req, resp):
+        """
+        :return: DateString or None
+        """
         return None
 
     def malformed_request(self, req, resp):
+        """
+        :return: True or False
+        """
         return False
 
     def moved_permanently(self, req, resp):
+        """
+        :return: True Or False
+        """
         return False
     
     def moved_temporarily(self, req, resp):
+        """
+        :return: True or False
+        """
         return False
     
     def multiple_choices(self, req, resp):
@@ -318,6 +391,8 @@ class Resource(object):
         representations of the response are possible and a single
         one cannot be automatically chosen, so a 300 Multiple Choices
         will be sent instead of a 200.
+
+        :return: True or False
         """
         return False
 
@@ -327,10 +402,15 @@ class Resource(object):
         value of this function is expected to be a list of pairs 
         representing header names and values that should appear 
         in the response.
+
+        :return: [(HeaderName, Value)]
         """
         return []
 
     def ping(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
     
     def post_is_create(self, req, resp):
@@ -341,35 +421,56 @@ class Resource(object):
         If it does return true, then create_path will be called and the 
         rest of the request will be treated much like a PUT to the Path 
         entry returned by that call.
+
+        :return: True or False
         """
         return False
     
     def previously_existed(self, req, resp):
+        """
+        :return: True or False
+        """
         return False
 
     def process_post(self, req, resp):
         """
         If post_is_create returns false, then this will be called to process
         any POST requests. If it succeeds, it should return True.
+
+        :return: True or False
         """
         return False
 
     def resource_exists(self, req, resp):
         """
         Returning non-true values will result in 404 Not Found.
+
+        :return: True or False
         """
         return True
     
     def service_available(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
 
     def uri_too_long(self, req, resp):
+        """
+        :return: True or False
+        """
         return False
     
     def valid_content_headers(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
     
     def valid_entity_length(self, req, resp):
+        """
+        :return: True or False
+        """
         return True
 
     def variances(self, req, resp):
@@ -381,6 +482,8 @@ class Resource(object):
         do not need to be specified here as Webmachine will add the
         correct elements of those automatically depending on resource
         behavior.
+
+        :return: True or False
         """
         return []
 
@@ -389,7 +492,7 @@ class Resource(object):
         """
         method used to register utls in django urls routing.
 
-        return urlpattern
+        :return: urlpattern
         """
         from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('',
@@ -406,7 +509,7 @@ class Resource(object):
     # PRIVATE METHODS #
     ###################
 
-    def process(self, req, *args, **kwargs):
+    def _process(self, req, *args, **kwargs):
         """ Process request and return the response """
 
         # initialize response object
@@ -504,4 +607,4 @@ class Resource(object):
         return resp
 
     def __call__(self, request, *args, **kwargs):
-        return self.process(request, *args, **kwargs)
+        return self._process(request, *args, **kwargs)
