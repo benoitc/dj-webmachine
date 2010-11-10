@@ -74,7 +74,7 @@ settings::
 
     INSTALLED_APPS = (
         ...
-        'dj-webmachine',
+        'webmachine',
         'helloworld.hello'
     )
 
