@@ -34,7 +34,7 @@ Contents:
    :maxdepth: 1
 
    introduction
-   documentation
+   docs
 
 Indices and tables
 ==================
