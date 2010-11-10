@@ -87,7 +87,7 @@ Put your the Hello resource in your ``urls.py``:
     from helloworld.hello.resource import Hello
 
     urlpatterns = patterns('',
-        (r'^hello', Hello()),
+        (r'^$', Hello()),
     )
 
 Launch your application::
@@ -98,10 +98,10 @@ Take a look! Point a web browser at http://localhost:8000/
 
 Or with curl::
 
-    $ curl http://127.0.0.1:8000/hello
+    $ curl http://127.0.0.1:8000
     <html><body>Hello world!</body></html>
 
-    $ curl http://127.0.0.1:8000/hello -H "Accept: application/json"
+    $ curl http://127.0.0.1:8000 -H "Accept: application/json"
     {"message": "hello world!", "ok": true}    
 
 
