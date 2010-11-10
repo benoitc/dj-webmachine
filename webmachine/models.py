@@ -3,6 +3,7 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+import time
 import urllib
 import urlparse
 
@@ -17,7 +18,7 @@ from webmachine.managers import ConsumerManager, TokenManager
 def generate_random(length=SECRET_SIZE):
     return User.objects.make_random_password(length=length)
 
-class Nonce(models.models):
+class Nonce(models.Model):
     token_key = models.CharField(max_length=KEY_SIZE)
     consumer_key = models.CharField(max_length=KEY_SIZE)
     key = models.CharField(max_length=255)
@@ -40,7 +41,7 @@ class Consumer(models.Model):
 
         return urllib.urlencode(data)
 
-class Token(models.Models):
+class Token(models.Model):
     key = models.CharField(max_length=KEY_SIZE)
     secret = models.CharField(max_length=SECRET_SIZE),
     token_type = models.SmallIntegerField(choices=TOKEN_TYPES)
@@ -48,7 +49,7 @@ class Token(models.Models):
     callback_confirmed = models.BooleanField(default=False)
     verifier = models.CharField(max_length=VERIFIER_SIZE)
     timestamp = models.IntegerField(default=time.time())
-    user = models.ForeignKey(numm=True, blank=True,
+    user = models.ForeignKey(User, null=True, blank=True, 
             related_name="tokens_user")
     is_approved = models.BooleanField(default=False)
     

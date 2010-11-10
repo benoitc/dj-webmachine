@@ -5,9 +5,11 @@
 
 import uuid
 
-from django.const import SECRET_SIZE
+
 from django.contrib.auth.models import User
 from django.db import models
+
+from webmachine.const import SECRET_SIZE
 
 class KeyManager(models.Manager):
 

@@ -29,17 +29,5 @@ class Hello(Resource):
     def to_json(self, req, resp):
         return json.dumps({"message": "hello world!", "ok": True})
 
-class Crud(CrudResource):
-    accept = ["application/json"]
-    provides = ["application/json"]
 
-    def read(self, req, resp):
-        return {"message": "hello world!", "ok": True}
-
-    def delete(self, req, resp):
-        return {"ok":True}
-
-class Entry(ModelResource):
-    model = Entry
-
-site.register(Hello, Crud, Entry)
+site.register(Hello)
