@@ -48,19 +48,11 @@ We will quickly create an Hello world accepting HTML and JSON.
 In the hello folder create a file named ``resource.p```:
 
 .. code-block:: python
-
-    from webmachine import Resource
-    from webmachine.resources import ModelResource, CrudResource
-    from webmachine.sites import site
-
-
+    
     import json
-
+    from webmachine import Resource
+    
     class Hello(Resource):
-
-
-        class Meta:
-            resource_prefix = ''
 
         def format_suffix_accepted(self, req, resp):
             return [("json", "application/json")]
