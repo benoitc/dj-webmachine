@@ -18,6 +18,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     # (r'^admin/', include(admin.site.urls)),
 
-    (r'auth', oauth_res.OauthResource().get_urls()),
+    (r'^auth/', include(oauth_res.OauthResource().get_urls())),
     (r'$^', Protected()),
 )

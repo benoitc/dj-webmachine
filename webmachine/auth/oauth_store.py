@@ -42,9 +42,11 @@ class OAuthDataStore(object):
 class DataStore(OAuthDataStore):
 
     def lookup_consumer(self, key):
+        print list(Consumer.objects.all())
         try:
             self.consumer = Consumer.objects.get(key=key)
         except Consumer.DoesNotExist:
+            print "meh"
             return None
         return self.consumer
 

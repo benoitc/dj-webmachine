@@ -10,10 +10,7 @@ from django.utils.importlib import import_module
 try:
     from restkit.util import oauth2
 except ImportError:
-    try:
-        import oauth2
-    except ImportError:
-        raise ImportError("oauth2 module is needed. Install restkit or python-oauth2.")
+    raise ImportError("restkit packages is needed for auth.")
 
 from webmachine.auth.base import Auth
 from webmachine.const import TOKEN_REQUEST, TOKEN_ACCESS
@@ -59,9 +56,12 @@ class OAuthServer(oauth2.Server):
                 callback = self.get_callback(oauth_request)
             except oauth2.Error:
                 callback = None # 1.0, no callback specified.
+
+            #hack
+            
             self._check_signature(oauth_request, consumer, None)
             # Fetch a new token.
-            token = self.data_store.fetch_request_token(consumer,
+            token = self.datastore.fetch_request_token(consumer,
                     callback, timestamp)
         return token
 
@@ -76,7 +76,7 @@ class OAuthServer(oauth2.Server):
         # Get the request token.
         token = self._get_token(oauth_request, TOKEN_REQUEST)
         self._check_signature(oauth_request, consumer, token)
-        new_token = self.data_store.fetch_access_token(consumer, token,
+        new_token = self.datastore.fetch_access_token(consumer, token,
                 verifier, timestamp)
         return new_token
 
@@ -97,7 +97,11 @@ class OAuthServer(oauth2.Server):
 
     def _get_consumer(self, oauth_request):
         consumer_key = oauth_request.get_parameter('oauth_consumer_key')
+        print "mmm %s" % consumer_key
         consumer = self.datastore.lookup_consumer(consumer_key)
+        print consumer
+        print "key %s" % consumer_key
+        print oauth_request
         if not consumer:
             raise oauth2.Error('Invalid consumer.')
         return consumer
@@ -112,7 +116,7 @@ class OAuthServer(oauth2.Server):
 
     def _check_nonce(self, consumer, token, nonce):
         """Verify that the nonce is uniqueish."""
-        nonce = self.data_store.lookup_nonce(consumer, token, nonce)
+        nonce = self.datastore.lookup_nonce(consumer, token, nonce)
         if nonce:
             raise oauth2.Error('Nonce already used: %s' % str(nonce))
 

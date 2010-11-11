@@ -43,11 +43,13 @@ class Consumer(models.Model):
 
 class Token(models.Model):
     key = models.CharField(max_length=KEY_SIZE)
-    secret = models.CharField(max_length=SECRET_SIZE),
+    secret = models.CharField(max_length=SECRET_SIZE)
     token_type = models.SmallIntegerField(choices=TOKEN_TYPES)
     callback = models.CharField(max_length=2048) #URL
     callback_confirmed = models.BooleanField(default=False)
     verifier = models.CharField(max_length=VERIFIER_SIZE)
+    consumer = models.ForeignKey(Consumer,
+            related_name="tokens_consumer")
     timestamp = models.IntegerField(default=time.time())
     user = models.ForeignKey(User, null=True, blank=True, 
             related_name="tokens_user")

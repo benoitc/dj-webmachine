@@ -8,14 +8,11 @@ from django.template import loader, RequestContext
 try:
     from restkit.util import oauth2
 except ImportError:
-    try:
-        import oauth2
-    except ImportError:
-        raise ImportError("oauth2 module is needed. Install restkit or python-oauth2.")
+    raise ImportError("restkit packages is needed for auth.")
 
+from webmachine.auth.oauth import OAuthServer, load_oauth_datastore
 from webmachine.forms import OAuthAuthenticationForm
 from webmachine.resource import Resource
-
 
 class OauthResource(Resource):
 
@@ -26,6 +23,11 @@ class OauthResource(Resource):
         self.auth_template = auth_template
         self.auth_form = auth_form
         self.realm = realm
+
+        oauth_datastore = load_oauth_datastore()
+        self.oauth_server = OAuthServer(oauth_datastore())
+        self.oauth_server.add_signature_method(oauth2.SignatureMethod_PLAINTEXT())
+        self.oauth_server.add_signature_method(oauth2.SignatureMethod_HMAC_SHA1())
 
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD", "POST"]
@@ -55,7 +57,7 @@ class OauthResource(Resource):
             try:
                 form = self.auth_form(req.POST)
                 if form.is_valid():
-                    token = req.oauth_server.authorize_token(token, req.user)
+                    token = self.oauth_server.authorize_token(token, req.user)
                     args = '?'+token.to_string(only_key=True)
                 else:
                     args = '?error=%s' % 'Access not granted by user.'
@@ -70,23 +72,32 @@ class OauthResource(Resource):
 
     def oauth_access_token(self, req, resp):
         try:
-            token = oauth_server.fetch_access_token(req.oauth_request)
+            token = self.oauth_server.fetch_access_token(req.oauth_request)
             resp.content = token.to_string()
-        except oauth.Error, err:
+        except oauth2.Error, err:
             return self.oauth_error(req, resp, err)
         return True
 
     def oauth_request_token(self, req, resp):
         try:
-            token = oauth_server.fetch_request_token(req.oauth_request)
+            token = self.oauth_server.fetch_request_token(req.oauth_request)
+            print "token %s" % token.to_string()
             resp.content = token.to_string()
-        except oauth.Error, err:
+        except oauth2.Error, err:
             return self.oauth_error(req, resp, err) 
         return True
 
     def oauth_error(self, req, resp, err):
         resp.content = str(err)
         return 'OAuth realm="%s"' % self.realm
+
+
+    def oauth_resp(self, req, resp):
+        return resp.content
+
+
+    def content_types_provided(self, req, resp):
+        return [("", self.oauth_resp)] 
 
     def process_post(self, res, resp):
         # we already processed POST
@@ -98,7 +109,8 @@ class OauthResource(Resource):
         except AttributeError:
             return False
  
-    def is_unauthorized(self, req, resp):
+    def is_authorized(self, req, resp):
+        print "ici"
         func = getattr(self, "oauth_%s" % req.oauth_action)
         return func(req, resp)
 
@@ -118,16 +130,19 @@ class OauthResource(Resource):
             query_string=req.META.get('QUERY_STRING'))
 
         if not oauth_request:
-            return False
+            
+            return True
 
         req.oauth_request = oauth_request
-        return True
+        return False
 
-    def resource_exists(self, req, resp):
+    def ping(self, req, resp):
         action = req.url_kwargs.get("action")
         if not action or action not in ("authorize", "access_token",
                 "request_token"):
             return False
+
+        print "action %s" % action
         req.oauth_action = action
 
         return True
@@ -135,14 +150,14 @@ class OauthResource(Resource):
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('', 
-                url(r'^authorize$', self, {"action": "authorize"}, 
+                url(r'^authorize$', self, kwargs={"action": "authorize"}, 
                     name="oauth_authorize"),
-                url(r'^access_token$', self, {"action": "access_token"},
+                url(r'^access_token$', self, kwargs={"action": "access_token"},
                     name="oauth_access_token"),
-                url(r'^request_token$', self, {"action": "request_token"},
+                url(r'^request_token$', self,kwargs= {"action": "request_token"},
                     name="oauth_request_token")
         )
         return urlpatterns
     
-    urls = property(get_urls)
+    #urls = property(get_urls)
  

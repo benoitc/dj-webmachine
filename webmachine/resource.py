@@ -160,6 +160,7 @@ class Resource(object):
     csrf_exempt = True
     format_sufx_param = "FORMAT_SUFX"
 
+
     def allowed_methods(self, req, resp):
         """
         If a Method not in this list is requested, then a 
