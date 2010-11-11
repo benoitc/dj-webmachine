@@ -5,7 +5,8 @@
 
 import binascii
 
-from django.contrib.auth import authenticate, AnonymousUser
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import AnonymousUser
 
 from webmachine.exc import HTTPClientError
 

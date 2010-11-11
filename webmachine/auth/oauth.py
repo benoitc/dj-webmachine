@@ -8,7 +8,7 @@ from django.conf import settings
 from django.utils.importlib import import_module
 
 try:
-    from restkit.utils import oauth2
+    from restkit.util import oauth2
 except ImportError:
     try:
         import oauth2
@@ -19,11 +19,12 @@ from webmachine.auth.base import Auth
 from webmachine.const import TOKEN_REQUEST, TOKEN_ACCESS
 
 
-def load_oauth_datastore(self):
+def load_oauth_datastore():
     datastore = getattr(settings, 'OAUTH_DATASTORE', 
             'webmachine.auth.oauth_store.DataStore')
     i = datastore.rfind('.')
     module, clsname = datastore[:i], datastore[i+1:]
+    print module
     try:
         mod = import_module(module)
     except ImportError:
@@ -124,8 +125,8 @@ class Oauth(Auth):
         oauth_datastore = load_oauth_datastore()
         self.realm = realm
         self.oauth_server = OAuthServer(oauth_datastore())
-        self.oauth_server.add_signature_method(oauth2.OAuthSignatureMethod_PLAINTEXT())
-        self.oauth_server.add_signature_method(oauth2.OAuthSignatureMethod_HMAC_SHA1())
+        self.oauth_server.add_signature_method(oauth2.SignatureMethod_PLAINTEXT())
+        self.oauth_server.add_signature_method(oauth2.SignatureMethod_HMAC_SHA1())
 
     def authorized(self, req, resp):
         params = {}

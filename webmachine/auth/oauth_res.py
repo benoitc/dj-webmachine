@@ -6,7 +6,7 @@
 from django.template import loader, RequestContext
 
 try:
-    from restkit.utils import oauth2
+    from restkit.util import oauth2
 except ImportError:
     try:
         import oauth2
@@ -17,7 +17,7 @@ from webmachine.forms import OAuthAuthenticationForm
 from webmachine.resource import Resource
 
 
-class Oauth(Resource):
+class OauthResource(Resource):
 
     def __init__(self, realm='OAuth', 
             auth_template='webmachine/authorize_token.html', 

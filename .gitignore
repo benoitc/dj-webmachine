@@ -9,4 +9,4 @@ dist
 build
 doc/build/doctrees
 doc/build/html
-examples/oauth/oauth.db
+examples/testoauth/oauth.db

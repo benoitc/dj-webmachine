@@ -30,6 +30,11 @@ def generate_timestamp():
     """Get seconds since epoch (UTC)."""
     return int(time.time())
 
+def generate_random(length=8):
+    """Generate pseudorandom number."""
+    return ''.join([str(random.randint(0, 9)) for i in range(length)])
+
+
 
 def coerce_put_post(request):
     """

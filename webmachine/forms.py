@@ -7,7 +7,7 @@ import hmac
 try:
     import hashlib
     _sha = hashlib.sha1
-except ImportError
+except ImportError:
     import sha
     _sha = sha
 
@@ -31,7 +31,7 @@ class OAuthAuthenticationForm(forms.Form):
         token = self.cleaned_data['oauth_token']
 
         sig1 = OAuthAuthenticationForm.get_csrf_signature(settings.SECRET_KEY, 
-                token
+                token)
         if sig != sig1:
             raise forms.ValidationError("CSRF signature is not valid")
 
