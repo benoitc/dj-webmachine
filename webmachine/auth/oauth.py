@@ -21,7 +21,6 @@ def load_oauth_datastore():
             'webmachine.auth.oauth_store.DataStore')
     i = datastore.rfind('.')
     module, clsname = datastore[:i], datastore[i+1:]
-    print module
     try:
         mod = import_module(module)
     except ImportError:
@@ -97,11 +96,7 @@ class OAuthServer(oauth2.Server):
 
     def _get_consumer(self, oauth_request):
         consumer_key = oauth_request.get_parameter('oauth_consumer_key')
-        print "mmm %s" % consumer_key
         consumer = self.datastore.lookup_consumer(consumer_key)
-        print consumer
-        print "key %s" % consumer_key
-        print oauth_request
         if not consumer:
             raise oauth2.Error('Invalid consumer.')
         return consumer

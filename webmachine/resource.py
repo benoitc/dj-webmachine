@@ -566,6 +566,7 @@ class Resource(object):
         resp.etag = None
         resp.last_modified = None
         resp.expires = None
+        resp.location = None
 
         ctypes = [ct for (ct, func) in (self.content_types_provided(req, resp) or [])]
         if len(ctypes):
@@ -604,6 +605,9 @@ class Resource(object):
                     header = header[:match.start()] + header[match.end():]
                 header += '; charset=%s' % resp.charset
                 resp['Content-Type'] = header
+
+        if resp.location is not None:
+            resp['Location'] = resp.location
 
         return resp
 

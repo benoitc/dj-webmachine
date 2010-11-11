@@ -3,6 +3,7 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+import base64
 import hmac
 try:
     import hashlib

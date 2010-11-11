@@ -34,13 +34,12 @@ class OauthResource(Resource):
     
     def oauth_authorize(self, req, resp):
         try:
-            token = oauth_server.fetch_request_token(req.oauth_request)
-        except oauth.OAuthError, err:
+            token = self.oauth_server.fetch_request_token(req.oauth_request)
+        except oauth2.Error, err:
             return self.auth_error(req, resp, err)
-        return send_oauth_error(err)
         
         try:
-            callback = req.auth_server.get_callback(oauth_request)
+            callback = self.auth_server.get_callback(oauth_request)
         except:
             callback = None
     
@@ -54,6 +53,7 @@ class OauthResource(Resource):
                     { 'form': form }, RequestContext(req))
 
         elif req.method == "POST":
+            
             try:
                 form = self.auth_form(req.POST)
                 if form.is_valid():
@@ -81,7 +81,6 @@ class OauthResource(Resource):
     def oauth_request_token(self, req, resp):
         try:
             token = self.oauth_server.fetch_request_token(req.oauth_request)
-            print "token %s" % token.to_string()
             resp.content = token.to_string()
         except oauth2.Error, err:
             return self.oauth_error(req, resp, err) 
@@ -110,7 +109,6 @@ class OauthResource(Resource):
             return False
  
     def is_authorized(self, req, resp):
-        print "ici"
         func = getattr(self, "oauth_%s" % req.oauth_action)
         return func(req, resp)
 
@@ -119,7 +117,7 @@ class OauthResource(Resource):
         headers = {}
 
         if req.method == "POST":
-            params = req.REQUEST.items()
+            params = dict(req.REQUEST.items())
 
         if 'HTTP_AUTHORIZATION' in req.META:
             headers['Authorization'] = req.META.get('HTTP_AUTHORIZATION')
@@ -142,7 +140,6 @@ class OauthResource(Resource):
                 "request_token"):
             return False
 
-        print "action %s" % action
         req.oauth_action = action
 
         return True
