@@ -7,4 +7,6 @@
 dj_webmachine.egg-info/
 dist
 build
-doc/build/*
+doc/build/doctrees
+doc/build/html
+examples/oauth/oauth.db

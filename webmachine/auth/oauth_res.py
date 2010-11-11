@@ -21,14 +21,11 @@ class Oauth(Resource):
 
     def __init__(self, realm='OAuth', 
             auth_template='webmachine/authorize_token.html', 
-            auth_form=OAuthAuthenticationForm, name=None, 
-            app_name='webmachine'):
+            auth_form=OAuthAuthenticationForm):
 
         self.auth_template = auth_template
         self.auth_form = auth_form
         self.realm = realm
-        self.name = name or 'oauth'
-        self.app_name = app_name
 
     def allowed_methods(self, req, resp):
         return ["GET", "HEAD", "POST"]
@@ -146,9 +143,6 @@ class Oauth(Resource):
                     name="oauth_request_token")
         )
         return urlpatterns
-
-    def urls(self):
-        return self.get_urls(), self.app_name, self.name
-    urls = property(urls)
-
     
+    urls = property(get_urls)
+ 
