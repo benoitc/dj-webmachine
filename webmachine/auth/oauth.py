@@ -147,7 +147,7 @@ class Oauth(Auth):
             query_string=req.META.get('QUERY_STRING'))
 
         if not oauth_request:
-            return False
+            return 'OAuth realm="%s"' % self.realm
 
         try:
             consumer, token, params = self.oauth_server.verify_request(oauth_request)

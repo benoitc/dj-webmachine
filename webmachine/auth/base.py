@@ -18,6 +18,12 @@ class Auth(object):
 class BasicAuth(Auth):
 
     def __init__(self, func=authenticate, realm="API"):
+        """
+        :attr func: authentification function. By default it's the
+        :func:`django.contrib.auth.authenticate` function.
+        :attr realm: string, the authentification realm
+        """
+
         self.func = func
         self.realm = realm
 

@@ -7,6 +7,6 @@ Documentation
    :maxdepth: 1
 
    quickstart
-   example_resources
    resources
+   auth
    api

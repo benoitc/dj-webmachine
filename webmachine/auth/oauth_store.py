@@ -106,6 +106,7 @@ class DataStore(OAuthDataStore):
 
     def authorize_request_token(self, oauth_token, user):
         if oauth_token.key == self.request_token.key:
+            print "ici"
             # authorize the request token in the store
             self.request_token.is_approved = True
             if not isinstance(user, AnonymousUser):

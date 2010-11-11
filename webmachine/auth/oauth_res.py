@@ -75,6 +75,8 @@ class OauthResource(Resource):
     def oauth_access_token(self, req, resp):
         try:
             token = self.oauth_server.fetch_access_token(req.oauth_request)
+            if not token:
+                return False
             resp.content = token.to_string()
         except oauth2.Error, err:
             return self.oauth_error(req, resp, err)
@@ -83,6 +85,8 @@ class OauthResource(Resource):
     def oauth_request_token(self, req, resp):
         try:
             token = self.oauth_server.fetch_request_token(req.oauth_request)
+            if not token:
+                return False
             resp.content = token.to_string()
         except oauth2.Error, err:
             return self.oauth_error(req, resp, err) 
