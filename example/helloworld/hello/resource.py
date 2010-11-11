@@ -4,10 +4,6 @@ from webmachine import Resource
 
 class Hello(Resource):
 
-
-    def format_suffix_accepted(self, req, resp):
-        return [("json", "application/json")]
-
     def content_types_provided(self, req, resp):
         return ( 
             ("", self.to_html),
