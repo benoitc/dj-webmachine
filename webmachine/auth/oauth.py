@@ -71,7 +71,10 @@ class OAuthServer(oauth2.Server):
         timestamp = self._get_timestamp(oauth_request)
         version = self._get_version(oauth_request)
         consumer = self._get_consumer(oauth_request)
-        verifier = self._get_verifier(oauth_request)
+        try:
+            verifier = self._get_verifier(oauth_request)
+        except oauth2.Error:
+            verifier = None
         # Get the request token.
         token = self._get_token(oauth_request, TOKEN_REQUEST)
         self._check_signature(oauth_request, consumer, token)
@@ -88,7 +91,7 @@ class OAuthServer(oauth2.Server):
 
     def authorize_token(self, token, user):
         """Authorize a request token."""
-        return self.data_store.authorize_request_token(token, user)
+        return self.datastore.authorize_request_token(token, user)
 
     def get_callback(self, oauth_request):
         """Get the callback URL."""

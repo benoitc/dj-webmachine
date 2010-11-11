@@ -87,7 +87,7 @@ class Token(models.Model):
         token_dict = {
                 'oauth_token': self.key, 
                 'oauth_token_secret': self.secret,
-                'oauth_callback_confirmed': 'true',
+                'oauth_callback_confirmed': self.callback_confirmed and 'true' or 'error',
         }
 
         if self.verifier:
@@ -95,5 +95,6 @@ class Token(models.Model):
 
         if only_key:
             del token_dict['oauth_token_secret']
+            del token_dict['oauth_callback_confirmed']
 
         return urllib.urlencode(token_dict)

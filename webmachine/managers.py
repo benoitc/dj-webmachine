@@ -35,12 +35,16 @@ class TokenManager(KeyManager):
 
     def create_token(self, consumer, token_type, timestamp, user=None):
         key, secret = self.generate_key_secret()
-        token = self.create(
-                key=key, 
-                secret=secret, 
-                token_type=token_type,
-                consumer=consumer,
-                timestamp=timestamp,
-                user=user)
+        kwargs = dict(
+            key=key, 
+            secret=secret, 
+            token_type=token_type,
+            consumer=consumer,
+            timestamp=timestamp,
+            user=user
+        )
+        if not user:
+            del kwargs["user"]
+        token = self.create(**kwargs)
         return token
 

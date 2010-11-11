@@ -3,9 +3,10 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
+from django.contrib.auth.models import AnonymousUser
+
 from webmachine.const import VERIFIER_SIZE, TOKEN_REQUEST, TOKEN_ACCESS
 from webmachine.models import Nonce, Consumer, Token
-
 from webmachine.util import generate_random
 
 class OAuthDataStore(object):
@@ -42,11 +43,9 @@ class OAuthDataStore(object):
 class DataStore(OAuthDataStore):
 
     def lookup_consumer(self, key):
-        print list(Consumer.objects.all())
         try:
             self.consumer = Consumer.objects.get(key=key)
         except Consumer.DoesNotExist:
-            print "meh"
             return None
         return self.consumer
 
@@ -92,21 +91,25 @@ class DataStore(OAuthDataStore):
     def fetch_access_token(self, consumer, token, verifier, timestamp):
         if consumer.key == self.consumer.key \
         and token.key == self.request_token.key \
-        and verifier == self.request_token.verifier \
         and self.request_token.is_approved:
-            self.access_token = Token.objects.create_token(
+            if (self.request_token.callback_confirmed \
+                    and verifier == self.request_token.verifier) \
+                    or not self.request_token.callback_confirmed:
+
+                self.access_token = Token.objects.create_token(
                     consumer=self.consumer,
                     token_type=TOKEN_ACCESS,
                     timestamp=timestamp,
                     user=self.request_token.user)
-            return self.access_token
+                return self.access_token
         return None
 
     def authorize_request_token(self, oauth_token, user):
         if oauth_token.key == self.request_token.key:
             # authorize the request token in the store
             self.request_token.is_approved = True
-            self.request_token.user = user
+            if not isinstance(user, AnonymousUser):
+                self.request_token.user = user
             self.request_token.verifier = generate_random(VERIFIER_SIZE)
             self.request_token.save()
             return self.request_token

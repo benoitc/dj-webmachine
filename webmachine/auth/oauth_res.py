@@ -37,7 +37,7 @@ class OauthResource(Resource):
             token = self.oauth_server.fetch_request_token(req.oauth_request)
         except oauth2.Error, err:
             return self.auth_error(req, resp, err)
-        
+       
         try:
             callback = self.auth_server.get_callback(oauth_request)
         except:
@@ -61,6 +61,8 @@ class OauthResource(Resource):
                     args = '?'+token.to_string(only_key=True)
                 else:
                     args = '?error=%s' % 'Access not granted by user.'
+                    if not callback:
+                        resp.content = 'Access not granted by user.'
             
                 if not callback:
                     return True 
