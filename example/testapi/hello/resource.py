@@ -1,18 +1,9 @@
-# Create your views here.
+import json
 
 from webmachine import Resource
-from webmachine.resources import ModelResource, CrudResource
-from webmachine.sites import site
-
-from testapi.hello.models import Entry
-
-import json
 
 class Hello(Resource):
 
-
-    class Meta:
-        resource_prefix = ''
 
     def format_suffix_accepted(self, req, resp):
         return [("json", "application/json")]

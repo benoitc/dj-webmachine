@@ -54,10 +54,10 @@ In the hello folder create a file named ``resource.p```:
     
     class Hello(Resource):
 
-        def format_suffix_accepted(self, req, resp):
-            return [("json", "application/json")]
-
         def content_types_provided(self, req, resp):
+            """" define the content type we render accoridng the Accept
+            header.
+            """
             return ( 
                 ("", self.to_html),
                 ("application/json", self.to_json)
