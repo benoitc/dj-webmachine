@@ -10,7 +10,15 @@ def hello(req, resp):
 def hello_json(req, resp):
     return {"ok": True, "message": "hellow world"}
 
-@wm.route(r"^hello$", provided=["text/html", ("application/json", json.dumps)])
+
+def resource_exists(req, resp):
+    return True
+
+@wm.route(r"^hello$", 
+        provided=["text/html", ("application/json", json.dumps)],
+        resource_exists=resource_exists
+        
+        )
 def all_in_one(req, resp):
     if resp.content_type == "application/json":
         return {"ok": True, "message": "hellow world! All in one"}

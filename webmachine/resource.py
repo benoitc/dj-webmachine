@@ -150,6 +150,20 @@ class ResourceMeta(type):
         else:
             setattr(cls, name, value)
 
+
+RESOURCE_METHODS = ["allowed_methods", "allow_missing_post",
+"auth_required", "charsets_provided", "content_types_accepted",
+"content_types_provided", "created_location", "delete_completed",
+"delete_resource", "encodings_provided", "expires", "finish_request",
+"forbidden", "format_suffix_accepted", "generate_etag", "is_authorized",
+"is_conflict", "known_content_type", "known_methods",
+"languages_provided", "last_modified", "malformed_request",
+"moved_permanently", "moved_temporarily", "multiple_choices", "options",
+"ping", "post_is_create", "previously_existed", "process_post",
+"resource_exists", "service_available", "uri_too_long",
+"valid_content_headers", "valid_entity_length", "variances"]
+
+
 # FIXME: we should propbably wrap full HttpRequest object instead of
 # adding properties to it in __call__ . Also datetime_utils has surely
 # equivalent in Django. 

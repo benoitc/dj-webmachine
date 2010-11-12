@@ -18,7 +18,7 @@ See ModelDescriptor and QueryDescriptor for generic api descriptor
 allowing you to expose models and query.
 """
 
-from webmachine.resource import Resource
+from webmachine.resource import Resource, RESOURCE_METHODS
 
 def validate_ctype(value):
     if isinstance(value, basestring):
@@ -56,7 +56,7 @@ def build_ctypes(ctypes, fun, method):
 class WMResource(Resource):
 
     def __init__(self, pattern, fun, **kwargs):
-        self.url = (pattern, kwargs.get('name'))
+        self.set_pattern(pattern, **kwargs) 
 
         methods = kwargs.get('methods') or ['GET', 'HEAD']
         if isinstance(methods, basestring):
@@ -82,6 +82,14 @@ class WMResource(Resource):
 
         self.kwargs = kwargs
 
+        # override method if needed
+        for k, v in self.kwargs.items():
+            if k in RESOURCE_METHODS:
+                setattr(self, k, self.wrap(v))           
+
+
+    def set_pattern(self, url, **kwargs):
+        self.url = (pattern, kwargs.get('name'))
 
     def update(self, fun, **kwargs):
         methods = kwargs.get('methods') or ['GET', 'HEAD']
@@ -110,6 +118,8 @@ class WMResource(Resource):
         def _wrapped(req, resp):
             return f(req, resp)
         return _wrapped
+
+    #### resources methods
 
     def allowed_methods(self, req, resp):
         return self.methods.keys()
