@@ -28,6 +28,7 @@ __version__ = ".".join(map(str, version_info))
 
 
 try:
+    from webmachine.api import wm
     from webmachine.sites import Site, site
     from webmachine.resource import Resource
 except ImportError:
@@ -51,8 +52,8 @@ def autodiscover():
         # Attempt to import the app's resource module.
         try:
             before_import_registry = copy.copy(site._registry)
-            import_module('%s.resource' % app)
+            import_module('%s.resources' % app)
         except:
             site._registry = before_import_registry
-            if module_has_submodule(mod, 'resource'):
+            if module_has_submodule(mod, 'resources'):
                 raise 

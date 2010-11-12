@@ -20,159 +20,176 @@ allowing you to expose models and query.
 
 from webmachine.resource import Resource
 
-class QA(object):
-    """ object used to document query args and validate them """
+def validate_ctype(value):
+    if isinstance(value, basestring):
+        return [value]
+    elif not isinstance(value, list) and value is not None:
+        raise TypeError("'%s' should be a list or a string, got %s" %
+                (value, type(value)))
 
-    def __init__(self, name, default=None, validator=None, 
-            required=False, null=True, doc=""):
-        self.name = name
-        self.default = default
-        self.validator = validator
-        self.required = required
-        self.null = null
-        self.doc = ""
-
-    def validate(self, req, resp, value):
-        if not self.validator:
-            return True
-        return self.validator(req, resp, value)
-
-    def is_required(self, req, resp):
-        return self.required
-
-    def get_default(self, req, resp):
-        return self.default
-
-def qa(name, default=None, validator=None, required=False, null=True,
-        doc=""):
-    """ shortcut to create a QA instance """
-    return QA(name, default=default, validator=validatir
-            required=required, null=null, doc=doc)
+    return value
 
 
-class WMUrl(object):
-    """ object used to document url used """
+def serializer_cb(serializer, method):
+    if hasattr(serializer, method):
+        return getattr(serializer, method)
+    return serializer
 
-    def __init__(self, regexp, doc=""):
-        self.regexp = regexp
-        doc = doc
+def wrap_ctype(fun, cb):
+    def _wrapped(req, resp):
+        if req.method == "DELETE":
+            return cb(resp._container)
+        ret = fun(req, resp)
+        return cb(fun(req, resp))
+    return _wrapped
 
-def wmurl(regexp, doc=""):
-    """ shortcut to create an Url instance """
-    return WUrl(regexp, doc=doc)
+def build_ctypes(ctypes, fun, method):
 
-
-class ApiDescriptor(object):
-
-    allowed_method = ["GET", "HEAD"]
-    urls = None
-    query_args = None
-    throttle = None
-    serializers = []
-
-    def unserialize(self, req, resp):
-        if req.method != "DELETE":
-            funname = "handle_%s" % req.method.lower()
-            if hasattr(self, funname):
-                body = getattr(self, funname)(req, resp)
-            else:
-                return False
+    for ctype in ctypes:
+        if isinstance(ctype, tuple):
+            cb = serializer_cb(ctype[1], method) 
+            yield ctype[0], wrap_ctype(fun, cb)
         else:
-            body = resp._container
+            yield ctype, fun
+
+
+class WMResource(Resource):
+
+    def __init__(self, pattern, fun, **kwargs):
+        self.url = (pattern, kwargs.get('name'))
+
+        methods = kwargs.get('methods') or ['GET', 'HEAD']
+        if isinstance(methods, basestring):
+            methods = [methods]
+
+        elif not isinstance(methods, (list, tuple,)):
+            raise TypeError("methods should be list or a tuple, '%s' provided" % type(methods))
+
+        # associate methods to the function
+        self.methods = {}
+        for m in methods:
+            self.methods[m.upper()] = fun
+
+        # build content provided list
+        provided = validate_ctype(kwargs.get('provided') or \
+                ['text/html'])
+        self.provided = list(build_ctypes(provided, fun, "serialize"))
+
+        # build content accepted list
+        accepted = validate_ctype(kwargs.get('accepted'))
+        if accepted is not None:
+            self.accepted = list(build_ctypes(accepted, fun, "unserialize"))
+
+        self.kwargs = kwargs
+
+
+    def update(self, fun, **kwargs):
+        methods = kwargs.get('methods') or ['GET', 'HEAD']
+        if isinstance(methods, basestring):
+            methods = [methods]
+        elif not isinstance(methods, (list, tuple,)):
+            raise TypeError("methods should be list or a tuple, '%s' provided" % type(methods))
+
+        # associate methods to the function
+        self.methods = {}
+        for m in methods:
+            self.methods[m.upper()] = fun
+
+        # we probably should merge here
+        provided = validate_ctype(kwargs.get('provided'))
+        if provided is not None:
+            provided = list(build_ctypes(provided, fun, "serialize"))
+            self.provided.extend(provided)
         
-        serializer = get_serializer(resp.content_type)
-        return serializer.serialize(body, req, resp)
-    
-    def serialize(self, req, resp):
-        ctype = req.content_type or "application/octet-stream"
-        mtype = ctype.split(";", 1)[0]
+        accepted = validate_ctype(kwargs.get('accepted'))
+        if accepted is not None:
+            accepted = list(build_ctypes(accepted, fun, "unserialize"))
+            self.accepted.extend(accepted)
 
-        serializer = get_serializer(mtype)
-        req.decoded_data = serializer.unserialize(req, resp)
-        
-
-
-class ApiResource(Resource):
-
-    def __init__(self, descriptor):
-        self.descriptor = descriptor
+    def wrap(self, f,):
+        def _wrapped(req, resp):
+            return f(req, resp)
+        return _wrapped
 
     def allowed_methods(self, req, resp):
-        if hasattr(self.descriptor, "filter_methods"):
-            fun = getattr(self.descriptor, "filter_methods")
-            return fun(req.method, req, resp)
-
-        return self.descriptor.allowed_methods
-
-    def malformed_request(self, req, resp):
-        query_args = self.descriptor.query_args
-        if not query_args:
-            return False
-        args_to_validate = []
-        if "default" in query_args:
-            args_to_validate.extend(query_args["defaul"])
-        if req.method in query_args:
-            args_to_validate.extend(query_args[req.method])
-
-        final_query_args = {}
-        for arg in args_to_validate:
-            if arg.name in req.REQUEST:
-                value = req.REQUEST[arg.name]
-                if not arg.validate(value, req, resp):
-                    return True
-                final_query_args[arg.name] = value
-            elif arg.is_required(req, resp):
-                return True
-            else:
-                default = arg.get_default(req, resp)
-                if default is not None:
-                    final_query_args[arg.name] = default
-        req.query_args = final_query_args
-        return False
+        return self.methods.keys()
 
     def content_types_accepted(self, req, resp):
-        ctypes = self.descriptor.content_types_accepted
-        if not ctypes:
-            return []
+        if not self.accepted and req.method not in self.methods:
+            return None
+
+        fun = self.methods[req.method]
+        if not self.accepted:
+            return [("text/html", self.wrap(fun))]
+       
+        return [(c, self.wrap(f)) for c, f in self.accepted]
         
-        fun = getattr(self.descriptor, "unserialize")
-        return [(ctype, fun) for ctype in ctypes]
-
-
     def content_types_provided(self, req, resp):
-        ctypes = self.descriptor.content_types_provided
-        if not ctypes:
-            return []
+        fun = self.methods[req.method]
+        if not self.provided:
+            return [("text/html", self.wrap(fun))]
 
-        fun = getattr(self.descriptor, "serialize")
-        return [(ctype, fun) for ctype in ctypes]
-    
+        return [(c, self.wrap(f)) for c, f in self.provided]
 
-    def delete_resource(self, req, resp):
-        result = self.descriptor.delete(req, resp)
-        if result == False or result == None:
-            return False
-        resp._container = result
-        return True
+    def delete(self, req, resp):
+        fun = self.methods['DELETE']
+        ret = self.wrap(fun)
+        if isinstance(ret, basestring):
+            resp._container = ret
+            return True
+        return ret
 
-    def resource_exists(self, req, resp):
-        if hasattr(self.descriptor, "resource_exists"):
-            fun = getattr(self.descriptor, "resource_exists")
-            return fun(req, resp)
-        return True
+    def get_urls(self):
+        from django.conf.urls.defaults import patterns, url
+        url_kwargs = self.kwargs.get('url_kwargs') or {}
+
+        name = None
+        if len(self.url) >2:
+            url1 =url(self.url[0], self, name=self.url[1], kwargs=url_kwargs)
+        else:
+            url1 =url(self.url[0], self, kwargs=url_kwargs)
+
+        return patterns('', url1)
+
+
+class WM(object):
+
+    def __init__(self, name="webmachine", version=None):
+        self.name = name
+        self.version = version
+        self.resources = {}
+        self.routes = []
+
+    def route(self, pattern, **kwargs):
+        """ A decorator that is used to register a new resource using
+        this function to return response"""
+        def _decorated(func):
+            self.add_route(pattern, func, **kwargs)
+            return func
+        return _decorated
+
+    def add_route(self, pattern, func, **kwargs):
+        if pattern in self.resources:
+            res = self.resources[pattern]
+            res.update(func, **kwargs)
+        else:
+            res = WMResource(pattern, func, **kwargs)
+        self.resources[pattern] = res
+
+        self.routes.append((pattern, func, kwargs))
+        # associate the resource to the function
+        setattr(func, "_wmresource", res)
+
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url, include
-        urls = []
-        for url in self.descriptor.urls:
-            urls.append(url(url.pattern, self))
-        return patterns('', *urls)
+        urlpatterns = patterns('')
+        print self.resources
+        for pattern, resource in self.resources.items():
+            urlpatterns += resource.get_urls()
+        print urlpatterns
+        return urlpatterns
 
-def register_api(*api_desccriptors, site=None, version='1.0'):
-    api_descriptors = api_descriptors or []
-    resources = [ApiResource(api_descriptor) for api_descriptor in \
-            api_descriptors]
-    if site = None:
-        from webmachine.sites import site
+    urls = property(get_urls)
 
-    site.register(resources)
+wm = WM()
