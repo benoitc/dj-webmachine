@@ -1,0 +1,211 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>getting started quickly with dj-webmachine &mdash; dj-webmachine v0.1.0.1e850f4-git documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0.1e850f4-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.1.0.1e850f4-git documentation" href="index.html" />
+    <link rel="up" title="Documentation" href="docs.html" />
+    <link rel="next" title="dj-webmachine Resource object methods" href="resources.html" />
+    <link rel="prev" title="Documentation" href="docs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="resources.html" title="dj-webmachine Resource object methods"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="docs.html" title="Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started-quickly-with-dj-webmachine">
+<span id="quickstart"></span><h1>getting started quickly with dj-webmachine<a class="headerlink" href="#getting-started-quickly-with-dj-webmachine" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p>Make sure that you have a working <a class="reference external" href="http://python.org">Python</a> 2.x &gt;=2.5 installed and <a class="reference external" href="http://djangoproject.org">Django</a> &gt;= 1.1.</p>
+<div class="section" id="with-pip">
+<h3>With pip<a class="headerlink" href="#with-pip" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>$ pip install dj-webmachine</pre>
+</div>
+</div>
+<div class="section" id="from-source">
+<h3>From source<a class="headerlink" href="#from-source" title="Permalink to this headline">¶</a></h3>
+<p>Get the dj-webmachine code:</p>
+<div class="highlight-python"><pre>$ git clone https://github.com/benoitc/dj-webmachine.git
+$ cd dj-webmachine</pre>
+</div>
+<p>Or using a tarbal:</p>
+<div class="highlight-python"><pre>$ wget http://github.com/benoitc/dj-webmachine/tarball/master -o dj-webmachine.tar.gz
+$ tar xvzf dj-webmachine.tar.gz
+$ cd dj-webmachine-$HASH/</pre>
+</div>
+<p>and install:</p>
+<div class="highlight-python"><pre>$ sudo python setup.py install</pre>
+</div>
+</div>
+</div>
+<div class="section" id="create-a-django-project">
+<h2>Create a django project<a class="headerlink" href="#create-a-django-project" title="Permalink to this headline">¶</a></h2>
+<p>We will quickly create an Hello world accepting HTML and JSON.</p>
+<blockquote>
+$ django-admin startproject helloworld
+$ cd helloworld
+$ python manage.py startapp hello</blockquote>
+<p>In the hello folder create a file named <tt class="docutils literal"><span class="pre">resource.p`</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+
+<span class="k">class</span> <span class="nc">Hello</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">content_types_provided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot; define the content type we render accoridng the Accept</span>
+<span class="sd">        header.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_html</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&quot;application/json&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;body&gt;Hello world!&lt;/body&gt;&lt;/html&gt;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;hello world!&quot;</span><span class="p">,</span> <span class="s">&quot;ok&quot;</span><span class="p">:</span> <span class="bp">True</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Add <strong>dj-webmachine</strong> and your hello app to <tt class="docutils literal"><span class="pre">INSTALLED_APPS</span></tt> in your
+settings:</p>
+<div class="highlight-python"><pre>INSTALLED_APPS = (
+    ...
+    'webmachine',
+    'helloworld.hello'
+)</pre>
+</div>
+<p>Put your the Hello resource in your <tt class="docutils literal"><span class="pre">urls.py</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">helloworld.hello.resource</span> <span class="kn">import</span> <span class="n">Hello</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">r&#39;^$&#39;</span><span class="p">,</span> <span class="n">Hello</span><span class="p">()),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Launch your application:</p>
+<div class="highlight-python"><pre>$ python manage.py runserver</pre>
+</div>
+<p>Take a look! Point a web browser at <a class="reference external" href="http://localhost:8000/">http://localhost:8000/</a></p>
+<p>Or with curl:</p>
+<div class="highlight-python"><pre>$ curl http://127.0.0.1:8000
+&lt;html&gt;&lt;body&gt;Hello world!&lt;/body&gt;&lt;/html&gt;
+
+$ curl http://127.0.0.1:8000 -H "Accept: application/json"
+{"message": "hello world!", "ok": true}</pre>
+</div>
+<p>The first line ask the hello page as html while the second using the
+same url ask for JSON.</p>
+<p>To learn how to do more interresting things, checkout <em class="xref std std-ref">some examples</em> or read <a class="reference internal" href="docs.html#docs"><em>more documentations</em></a> .</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">getting started quickly with dj-webmachine</a><ul>
+<li><a class="reference internal" href="#install">Install</a><ul>
+<li><a class="reference internal" href="#with-pip">With pip</a></li>
+<li><a class="reference internal" href="#from-source">From source</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-a-django-project">Create a django project</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="docs.html"
+                        title="previous chapter">Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="resources.html"
+                        title="next chapter">dj-webmachine Resource object methods</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/quickstart.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="resources.html" title="dj-webmachine Resource object methods"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="docs.html" title="Documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" >Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,713 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dj-webmachine Resource object methods &mdash; dj-webmachine v0.1.0.1e850f4-git documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0.1e850f4-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.1.0.1e850f4-git documentation" href="index.html" />
+    <link rel="up" title="Documentation" href="docs.html" />
+    <link rel="next" title="Handle authorization" href="auth.html" />
+    <link rel="prev" title="getting started quickly with dj-webmachine" href="quickstart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="auth.html" title="Handle authorization"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="getting started quickly with dj-webmachine"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dj-webmachine-resource-object-methods">
+<span id="resources"></span><h1>dj-webmachine Resource object methods<a class="headerlink" href="#dj-webmachine-resource-object-methods" title="Permalink to this headline">¶</a></h1>
+<p>All dj-webmachine resources should inherit from the
+<a class="reference internal" href="#webmachine.Resource" title="webmachine.Resource"><tt class="xref py py-class docutils literal"><span class="pre">webmachine.Resource</span></tt></a> class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; my app resource &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p><strong>Resource methods</strong> are of the signature:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">req</span></tt> is a <tt class="xref py py-class docutils literal"><span class="pre">django.http.HttpRequest</span></tt> instance, and <tt class="docutils literal"><span class="pre">resp</span></tt> a
+<tt class="xref py py-class docutils literal"><span class="pre">django.http.HttpResource</span></tt> instance. This instances have been
+<em class="xref std std-ref">improved to support more HTTP semantics</em>. At any time you
+can manipulate this object to return the response you want or pass
+values to other methods.</p>
+<p>There are over 30 Resource methods you can define, but any of them can
+be omitted as they have reasonable defaults.</p>
+<div class="section" id="resource-methods-description">
+<h2>Resource methods description<a class="headerlink" href="#resource-methods-description" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="webmachine.Resource">
+<em class="property">class </em><tt class="descclassname">webmachine.</tt><tt class="descname">Resource</tt><a class="headerlink" href="#webmachine.Resource" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="webmachine.Resource.allow_missing_post">
+<tt class="descname">allow_missing_post</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.allow_missing_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the resource accepts POST requests to nonexistent resources, 
+then this should return True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.allowed_methods">
+<tt class="descname">allowed_methods</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.allowed_methods" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a Method not in this list is requested, then a 
+405 Method Not Allowed will be sent. Note that 
+these are all-caps and are string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[Method]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.auth_required">
+<tt class="descname">auth_required</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.auth_required" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.charsets_provided">
+<tt class="descname">charsets_provided</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.charsets_provided" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this is anything other than None, it must be a list of pairs 
+where each pair is of the form Charset, Converter where Charset
+is a string naming a charset and Converter is a callable function 
+in the resource which will be called on the produced body in a GET
+and ensure that it is in Charset.</p>
+<dl class="docutils">
+<dt>Ex:</dt>
+<dd>return [(&#8220;iso-8859-1&#8221;, lambda x: x)]</dd>
+</dl>
+<p>Returning None prevents the character set negotiation
+logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(Charset, Handler)]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.content_types_accepted">
+<tt class="descname">content_types_accepted</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.content_types_accepted" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used similarly to content_types_provided, 
+except that it is for incoming resource representations
+&#8211; for example, PUT requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(MediaType, Handler)] or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.content_types_provided">
+<tt class="descname">content_types_provided</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.content_types_provided" title="Permalink to this definition">¶</a></dt>
+<dd><p>This should return a list of pairs where each pair is of the form 
+(Mediatype, Handler) where Mediatype is a string of content-type 
+format and the Handler is an callable function which can provide
+a resource representation in that media type. Content negotiation 
+is driven by this return value. For example, if a client request
+includes an Accept header with a value that does not appear as a 
+first element in any of the return tuples, then a 406 Not Acceptable 
+will be sent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(MediaType, Handler)] or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.created_location">
+<tt class="descname">created_location</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.created_location" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Path or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.delete_completed">
+<tt class="descname">delete_completed</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.delete_completed" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is only called after a successful delete_resource 
+call, and should return false if the deletion was accepted
+but cannot yet be guaranteed to have finished.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.delete_resource">
+<tt class="descname">delete_resource</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.delete_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is called when a DELETE request should be enacted, 
+and should return true if the deletion succeeded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.encodings_provided">
+<tt class="descname">encodings_provided</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.encodings_provided" title="Permalink to this definition">¶</a></dt>
+<dd><p>This must be a list of pairs where in each pair Encoding 
+is a string naming a valid content encoding and Encoder
+is a callable function in the resource which will be 
+called on the produced body in a GET and ensure that it
+is so encoded. One useful setting is to have the function
+check on method, and on GET requests return [(&#8220;identity&#8221;, lambda x: x)] 
+as this is all that is needed to support identity encoding.</p>
+<blockquote>
+return [(&#8220;identity&#8221;, lambda x: x)]</blockquote>
+<p>Returning None prevents the encoding negotiation logic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(Encoding, Encoder)]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.expires">
+<tt class="descname">expires</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.expires" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Nonr or Date string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.finish_request">
+<tt class="descname">finish_request</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.finish_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function, if exported, is called just before the final 
+response is constructed and sent. The Result is ignored, so
+any effect of this function must be by returning a modified 
+request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.forbidden">
+<tt class="descname">forbidden</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.forbidden" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.format_suffix_accepted">
+<tt class="descname">format_suffix_accepted</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.format_suffix_accepted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows you to force the accepted format depending on path
+suffix.</p>
+<p>Ex:  return [(&#8220;json&#8221;, &#8220;application/json&#8221;)]
+will allows to force <cite>Accept</cite> header to <cite>application/json</cite> on
+url <cite>/some/url.json</cite></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(Suffix, MediaType)] or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.generate_etag">
+<tt class="descname">generate_etag</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.generate_etag" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this returns a value, it will be used as the value of the ETag 
+header and for comparison in conditional requests.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">Str or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.get_urls">
+<tt class="descname">get_urls</tt><big>(</big><big>)</big><a class="headerlink" href="#webmachine.Resource.get_urls" title="Permalink to this definition">¶</a></dt>
+<dd><p>method used to register utls in django urls routing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">urlpattern</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.is_authorized">
+<tt class="descname">is_authorized</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.is_authorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this returns anything other than true, the response will 
+be 401 Unauthorized. The AuthHead return value will be used 
+as the value in the WWW-Authenticate header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.is_conflict">
+<tt class="descname">is_conflict</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.is_conflict" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this returns true, the client will receive a 409 Conflict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.known_content_type">
+<tt class="descname">known_content_type</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.known_content_type" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.known_methods">
+<tt class="descname">known_methods</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.known_methods" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">set([Method])</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.languages_provided">
+<tt class="descname">languages_provided</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.languages_provided" title="Permalink to this definition">¶</a></dt>
+<dd><p>return [&#8220;en&#8221;, &#8220;es&#8221;, &#8220;en-gb&#8221;]</p>
+<p>returning None short circuits the language negotiation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[Language]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.last_modified">
+<tt class="descname">last_modified</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.last_modified" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">DateString or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.malformed_request">
+<tt class="descname">malformed_request</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.malformed_request" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.moved_permanently">
+<tt class="descname">moved_permanently</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.moved_permanently" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True Or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.moved_temporarily">
+<tt class="descname">moved_temporarily</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.moved_temporarily" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.multiple_choices">
+<tt class="descname">multiple_choices</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.multiple_choices" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this returns true, then it is assumed that multiple 
+representations of the response are possible and a single
+one cannot be automatically chosen, so a 300 Multiple Choices
+will be sent instead of a 200.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.options">
+<tt class="descname">options</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the OPTIONS method is supported and is used, the return 
+value of this function is expected to be a list of pairs 
+representing header names and values that should appear 
+in the response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">[(HeaderName, Value)]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.ping">
+<tt class="descname">ping</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.ping" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.post_is_create">
+<tt class="descname">post_is_create</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.post_is_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>If POST requests should be treated as a request to put content
+into a (potentially new) resource as opposed to being a generic 
+submission for processing, then this function should return true. 
+If it does return true, then create_path will be called and the 
+rest of the request will be treated much like a PUT to the Path 
+entry returned by that call.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.previously_existed">
+<tt class="descname">previously_existed</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.previously_existed" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.process_post">
+<tt class="descname">process_post</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.process_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>If post_is_create returns false, then this will be called to process
+any POST requests. If it succeeds, it should return True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.resource_exists">
+<tt class="descname">resource_exists</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.resource_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returning non-true values will result in 404 Not Found.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.service_available">
+<tt class="descname">service_available</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.service_available" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.uri_too_long">
+<tt class="descname">uri_too_long</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.uri_too_long" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.valid_content_headers">
+<tt class="descname">valid_content_headers</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.valid_content_headers" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.valid_entity_length">
+<tt class="descname">valid_entity_length</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.valid_entity_length" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.Resource.variances">
+<tt class="descname">variances</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.variances" title="Permalink to this definition">¶</a></dt>
+<dd><p>If this function is implemented, it should return a list 
+of strings with header names that should be included in 
+a given response&#8217;s Vary header. The standard conneg headers
+(Accept, Accept-Encoding, Accept-Charset, Accept-Language)
+do not need to be specified here as Webmachine will add the
+correct elements of those automatically depending on resource
+behavior.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">dj-webmachine Resource object methods</a><ul>
+<li><a class="reference internal" href="#resource-methods-description">Resource methods description</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="previous chapter">getting started quickly with dj-webmachine</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="auth.html"
+                        title="next chapter">Handle authorization</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/resources.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="auth.html" title="Handle authorization"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="quickstart.html" title="getting started quickly with dj-webmachine"
+             >previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" >Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>

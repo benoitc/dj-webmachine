@@ -1,0 +1,271 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Handle authorization &mdash; dj-webmachine v0.1.0.1e850f4-git documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0.1e850f4-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.1.0.1e850f4-git documentation" href="index.html" />
+    <link rel="up" title="Documentation" href="docs.html" />
+    <link rel="next" title="Simple way to create an api" href="api.html" />
+    <link rel="prev" title="dj-webmachine Resource object methods" href="resources.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api.html" title="Simple way to create an api"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="resources.html" title="dj-webmachine Resource object methods"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="handle-authorization">
+<span id="auth"></span><h1>Handle authorization<a class="headerlink" href="#handle-authorization" title="Permalink to this headline">¶</a></h1>
+<p>webmachine offer mechanism to authenticate via basic authentification or
+oauth. All authentification module should inherit from
+<tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.base.Auth</span></tt>.</p>
+<div class="highlight-python"><pre>class Auth(object):
+
+def authorized(self, request):
+    return True</pre>
+</div>
+<div class="section" id="basic-authentification">
+<h2>Basic Authentification<a class="headerlink" href="#basic-authentification" title="Permalink to this headline">¶</a></h2>
+<p>To handle basic authentification just do this in your <tt class="docutils literal"><span class="pre">Resource</span></tt>
+class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine.auth</span> <span class="kn">import</span> <span class="n">BasicAuth</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">is_authorized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">BasicAuth</span><span class="p">()</span><span class="o">.</span><span class="n">authorized</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="oauth">
+<h2>OAUTH<a class="headerlink" href="#oauth" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s easy to handle oauth in your dj-webmachine application. First you
+need to add the oauth resource to your <tt class="docutils literal"><span class="pre">urls.py</span></tt> file:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine.auth</span> <span class="kn">import</span> <span class="n">oauth_res</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+
+    <span class="o">...</span>
+
+    <span class="p">(</span><span class="s">r&#39;^auth/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">oauth_res</span><span class="o">.</span><span class="n">OauthResource</span><span class="p">()</span><span class="o">.</span><span class="n">get_urls</span><span class="p">())),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Then like with the basic authentification add the class
+<tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth.Oauth</span></tt> in your resource:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine.authoauth</span> <span class="kn">import</span> <span class="n">Oauth</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">is_authorized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Oauth</span><span class="p">()</span><span class="o">.</span><span class="n">authorized</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="test-it">
+<h3>Test it<a class="headerlink" href="#test-it" title="Permalink to this headline">¶</a></h3>
+<p>Create a consumer</p>
+<div class="highlight-python"><pre>&gt;&gt; from webmachine.models import Consumer
+&gt;&gt; consumer = Consumer.objects.create_consumer()</pre>
+</div>
+<p>Request a token for this consumer. We use the <a class="reference external" href="http://benoitc.github.com/restkit">restkit</a> client to do that.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">restkit</span> <span class="kn">import</span> <span class="n">request</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">restkit.filters</span> <span class="kn">import</span> <span class="n">OAuthFilter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">restkit.util.oauth2</span> <span class="kn">import</span> <span class="n">Token</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">urlparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/auth/request_token&quot;</span><span class="p">,</span>
+<span class="go">filters=[OAuthFilter(&quot;*&quot;, consumer)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">status_int</span>
+<span class="go">200</span>
+</pre></div>
+</div>
+<p>You need now to read the response body, and create a token request on
+the client side:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">qs</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">body_string</span><span class="p">())</span>
+<span class="go">&gt;&gt; request_token = Token(qs[&#39;oauth_token&#39;][0], qs[&#39;oauth_token_secret&#39;][0])</span>
+</pre></div>
+</div>
+<p>Now we need to authorize our client:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/auth/authorize&quot;</span><span class="p">,</span>
+<span class="go">filters=[OAuthFilter(&quot;*&quot;, consumer, request_token)])</span>
+</pre></div>
+</div>
+<p>We now need to read the body for the second step, since we send a form
+here to the client. We are again using restkit to send the result of the
+form and get the tokens back.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">form</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;authorize_access&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;oauth_token&#39;</span><span class="p">:</span> <span class="s">&#39;2e8bfdaddb664d97ada4b8cec6827bcf&#39;</span><span class="p">,</span>
+<span class="go">&#39;csrf_signature&#39;: &#39;iGHjuOEppMeg+gHWyYV/etLRxTQ=&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/auth/authorize&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">,</span>
+<span class="go">body=form, filters=[OAuthFilter(&quot;*&quot;, consumer, request_token)])</span>
+</pre></div>
+</div>
+<p>We are now authorized, and we need to ask an access token:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/auth/access_token&quot;</span><span class="p">,</span>
+<span class="go">filters=[OAuthFilter(&quot;*&quot;, consumer, request_token)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">qs</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">parse_qs</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">body_string</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">access_token</span> <span class="o">=</span> <span class="n">Token</span><span class="p">(</span><span class="n">qs</span><span class="p">[</span><span class="s">&#39;oauth_token&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">qs</span><span class="p">[</span><span class="s">&#39;oauth_token_secret&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>If you use tthe testoauth application in <tt class="docutils literal"><span class="pre">examples</span></tt> folder, you can
+then test if you are authorized. Without the acces token:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">status_int</span>
+<span class="go">401</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span>
+<span class="go">{&#39;date&#39;: &#39;Thu, 11 Nov 2010 23:16:25 GMT&#39;, &#39;content-type&#39;: &#39;text/html&#39;,</span>
+<span class="go">&#39;www-authenticate&#39;: &#39;OAuth realm=&quot;OAuth&quot;&#39;, &#39;server&#39;: &#39;WSGIServer/0.1 Python/2.7&#39;}</span>
+</pre></div>
+</div>
+<p>You can see the <strong>WWW-Authenticate</strong> header.</p>
+<p>Using the access token:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span> <span class="o">=</span> <span class="n">request</span><span class="p">(</span><span class="s">&quot;http://127.0.0.1:8000/&quot;</span><span class="p">,</span>
+<span class="go">filters=[OAuthFilter(&quot;*&quot;, consumer, access_token)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">status_int</span>
+<span class="go">200</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resp</span><span class="o">.</span><span class="n">body_string</span><span class="p">()</span>
+<span class="go">&quot;&lt;html&gt;&lt;p&gt;I&#39;m protected you know.&lt;/p&gt;&lt;/html&gt;&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You need to install <a class="reference external" href="http://benoitc.github.com/restkit">restkit</a> to have oauth in your application.</p>
+</div>
+</div>
+</div>
+<div class="section" id="auth-classes-description">
+<h2>AUTH classes description<a class="headerlink" href="#auth-classes-description" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Basic authentification<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="oauth-authentification">
+<h3>Oauth authentification<a class="headerlink" href="#oauth-authentification" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="datastore">
+<h3>Datastore<a class="headerlink" href="#datastore" title="Permalink to this headline">¶</a></h3>
+<p>Find here the description of the abstract class you need to use if you
+want to create your own class. This class mmanage creation and request
+of tokens, nonces and consumer. See the
+<tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth_datastore.DataStore</span></tt> for a complete
+example. To use you own class add it to your settings:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">OAUTH_DATASTORE</span> <span class="o">=</span> <span class="s">&#39;webmachine.auth.oauth_store.DataStore&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Handle authorization</a><ul>
+<li><a class="reference internal" href="#basic-authentification">Basic Authentification</a></li>
+<li><a class="reference internal" href="#oauth">OAUTH</a><ul>
+<li><a class="reference internal" href="#test-it">Test it</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auth-classes-description">AUTH classes description</a><ul>
+<li><a class="reference internal" href="#id1">Basic authentification</a></li>
+<li><a class="reference internal" href="#oauth-authentification">Oauth authentification</a></li>
+<li><a class="reference internal" href="#datastore">Datastore</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="resources.html"
+                        title="previous chapter">dj-webmachine Resource object methods</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="next chapter">Simple way to create an api</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/auth.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="api.html" title="Simple way to create an api"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="resources.html" title="dj-webmachine Resource object methods"
+             >previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" >Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>
