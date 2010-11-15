@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Minimal API building &mdash; dj-webmachine v0.1.0.8f56bce-git documentation</title>
+    <title>Minimal API building &mdash; dj-webmachine v0.1.0.d01a739-git documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0.8f56bce-git',
+        VERSION:     '0.1.0.d01a739-git',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="dj-webmachine v0.1.0.8f56bce-git documentation" href="index.html" />
+    <link rel="top" title="dj-webmachine v0.1.0.d01a739-git documentation" href="index.html" />
     <link rel="up" title="Documentation" href="docs.html" />
     <link rel="next" title="Handle authorization" href="auth.html" />
     <link rel="prev" title="dj-webmachine Resource object methods" href="resources.html" /> 
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0.8f56bce-git documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.d01a739-git documentation</a> &raquo;</li>
           <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -139,7 +139,81 @@ global one provided. For that you can import the class
 <dt id="webmachine.api.WM.route">
 <tt class="descname">route</tt><big>(</big><em>pattern</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="modules/webmachine/api.html#WM.route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.api.WM.route" title="Permalink to this definition">¶</a></dt>
 <dd><p>A decorator that is used to register a new resource using
-this function to return response</p>
+this function to return response.</p>
+<p><strong>Parameters</strong></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr pattern:</th><td class="field-body">regular expression, like the one you give in</td>
+</tr>
+</tbody>
+</table>
+<p>your urls.py</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr methods:</th><td class="field-body">methods accepted on this function</td>
+</tr>
+<tr class="field"><th class="field-name">Attr provides:</th><td class="field-body">list of provided contents tpes and associated</td>
+</tr>
+</tbody>
+</table>
+<p>serializers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[(</span><span class="n">MediaType</span><span class="p">,</span> <span class="n">Handler</span><span class="p">)]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr accepted:</th><td class="field-body">list of content you accept in POST/PUT with</td>
+</tr>
+</tbody>
+</table>
+<p>associated deserializers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[(</span><span class="n">MediaType</span><span class="p">,</span> <span class="n">Handler</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>A serializer can be a simple callable taking a value or a class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Myserializer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">unserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c"># ... do something to value</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c"># ... do something to value</span>
+        <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr formats:</th><td class="field-body">return a list of format with their associated</td>
+</tr>
+</tbody>
+</table>
+<p>contenttype:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[(</span><span class="n">Suffix</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">)]</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr kwargs:</th><td class="field-body">any named parameter coresponding to a</td>
+</tr>
+</tbody>
+</table>
+<p><em class="xref std std-ref">resource method</em>. Each value is a callable
+taking a request and a response as arguments:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="attribute">
@@ -206,7 +280,7 @@ this function to return response</p>
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              >previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0.8f56bce-git documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.d01a739-git documentation</a> &raquo;</li>
           <li><a href="docs.html" >Documentation</a> &raquo;</li> 
       </ul>
     </div>
