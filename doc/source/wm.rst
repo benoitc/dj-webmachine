@@ -10,7 +10,7 @@ Using this decorator, our helloworld example can be rewritten like that:
 .. code-block:: python
 
 
-    from webmachine.api import wm
+    from webmachine.ap import wm
 
     import json
     @wm.route(r"^$")
@@ -78,6 +78,17 @@ serialized using the ``json.dumps`` function associated to the json
 content-type. Easy isn't it ? You can pass any :ref:`resource methods <resources>`
 to the decorator.
 
+
+Custom WM instance
+------------------
+
+Sometimes you want to create custom WM instance instead to use the
+global one provided. For that you can import the class
+:class:`webmachine.api.WM`:
+
+.. autoclass:: webmachine.api.WM
+   :members:
+   :undoc-members:
 
 .. _bottle: http://bottle.paws.de/
 .. _flask: http://flask.pocoo.org
