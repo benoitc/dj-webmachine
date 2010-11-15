@@ -45,7 +45,7 @@ You can also throttle using the :ref:`route decorator <wm>`:
             return Interval(self).allowed(req)
 
 
-    @route("^$", forbbiden=throttle_post)
+    @wm.route("^$", forbbiden=throttle_post)
     def myres(req, resp):
         ...
 
