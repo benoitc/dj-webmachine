@@ -4,18 +4,55 @@
 # See the NOTICE for more information.
 
 """
-webmachine.descriptors
+Minimal API building
+++++++++++++++++++++
 
-This module allows creation of web Resources based on their description.
-Basically you create an ApiDescriptor object defining accepted methods,
-accepted query args depending on their methods, used serializers and
-functionto manage differents request methods.
+Combinating the power of Django and the :ref:`resources <resources>` it's relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using the ``route`` decorator.
 
-This module will also allows automatic building of documentation and
-clients.
+Using this decorator, our helloworld example can be rewritten like that:
 
-See ModelDescriptor and QueryDescriptor for generic api descriptor
-allowing you to expose models and query.
+.. code-block:: python
+
+
+    from webmachine.ap import wm
+
+    import json
+    @wm.route(r"^$")
+    def hello(req, resp):
+        return "<html><p>hello world!</p></html>"
+
+
+    @wm.route(r"^$", provided=[("application/json", json.dumps)])
+    def hello_json(req, resp):
+        return {"ok": True, "message": "hellow world"}
+
+and the urls.py:
+
+.. code-block:: python
+
+    from django.conf.urls.defaults import *
+
+    import webmachine
+
+    webmachine.autodiscover()
+
+    urlpatterns = patterns('',
+        (r'^', include(webmachine.wm.urls))
+    )
+
+The autodiscover will detect all resources modules and add then to the
+url dispatching. The route decorator works a little like the one in
+bottle_ or for that matter flask_ (though bottle was the first). 
+
+This decorator works differently though. It creates full
+:class:`webmachine.resource.Resource` instancse registered in the wm
+object. So we are abble to provide all the features available in a
+resource:
+
+ - settings which content is accepted, provided
+ - assiciate serializers to the content types
+ - throttling
+ - authorization
 """
 
 from webmachine.resource import Resource, RESOURCE_METHODS
@@ -174,9 +211,54 @@ class WM(object):
 
     def route(self, pattern, **kwargs):
         """ A decorator that is used to register a new resource using
-        this function to return response
-        
-        
+        this function to return response.
+
+        **Parameters**
+
+        :attr pattern: regular expression, like the one you give in
+        your urls.py
+
+        :attr provides: list of provided contents tpes and associated
+        serializers::
+
+            [(MediaType, Handler)]
+
+
+        :attr accepted: list of content you accept in POST/PUT with
+        associated deserializers::
+
+            [(MediaType, Handler)]
+
+
+        A serializer can be a simple callable taking a value or a class:
+
+        .. code-block:: python
+
+            class Myserializer(object):
+
+                def unserialize(self, value):
+                    # ... do something to value
+                    return value
+
+                def serialize(self, value):
+                    # ... do something to value
+                    return value
+
+
+        :attr formats: return a list of format with their associated 
+        contenttype::
+
+            [(Suffix, MediaType)]
+
+        :attr kwargs: any named parameter coresponding to a
+        :ref:`resource method <resource>`. Each value is a callable
+        taking a request and a response as arguments:
+
+        .. code-block:: python
+
+            def f(req, resp):
+                pass
+
         """
         def _decorated(func):
             self.add_route(pattern, func, **kwargs)
