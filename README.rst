@@ -46,6 +46,8 @@ dj-webmachine in 5 minutes
 
 We will quickly create an Hello world accepting HTML and JSON.
 
+::
+
     $ django-admin startproject helloworld
     $ cd helloworld
     $ python manage.py startapp hello
