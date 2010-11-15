@@ -1,0 +1,206 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Throttling &mdash; dj-webmachine v0.1.0.4bdb009-git documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0.4bdb009-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.1.0.4bdb009-git documentation" href="index.html" />
+    <link rel="up" title="Documentation" href="docs.html" />
+    <link rel="prev" title="Handle authorization" href="auth.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="auth.html" title="Handle authorization"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.4bdb009-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="throttling">
+<span id="id1"></span><h1>Throttling<a class="headerlink" href="#throttling" title="Permalink to this headline">¶</a></h1>
+<p>Sometimes you may not want people to call a certain action many times in a
+short period of time. dj-webmachine allows you to throttle requests
+using different methods.</p>
+<div class="section" id="interval">
+<h2>Interval<a class="headerlink" href="#interval" title="Permalink to this headline">¶</a></h2>
+<p>This rate limiter strategy throttles the application by enforcing a
+minimal interval (by default, 1 second) betweeb subsequent allowed
+HTTP requests.</p>
+<p>In the resource object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine.throttle</span> <span class="kn">import</span> <span class="n">Interval</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can throttle according to the request method too by simply checking
+the request instance:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also throttle using the <a class="reference internal" href="wm.html#wm"><em>route decorator</em></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">throttle_post</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+
+
+<span class="nd">@route</span><span class="p">(</span><span class="s">&quot;^$&quot;</span><span class="p">,</span> <span class="n">forbbiden</span><span class="o">=</span><span class="n">throttle_post</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">myres</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="timewindow">
+<h2>TimeWindow<a class="headerlink" href="#timewindow" title="Permalink to this headline">¶</a></h2>
+<p>This rate limiter strategy throttles the application by defining a
+maximum number of allowed HTTP requests in a time window.</p>
+<div class="section" id="daily">
+<h3>Daily<a class="headerlink" href="#daily" title="Permalink to this headline">¶</a></h3>
+<p>This rate limiter strategy throttles the application by defining a
+maximum number of allowed HTTP requests per day (by default, 86,400
+requests per 24 hours, which works out to an average of 1 request per
+second).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This strategy doesn&#8217;t use a sliding time window, but rather
+tracks requests per calendar day. This means that the throttling counter
+is reset at midnight (according to the server&#8217;s local timezone) every
+night.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine.throttle</span> <span class="kn">import</span> <span class="n">Daily</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Daily</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="hourly">
+<h3>Hourly<a class="headerlink" href="#hourly" title="Permalink to this headline">¶</a></h3>
+<p>This rate limiter strategy throttles the application by defining a
+maximum number of allowed HTTP requests per hour (by default, 3,600
+requests per 60 minutes, which works out to an average of 1 request per
+second).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that this strategy doesn&#8217;t use a sliding time window, but rather
+tracks requests per distinct hour. This means that the throttling
+counter is reset every hour on the hour (according to the server&#8217;s local
+timezone).</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine.throttle</span> <span class="kn">import</span> <span class="n">Hourly</span>
+
+<span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">forbidden</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Hourly</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Throttling</a><ul>
+<li><a class="reference internal" href="#interval">Interval</a></li>
+<li><a class="reference internal" href="#timewindow">TimeWindow</a><ul>
+<li><a class="reference internal" href="#daily">Daily</a></li>
+<li><a class="reference internal" href="#hourly">Hourly</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="auth.html"
+                        title="previous chapter">Handle authorization</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/throttling.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="auth.html" title="Handle authorization"
+             >previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.4bdb009-git documentation</a> &raquo;</li>
+          <li><a href="docs.html" >Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>
