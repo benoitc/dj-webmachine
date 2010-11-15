@@ -6,6 +6,8 @@ SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
 BUILDDIR      = build
+SPHINXTOGITHUB = ${PWD}/sphinxtogithub.py
+GHPIMPORT     = ${PWD}/ghp-import
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -36,10 +38,14 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/*
 
-html:
+html: clean
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+github:
+	@echo "Send to github"
+	$(GHPIMPORT) -p $(BUILDDIR)/html
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
