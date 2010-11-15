@@ -218,6 +218,8 @@ class WM(object):
         :attr pattern: regular expression, like the one you give in
         your urls.py
 
+        :attr methods: methods accepted on this function
+
         :attr provides: list of provided contents tpes and associated
         serializers::
 
