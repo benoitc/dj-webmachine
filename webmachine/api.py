@@ -55,7 +55,7 @@ def build_ctypes(ctypes, fun, method):
 class WMResource(Resource):
 
     def __init__(self, pattern, fun, **kwargs):
-        self.set_pattern(pattern, **kwargs) 
+        self.set_pattern(pattern, **kwargs)
 
         methods = kwargs.get('methods') or ['GET', 'HEAD']
         if isinstance(methods, basestring):
@@ -85,7 +85,6 @@ class WMResource(Resource):
         for k, v in self.kwargs.items():
             if k in RESOURCE_METHODS:
                 setattr(self, k, self.wrap(v))           
-
 
     def set_pattern(self, pattern, **kwargs):
         self.url = (pattern, kwargs.get('name'))
@@ -122,6 +121,11 @@ class WMResource(Resource):
 
     def allowed_methods(self, req, resp):
         return self.methods.keys()
+
+    def format_suffix_accepted(self, req, resp):
+        if 'formats' in self.kwargs:
+            return self.kwargs['formats']
+        return []
 
     def content_types_accepted(self, req, resp):
         if not self.accepted and req.method not in self.methods:
@@ -170,7 +174,10 @@ class WM(object):
 
     def route(self, pattern, **kwargs):
         """ A decorator that is used to register a new resource using
-        this function to return response"""
+        this function to return response
+        
+        
+        """
         def _decorated(func):
             self.add_route(pattern, func, **kwargs)
             return func
