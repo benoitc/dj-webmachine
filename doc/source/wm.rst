@@ -40,7 +40,7 @@ The autodiscover will detect all resources modules and add then to the
 url dispatching. The route decorator works a little like the one in
 bottle_ or for that matter flask_ (though bottle was the first). 
 
-This decorator works differently though. It create full
+This decorator works differently though. It creates full
 :class:`webmachine.resource.Resource` instancse registered in the wm
 object. So we are abble to provide all the features available in a
 resource:

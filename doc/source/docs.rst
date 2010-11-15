@@ -10,4 +10,4 @@ Documentation
    resources
    wm
    auth
-   
+   throttling
