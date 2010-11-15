@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>webmachine.api &mdash; dj-webmachine v0.1.0.8f56bce-git documentation</title>
+    <link rel="stylesheet" href="../../static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0.8f56bce-git',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../static/jquery.js"></script>
+    <script type="text/javascript" src="../../static/underscore.js"></script>
+    <script type="text/javascript" src="../../static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.1.0.8f56bce-git documentation" href="../../index.html" />
+    <link rel="up" title="webmachine" href="../webmachine.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../index.html">dj-webmachine v0.1.0.8f56bce-git documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../webmachine.html" accesskey="U">webmachine</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for webmachine.api</h1><div class="highlight"><pre>
+<span class="c"># -*- coding: utf-8 -</span>
+<span class="c">#</span>
+<span class="c"># This file is part of dj-webmachine released under the MIT license. </span>
+<span class="c"># See the NOTICE for more information.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">webmachine.descriptors</span>
+
+<span class="sd">This module allows creation of web Resources based on their description.</span>
+<span class="sd">Basically you create an ApiDescriptor object defining accepted methods,</span>
+<span class="sd">accepted query args depending on their methods, used serializers and</span>
+<span class="sd">functionto manage differents request methods.</span>
+
+<span class="sd">This module will also allows automatic building of documentation and</span>
+<span class="sd">clients.</span>
+
+<span class="sd">See ModelDescriptor and QueryDescriptor for generic api descriptor</span>
+<span class="sd">allowing you to expose models and query.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">webmachine.resource</span> <span class="kn">import</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">RESOURCE_METHODS</span>
+
+<span class="k">def</span> <span class="nf">validate_ctype</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;&#39;</span><span class="si">%s</span><span class="s">&#39; should be a list or a string, got </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span>
+                <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span> <span class="nf">serializer_cb</span><span class="p">(</span><span class="n">serializer</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">serializer</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">serializer</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">serializer</span>
+
+<span class="k">def</span> <span class="nf">wrap_ctype</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">cb</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_wrapped</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">&quot;DELETE&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cb</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">_container</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cb</span><span class="p">(</span><span class="n">fun</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">_wrapped</span>
+
+<span class="k">def</span> <span class="nf">build_ctypes</span><span class="p">(</span><span class="n">ctypes</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">ctypes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ctype</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">cb</span> <span class="o">=</span> <span class="n">serializer_cb</span><span class="p">(</span><span class="n">ctype</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">method</span><span class="p">)</span> 
+            <span class="k">yield</span> <span class="n">ctype</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">wrap_ctype</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">cb</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">ctype</span><span class="p">,</span> <span class="n">fun</span>
+
+
+<span class="k">class</span> <span class="nc">WMResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_pattern</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> 
+
+        <span class="n">methods</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;methods&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;HEAD&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">methods</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;methods should be list or a tuple, &#39;</span><span class="si">%s</span><span class="s">&#39; provided&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">methods</span><span class="p">))</span>
+
+        <span class="c"># associate methods to the function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="n">fun</span>
+
+        <span class="c"># build content provided list</span>
+        <span class="n">provided</span> <span class="o">=</span> <span class="n">validate_ctype</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;provided&#39;</span><span class="p">)</span> <span class="ow">or</span> \
+                <span class="p">[</span><span class="s">&#39;text/html&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provided</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">build_ctypes</span><span class="p">(</span><span class="n">provided</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="s">&quot;serialize&quot;</span><span class="p">))</span>
+
+        <span class="c"># build content accepted list</span>
+        <span class="n">accepted</span> <span class="o">=</span> <span class="n">validate_ctype</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;accepted&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">accepted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">build_ctypes</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="s">&quot;unserialize&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+
+        <span class="c"># override method if needed</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">RESOURCE_METHODS</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>           
+
+
+    <span class="k">def</span> <span class="nf">set_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">methods</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;methods&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;HEAD&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">methods</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s">&quot;methods should be list or a tuple, &#39;</span><span class="si">%s</span><span class="s">&#39; provided&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">methods</span><span class="p">))</span>
+
+        <span class="c"># associate methods to the function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span> <span class="o">=</span> <span class="n">fun</span>
+
+        <span class="c"># we probably should merge here</span>
+        <span class="n">provided</span> <span class="o">=</span> <span class="n">validate_ctype</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;provided&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">provided</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">provided</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">build_ctypes</span><span class="p">(</span><span class="n">provided</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="s">&quot;serialize&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provided</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">provided</span><span class="p">)</span>
+        
+        <span class="n">accepted</span> <span class="o">=</span> <span class="n">validate_ctype</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;accepted&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">accepted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">accepted</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">build_ctypes</span><span class="p">(</span><span class="n">accepted</span><span class="p">,</span> <span class="n">fun</span><span class="p">,</span> <span class="s">&quot;unserialize&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">accepted</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,):</span>
+        <span class="k">def</span> <span class="nf">_wrapped</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_wrapped</span>
+
+    <span class="c">#### resources methods</span>
+
+    <span class="k">def</span> <span class="nf">allowed_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">content_types_accepted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span> <span class="ow">and</span> <span class="n">req</span><span class="o">.</span><span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">req</span><span class="o">.</span><span class="n">method</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="s">&quot;text/html&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">fun</span><span class="p">))]</span>
+       
+        <span class="k">return</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accepted</span><span class="p">]</span>
+        
+    <span class="k">def</span> <span class="nf">content_types_provided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="n">req</span><span class="o">.</span><span class="n">method</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">provided</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="s">&quot;text/html&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">fun</span><span class="p">))]</span>
+
+        <span class="k">return</span> <span class="p">[(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">provided</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">methods</span><span class="p">[</span><span class="s">&#39;DELETE&#39;</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">_container</span> <span class="o">=</span> <span class="n">ret</span>
+            <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span> <span class="nf">get_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">url</span>
+        <span class="n">url_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;url_kwargs&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">)</span> <span class="o">&gt;</span><span class="mi">2</span><span class="p">:</span>
+            <span class="n">url1</span> <span class="o">=</span><span class="n">url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">url1</span> <span class="o">=</span><span class="n">url</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="n">url_kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">url1</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="WM"><a class="viewcode-back" href="../../wm.html#webmachine.api.WM">[docs]</a><span class="k">class</span> <span class="nc">WM</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&quot;webmachine&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resources</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="WM.route"><a class="viewcode-back" href="../../wm.html#webmachine.api.WM.route">[docs]</a>    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; A decorator that is used to register a new resource using</span>
+<span class="sd">        this function to return response&quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">_decorated</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_route</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">func</span>
+        <span class="k">return</span> <span class="n">_decorated</span>
+</div>
+<div class="viewcode-block" id="WM.add_route"><a class="viewcode-back" href="../../wm.html#webmachine.api.WM.add_route">[docs]</a>    <span class="k">def</span> <span class="nf">add_route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">WMResource</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="p">[</span><span class="n">pattern</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pattern</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+        <span class="c"># associate the resource to the function</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s">&quot;_wmresource&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="WM.get_urls"><a class="viewcode-back" href="../../wm.html#webmachine.api.WM.get_urls">[docs]</a>    <span class="k">def</span> <span class="nf">get_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="n">patterns</span>
+        <span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">resource</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">resources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">urlpatterns</span> <span class="o">+=</span> <span class="n">resource</span><span class="o">.</span><span class="n">get_urls</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">urlpatterns</span>
+</div>
+    <span class="n">urls</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_urls</span><span class="p">)</span>
+</div>
+<span class="n">wm</span> <span class="o">=</span> <span class="n">WM</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../index.html">dj-webmachine v0.1.0.8f56bce-git documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../webmachine.html" >webmachine</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+    </div>
+  </body>
+</html>
