@@ -89,6 +89,7 @@ class TimeWindow(Limiter):
     """
 
     def allowed(self, request):
+        t1 = time.time()
         key = self.cache_key(request)
         count = int(self.cache_get(key) or 0)
         allowed = count <= self.max_per_window()

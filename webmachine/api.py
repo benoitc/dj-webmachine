@@ -39,7 +39,6 @@ def wrap_ctype(fun, cb):
     def _wrapped(req, resp):
         if req.method == "DELETE":
             return cb(resp._container)
-        ret = fun(req, resp)
         return cb(fun(req, resp))
     return _wrapped
 
@@ -88,7 +87,7 @@ class WMResource(Resource):
                 setattr(self, k, self.wrap(v))           
 
 
-    def set_pattern(self, url, **kwargs):
+    def set_pattern(self, pattern, **kwargs):
         self.url = (pattern, kwargs.get('name'))
 
     def update(self, fun, **kwargs):
@@ -153,7 +152,6 @@ class WMResource(Resource):
         from django.conf.urls.defaults import patterns, url
         url_kwargs = self.kwargs.get('url_kwargs') or {}
 
-        name = None
         if len(self.url) >2:
             url1 =url(self.url[0], self, name=self.url[1], kwargs=url_kwargs)
         else:
@@ -192,12 +190,10 @@ class WM(object):
 
 
     def get_urls(self):
-        from django.conf.urls.defaults import patterns, url, include
+        from django.conf.urls.defaults import patterns
         urlpatterns = patterns('')
-        print self.resources
         for pattern, resource in self.resources.items():
             urlpatterns += resource.get_urls()
-        print urlpatterns
         return urlpatterns
 
     urls = property(get_urls)

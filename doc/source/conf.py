@@ -6,8 +6,9 @@
 import sys, os
 import webmachine
 
+
 sys.path.insert(0, os.path.abspath('.'))
-os.environ['DJANGO_SETTINGS_MODULE'] = ""
+os.environ['DJANGO_SETTINGS_MODULE'] = "."
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
 'sphinx.ext.viewcode', 'sphinxtogithub']

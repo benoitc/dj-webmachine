@@ -4,6 +4,7 @@
 # See the NOTICE for more information.
 
 from django.template import loader, RequestContext
+from django.utils.encoding import iri_to_uri
 
 try:
     from restkit.util import oauth2
@@ -39,7 +40,7 @@ class OauthResource(Resource):
             return self.auth_error(req, resp, err)
        
         try:
-            callback = self.auth_server.get_callback(oauth_request)
+            callback = self.auth_server.get_callback(req.oauth_request)
         except:
             callback = None
     
