@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Handle authorization &mdash; dj-webmachine v0.1.0.1e850f4-git documentation</title>
+    <title>Handle authorization &mdash; dj-webmachine v0.1.0.f78863c-git documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0.1e850f4-git',
+        VERSION:     '0.1.0.f78863c-git',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="dj-webmachine v0.1.0.1e850f4-git documentation" href="index.html" />
+    <link rel="top" title="dj-webmachine v0.1.0.f78863c-git documentation" href="index.html" />
     <link rel="up" title="Documentation" href="docs.html" />
     <link rel="next" title="Simple way to create an api" href="api.html" />
     <link rel="prev" title="dj-webmachine Resource object methods" href="resources.html" /> 
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.f78863c-git documentation</a> &raquo;</li>
           <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -91,7 +91,7 @@ need to add the oauth resource to your <tt class="docutils literal"><span class=
 </pre></div>
 </div>
 <p>Then like with the basic authentification add the class
-<tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth.Oauth</span></tt> in your resource:</p>
+<a class="reference internal" href="#webmachine.auth.oauth.Oauth" title="webmachine.auth.oauth.Oauth"><tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth.Oauth</span></tt></a> in your resource:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
 <span class="kn">from</span> <span class="nn">webmachine.authoauth</span> <span class="kn">import</span> <span class="n">Oauth</span>
 
@@ -177,9 +177,29 @@ then test if you are authorized. Without the acces token:</p>
 <h2>AUTH classes description<a class="headerlink" href="#auth-classes-description" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
 <h3>Basic authentification<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="webmachine.auth.BasicAuth">
+<em class="property">class </em><tt class="descclassname">webmachine.auth.</tt><tt class="descname">BasicAuth</tt><big>(</big><em>func=&lt;function authenticate at 0x102a22c80&gt;</em>, <em>realm='API'</em><big>)</big><a class="headerlink" href="#webmachine.auth.BasicAuth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="webmachine.auth.BasicAuth.authorized">
+<tt class="descname">authorized</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.auth.BasicAuth.authorized" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="oauth-authentification">
 <h3>Oauth authentification<a class="headerlink" href="#oauth-authentification" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="webmachine.auth.oauth.Oauth">
+<em class="property">class </em><tt class="descclassname">webmachine.auth.oauth.</tt><tt class="descname">Oauth</tt><big>(</big><em>realm='OAuth'</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth.html#Oauth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth.Oauth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="webmachine.auth.oauth.Oauth.authorized">
+<tt class="descname">authorized</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth.html#Oauth.authorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth.Oauth.authorized" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="datastore">
 <h3>Datastore<a class="headerlink" href="#datastore" title="Permalink to this headline">¶</a></h3>
@@ -191,6 +211,83 @@ example. To use you own class add it to your settings:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">OAUTH_DATASTORE</span> <span class="o">=</span> <span class="s">&#39;webmachine.auth.oauth_store.DataStore&#39;</span>
 </pre></div>
 </div>
+<dl class="class">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore">
+<em class="property">class </em><tt class="descclassname">webmachine.auth.oauth_store.</tt><tt class="descname">OAuthDataStore</tt><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore" title="Permalink to this definition">¶</a></dt>
+<dd><p>A database abstraction used to lookup consumers and tokens.</p>
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.authorize_request_token">
+<tt class="descname">authorize_request_token</tt><big>(</big><em>oauth_token</em>, <em>user</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.authorize_request_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.authorize_request_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthToken.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.fetch_access_token">
+<tt class="descname">fetch_access_token</tt><big>(</big><em>oauth_consumer</em>, <em>oauth_token</em>, <em>oauth_verifier</em>, <em>oauth_timestamp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.fetch_access_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.fetch_access_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthToken.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.fetch_request_token">
+<tt class="descname">fetch_request_token</tt><big>(</big><em>oauth_consumer</em>, <em>oauth_callback</em>, <em>oauth_timestamp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.fetch_request_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.fetch_request_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthToken.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.lookup_consumer">
+<tt class="descname">lookup_consumer</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.lookup_consumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.lookup_consumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthConsumer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.lookup_nonce">
+<tt class="descname">lookup_nonce</tt><big>(</big><em>oauth_consumer</em>, <em>oauth_token</em>, <em>nonce</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.lookup_nonce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.lookup_nonce" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthToken.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.OAuthDataStore.lookup_token">
+<tt class="descname">lookup_token</tt><big>(</big><em>token_type</em>, <em>key</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#OAuthDataStore.lookup_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.OAuthDataStore.lookup_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>-&gt; OAuthToken.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="webmachine.auth.oauth_store.DataStore">
+<em class="property">class </em><tt class="descclassname">webmachine.auth.oauth_store.</tt><tt class="descname">DataStore</tt><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.authorize_request_token">
+<tt class="descname">authorize_request_token</tt><big>(</big><em>oauth_token</em>, <em>user</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.authorize_request_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.authorize_request_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.fetch_access_token">
+<tt class="descname">fetch_access_token</tt><big>(</big><em>consumer</em>, <em>token</em>, <em>verifier</em>, <em>timestamp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.fetch_access_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.fetch_access_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.fetch_request_token">
+<tt class="descname">fetch_request_token</tt><big>(</big><em>consumer</em>, <em>callback</em>, <em>timestamp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.fetch_request_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.fetch_request_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.lookup_consumer">
+<tt class="descname">lookup_consumer</tt><big>(</big><em>key</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.lookup_consumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.lookup_consumer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.lookup_nonce">
+<tt class="descname">lookup_nonce</tt><big>(</big><em>consumer</em>, <em>token</em>, <em>nonce</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.lookup_nonce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.lookup_nonce" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="webmachine.auth.oauth_store.DataStore.lookup_token">
+<tt class="descname">lookup_token</tt><big>(</big><em>token_type</em>, <em>key</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth_store.html#DataStore.lookup_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth_store.DataStore.lookup_token" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -259,7 +356,7 @@ example. To use you own class add it to your settings:</p>
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              >previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0.1e850f4-git documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.1.0.f78863c-git documentation</a> &raquo;</li>
           <li><a href="docs.html" >Documentation</a> &raquo;</li> 
       </ul>
     </div>
