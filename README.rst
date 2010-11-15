@@ -50,10 +50,8 @@ We will quickly create an Hello world accepting HTML and JSON.
     $ cd helloworld
     $ python manage.py startapp hello
 
-In the hello folder create a file named ``resource.p```:
+In the hello folder create a file named ``resource.p```::
 
-.. code-block:: python
-    
     import json
     from webmachine import Resource
     
@@ -83,9 +81,7 @@ settings::
         'helloworld.hello'
     )
 
-Put your the Hello resource in your ``urls.py``:
-
-.. code-block:: python
+Put your the Hello resource in your ``urls.py``::
 
     from django.conf.urls.defaults import *
 
