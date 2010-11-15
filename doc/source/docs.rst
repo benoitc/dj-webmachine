@@ -8,5 +8,6 @@ Documentation
 
    quickstart
    resources
+   wm
    auth
-   api
+   

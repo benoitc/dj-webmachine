@@ -30,6 +30,8 @@ values to other methods.
 There are over 30 Resource methods you can define, but any of them can 
 be omitted as they have reasonable defaults.
 
+.. _resdesr:
+
 Resource methods description
 ++++++++++++++++++++++++++++
 
