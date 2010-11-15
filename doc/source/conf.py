@@ -8,7 +8,7 @@ import webmachine
 
 
 sys.path.insert(0, os.path.abspath('.'))
-os.environ['DJANGO_SETTINGS_MODULE'] = "."
+os.environ['DJANGO_SETTINGS_MODULE'] = 'django.conf.global_settings'
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest',
 'sphinx.ext.viewcode', 'sphinxtogithub']
