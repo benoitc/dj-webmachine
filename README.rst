@@ -114,7 +114,7 @@ Or with curl::
 The first line ask the hello page as html while the second using the
 same url ask for JSON. 
 
-To learn how to do more interresting things, checkout :ref:`some examples <examples_resources>` or read :ref:`more documentations <docs>` .
+To learn how to do more interresting things, checkout :ref:`some examples <http://benoitc.github.com/dj-webmachine/resource.html>`_ or read :ref:`more documentations <http://benoitc.github.com/dj-webmachine/docs.html>`_ .
 
 .. _Python: http://python.org
 .. _Django: http://djangoproject.org
