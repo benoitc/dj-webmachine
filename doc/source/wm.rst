@@ -1,7 +1,7 @@
 .. _wm:
 
-Minimal API building
-++++++++++++++++++++
+Simple Routing / Minimal API building
++++++++++++++++++++++++++++++++++++++
 
 Combinating the power of Django and the :ref:`resources <resources>` it's relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using the ``route`` decorator.
 
