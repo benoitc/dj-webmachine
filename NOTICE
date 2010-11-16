@@ -2,6 +2,7 @@ dj-webmachine
 -----------
 
 2010 (c) Benoît Chesneau <benoitc@e-engura.org>
+2010 (c) Hyperweek - http://hyperweek.net
 
 dj-webmachine is released under the MIT license. See the LICENSE
 file for the complete license.
@@ -11,7 +12,6 @@ decisions.py
 ------------
 Adapted from py-webmachine under MIT license.
 Copyright (c) 2009-2010 Paul J. Davis <paul.joseph.davis@gmail.com>
-
 
 webmachine.acceptparse,
 webmachine.util.datetimeutil,
