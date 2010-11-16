@@ -16,8 +16,29 @@ your applications' behavior. dj-webmachine also offers you the
 possibility to build simple API based on your model and the tools to
 create automatically docs and clients from it (work in progress).
 
+Contents:
+
+.. toctree::
+   :maxdepth: 1
+
+   introduction
+   docs
+
+
+Resource oriented
+-----------------
+
 A dj-webmachine application is a set of Resources objects, each of which
 is a set of methods over the state of the resource.
+
+.. code-block:: python
+    
+    from webmachine import Resource
+    
+    class Hello(Resource):
+
+        def to_html(self, req, resp):
+            return "<html><body>Hello world!</body></html>\n"
 
 These methodes give you a place to define the representations and other 
 Web-relevant properties of your application's resources. 
@@ -26,15 +47,19 @@ For most of dj-webmachine applications, most of the Resources instance
 are small and isolated. The web behavior introduced :ref:`by directly mapping the HTTP <diagram>` 
 make your application easy to debug and read.
 
+Simple Routing
+--------------
+
+.. code-block:: python
+
+    from webmachine.ap import wm
+
+    import json
+    @wm.route(r"^$")
+    def hello(req, resp):
+        return "<html><p>hello world!</p></html>"
 
 
-Contents:
-
-.. toctree::
-   :maxdepth: 1
-
-   introduction
-   docs
 
 Indices and tables
 ==================
