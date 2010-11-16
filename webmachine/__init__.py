@@ -9,8 +9,7 @@ __version__ = ".".join(map(str, version_info))
 
 
 try:
-    from webmachine.api import wm
-    from webmachine.sites import Site, site
+    from webmachine.api import WM, wm
     from webmachine.resource import Resource
 except ImportError:
     import traceback

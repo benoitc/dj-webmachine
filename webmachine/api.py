@@ -89,7 +89,7 @@ def build_ctypes(ctypes, fun, method):
             yield ctype, fun
 
 
-class WMResource(Resource):
+class RouteResource(Resource):
 
     def __init__(self, pattern, fun, **kwargs):
         self.set_pattern(pattern, **kwargs)
@@ -267,12 +267,54 @@ class WM(object):
             return func
         return _decorated
 
+    def _wrap_urls(self, f, pattern):
+        from django.conf.urls.defaults import patterns, url, include
+        def _wrapped(*args):
+            return patterns('', 
+                    url(pattern, include(f(*args)))
+            )
+        return _wrapped
+
+    def add_resource(self, klass, pattern=None):
+        """add one :ref:`Resource class<resource>` to the routing.
+        
+        :attr klass: class inheriting from :class:webmachine.Resource
+        :attr pattern: regexp.
+
+        """
+        res = klass()
+        if not pattern:
+            if hasattr(res._meta, "resource_path"):
+                kname = res._meta.resource_path
+            else:
+                kname = klass.__name__.lower()
+
+            pattern = r'^%s/' % res._meta.app_label
+            if kname:
+                pattern = r'%s/' % kname
+        res.get_urls = self._wrap_urls(res.get_urls, pattern)
+        self.resources[pattern] = res
+
+    def add_resources(self, *klasses):
+        """ allows you to add multiple Resource classes to the WM instance. You
+        can also pass a pattern by using a tupple instead of simply
+        provided the Resource class. Ex::
+
+            (MyResource, r"^some/path$")
+        """
+        for klass in klasses:
+            if isinstance(klass, tuple):
+                klass, pattern = klass
+            else:
+                pattern = None
+            self.add_resource(klass, pattern=pattern)
+
     def add_route(self, pattern, func, **kwargs):
         if pattern in self.resources:
             res = self.resources[pattern]
             res.update(func, **kwargs)
         else:
-            res = WMResource(pattern, func, **kwargs)
+            res = RouteResource(pattern, func, **kwargs)
         self.resources[pattern] = res
 
         self.routes.append((pattern, func, kwargs))

@@ -54,7 +54,7 @@ from webmachine.decisions import b13, TRANSITIONS, first_match
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 get_verbose_name = lambda class_name: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).lower().strip()
 
-DEFAULT_NAMES = ('verbose_name', 'app_label', 'resource_prefix')
+DEFAULT_NAMES = ('verbose_name', 'app_label', 'resource_path')
 
 class Options(object):
     """ class based on django.db.models.options. We only keep
@@ -63,7 +63,7 @@ class Options(object):
     def __init__(self, meta, app_label=None):
         self.module_name, self.verbose_name = None, None
         self.verbose_name_plural = None
-        self.resource_prefix = None
+        self.resource_path = None
         self.object_name, self.app_label = None, app_label
         self.meta = meta
     
@@ -74,7 +74,7 @@ class Options(object):
         self.object_name = cls.__name__
         self.module_name = self.object_name.lower()
         self.verbose_name = get_verbose_name(self.object_name)
-        self.resource_prefix = self.module_name
+        self.resource_path = self.module_name
         # Next, apply any overridden values from 'class Meta'.
         if self.meta:
             meta_attrs = self.meta.__dict__.copy()

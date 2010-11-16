@@ -1,6 +1,7 @@
 import json
 
 from webmachine import Resource
+from webmachine import wm
 
 class Hello(Resource):
 
@@ -16,4 +17,11 @@ class Hello(Resource):
     def to_json(self, req, resp):
         return "%s\n" % json.dumps({"message": "hello world!", "ok": True})
 
+
+# available at wm/hello
+wm.add_resource(Hello, r"^hello")
+
+
+# available at wm/helloworld/hello
+wm.add_resource(Hello)
 
