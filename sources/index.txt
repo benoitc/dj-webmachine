@@ -28,7 +28,7 @@ Contents:
 Resource oriented
 -----------------
 
-A dj-webmachine application is a set of Resources objects, each of which
+A dj-webmachine application is a set of :ref:`Resources objects<resources>`, each of which
 is a set of methods over the state of the resource.
 
 .. code-block:: python
@@ -49,6 +49,8 @@ make your application easy to debug and read.
 
 Simple Routing
 --------------
+
+Combinating the power of Django and the resources it’s relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using :ref:`the route decorator<wm>`.
 
 .. code-block:: python
 

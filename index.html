@@ -62,7 +62,7 @@ create automatically docs and clients from it (work in progress).</p>
 </div>
 <div class="section" id="resource-oriented">
 <h2>Resource oriented<a class="headerlink" href="#resource-oriented" title="Permalink to this headline">¶</a></h2>
-<p>A dj-webmachine application is a set of Resources objects, each of which
+<p>A dj-webmachine application is a set of <a class="reference internal" href="resources.html#resources"><em>Resources objects</em></a>, each of which
 is a set of methods over the state of the resource.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
 
@@ -80,6 +80,7 @@ make your application easy to debug and read.</p>
 </div>
 <div class="section" id="simple-routing">
 <h2>Simple Routing<a class="headerlink" href="#simple-routing" title="Permalink to this headline">¶</a></h2>
+<p>Combinating the power of Django and the resources it’s relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using <a class="reference internal" href="wm.html#wm"><em>the route decorator</em></a>.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine.ap</span> <span class="kn">import</span> <span class="n">wm</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
