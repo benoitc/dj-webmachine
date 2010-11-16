@@ -14,6 +14,7 @@ from setuptools import setup, find_packages
 
 from webmachine import __version__
 
+popen3 = None
 try:#python 2.6, use subprocess
     import subprocess
     subprocess.Popen  # trigger ImportError early
@@ -27,13 +28,15 @@ try:#python 2.6, use subprocess
         return (p.stdin, p.stdout, p.stderr)
 except ImportError:
     subprocess = None
-    popen3 = os.popen3
-
+    try:
+        popen3 = os.popen3
+    except ImportError:
+        popen3 = None
 
 DEVELOP = "develop" in sys.argv
 
 version = __version__
-if DEVELOP:
+if DEVELOP and popen3 is not None:
     minor_tag = ""
     try:
         stdin, stdout, stderr = popen3("git rev-parse --short HEAD --")
@@ -43,7 +46,6 @@ if DEVELOP:
             minor_tag = ".%s-git" % git_tag
     except OSError:        
         pass
-
     version = "%s%s" % (version, minor_tag)
 
 
