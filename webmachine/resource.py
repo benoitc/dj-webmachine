@@ -172,7 +172,6 @@ class Resource(object):
 
     base_url = None
     csrf_exempt = True
-    format_sufx_param = "FORMAT_SUFX"
 
 
     def allowed_methods(self, req, resp):
@@ -511,8 +510,6 @@ class Resource(object):
         """
         from django.conf.urls.defaults import patterns, url
         urlpatterns = patterns('',
-            url(r'^\.(?P<%s>\w*)$' % self.format_sufx_param, self, 
-                name="%s_index_fmt" % self.__class__.__name__), 
             url(r'^$', self, name="%s_index" % self.__class__.__name__),
             
             
@@ -534,17 +531,17 @@ class Resource(object):
         setattr(req, "url_args", args or [])
         setattr(req, "url_kwargs", kwargs or {})
 
-        # force format depending on suffix ?
-        if self.format_sufx_param in kwargs:
-            fmt =kwargs.get(self.format_sufx_param)
-            fmt_sufx = first_match(self.format_suffix_accepted, req,
-                    resp, fmt)
-            if fmt_sufx is not None:
-                req.META['HTTP_ACCEPT'] = fmt_sufx
-            else:
-                resp.status_code = 406 
-                resp._container = ["format %s not accepted" % fmt] 
-                return resp
+        # force format ?
+        url_parts = req.path.rsplit(".", 1)
+        try:
+            fmt = url_parts[1]
+            fctype = first_match(self.format_suffix_accepted, req, resp,
+                    fmt)
+            if fctype is not None:
+                req.META['HTTP_ACCEPT'] = fctype
+        except IndexError:
+            pass
+
 
         # django isn't restful
         req.method = req.method.upper()
