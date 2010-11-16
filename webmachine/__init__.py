@@ -31,9 +31,7 @@ def autodiscover():
         mod = import_module(app)
         # Attempt to import the app's resource module.
         try:
-            before_import_registry = copy.copy(site._registry)
             import_module('%s.resources' % app)
         except:
-            site._registry = before_import_registry
             if module_has_submodule(mod, 'resources'):
                 raise 

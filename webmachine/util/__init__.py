@@ -3,24 +3,8 @@
 # This file is part of dj-apipoint released under the MIT license. 
 # See the NOTICE for more information.
 
-import os
 import random
 import time
-
-try:#python 2.6, use subprocess
-    import subprocess
-    subprocess.Popen  # trigger ImportError early
-    closefds = os.name == 'posix'
-    
-    def popen3(cmd, mode='t', bufsize=0):
-        p = subprocess.Popen(cmd, shell=True, bufsize=bufsize,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
-            close_fds=closefds)
-        p.wait()
-        return (p.stdin, p.stdout, p.stderr)
-except ImportError:
-    subprocess = None
-    popen3 = os.popen3
 
 CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
 def keygen(len):
@@ -33,8 +17,6 @@ def generate_timestamp():
 def generate_random(length=8):
     """Generate pseudorandom number."""
     return ''.join([str(random.randint(0, 9)) for i in range(length)])
-
-
 
 def coerce_put_post(request):
     """
