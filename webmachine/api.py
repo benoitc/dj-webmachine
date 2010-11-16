@@ -55,7 +55,7 @@ resource:
  - authorization
 """
 
-from webmachine.resource import Resource, RESOURCE_METHODS
+from webmachine.resource.base import Resource, RESOURCE_METHODS
 
 def validate_ctype(value):
     if isinstance(value, basestring):

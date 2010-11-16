@@ -10,7 +10,7 @@ import urlparse
 from django.contrib.auth.models import User
 from django.db import models
 
-from webmachine.const import KEY_SIZE, SECRET_SIZE, VERIFIER_SIZE, \
+from webmachine.util.const import KEY_SIZE, SECRET_SIZE, VERIFIER_SIZE, \
 TOKEN_TYPES, PENDING, CONSUMER_STATES
 
 from webmachine.managers import ConsumerManager, TokenManager
