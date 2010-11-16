@@ -4,26 +4,7 @@
 # See the NOTICE for more information.
 
 
-import os
-
-if os.environ.get('release') != "true":
-
-    minor_tag = ""
-    try:
-        from webmachine.util import popen3
-
-        stdin, stdout, stderr = popen3("git rev-parse --short HEAD --")
-        error = stderr.read()
-        if not error:
-            git_tag = stdout.read()[:-1]
-            minor_tag = ".%s-git" % git_tag
-    except OSError:        
-        pass
-else:
-    minor_tag = ""
-    
-
-version_info = (0, 1, "0%s" % minor_tag)
+version_info = (0, 1, 0)
 __version__ = ".".join(map(str, version_info))
 
 
