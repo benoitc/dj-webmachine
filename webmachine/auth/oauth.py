@@ -13,7 +13,7 @@ except ImportError:
     raise ImportError("restkit packages is needed for auth.")
 
 from webmachine.auth.base import Auth
-from webmachine.const import TOKEN_REQUEST, TOKEN_ACCESS
+from webmachine.util.const import TOKEN_REQUEST, TOKEN_ACCESS
 
 
 def load_oauth_datastore():

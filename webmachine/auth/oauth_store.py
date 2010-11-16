@@ -5,9 +5,9 @@
 
 from django.contrib.auth.models import AnonymousUser
 
-from webmachine.const import VERIFIER_SIZE, TOKEN_REQUEST, TOKEN_ACCESS
 from webmachine.models import Nonce, Consumer, Token
 from webmachine.util import generate_random
+from webmachine.util.const import VERIFIER_SIZE, TOKEN_REQUEST, TOKEN_ACCESS
 
 class OAuthDataStore(object):
     """A database abstraction used to lookup consumers and tokens."""
