@@ -53,19 +53,41 @@ top of Django and provides a simple and clean way to connect that to
 your applications&#8217; behavior. dj-webmachine also offers you the
 possibility to build simple API based on your model and the tools to
 create automatically docs and clients from it (work in progress).</p>
-<p>A dj-webmachine application is a set of Resources objects, each of which
-is a set of methods over the state of the resource.</p>
-<p>These methodes give you a place to define the representations and other
-Web-relevant properties of your application&#8217;s resources.</p>
-<p>For most of dj-webmachine applications, most of the Resources instance
-are small and isolated. The web behavior introduced <a class="reference internal" href="diagram.html#diagram"><em>by directly mapping the HTTP</em></a>
-make your application easy to debug and read.</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">How do I get Started?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="docs.html">Documentation</a></li>
 </ul>
+</div>
+<div class="section" id="resource-oriented">
+<h2>Resource oriented<a class="headerlink" href="#resource-oriented" title="Permalink to this headline">¶</a></h2>
+<p>A dj-webmachine application is a set of Resources objects, each of which
+is a set of methods over the state of the resource.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+
+<span class="k">class</span> <span class="nc">Hello</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;body&gt;Hello world!&lt;/body&gt;&lt;/html&gt;</span><span class="se">\n</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>These methodes give you a place to define the representations and other
+Web-relevant properties of your application&#8217;s resources.</p>
+<p>For most of dj-webmachine applications, most of the Resources instance
+are small and isolated. The web behavior introduced <a class="reference internal" href="diagram.html#diagram"><em>by directly mapping the HTTP</em></a>
+make your application easy to debug and read.</p>
+</div>
+<div class="section" id="simple-routing">
+<h2>Simple Routing<a class="headerlink" href="#simple-routing" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine.ap</span> <span class="kn">import</span> <span class="n">wm</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="nd">@wm.route</span><span class="p">(</span><span class="s">r&quot;^$&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;p&gt;hello world!&lt;/p&gt;&lt;/html&gt;&quot;</span>
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -86,6 +108,8 @@ make your application easy to debug and read.</p>
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Welcome to dj-webmachine&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#resource-oriented">Resource oriented</a></li>
+<li><a class="reference internal" href="#simple-routing">Simple Routing</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
