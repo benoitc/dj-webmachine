@@ -172,7 +172,7 @@ class Resource(object):
 
     base_url = None
     csrf_exempt = True
-
+    url_regexp = r"^$"
 
     def allowed_methods(self, req, resp):
         """
@@ -509,9 +509,11 @@ class Resource(object):
         :return: urlpattern
         """
         from django.conf.urls.defaults import patterns, url
+
+        regexp = getattr(self, "url_regexp") or r'^$'
+
         urlpatterns = patterns('',
-            url(r'^$', self, name="%s_index" % self.__class__.__name__),
-            
+            url(regexp, self, name="%s_index" % self.__class__.__name__), 
             
         )
         return urlpatterns
