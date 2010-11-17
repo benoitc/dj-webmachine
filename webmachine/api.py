@@ -54,7 +54,7 @@ resource:
  - throttling
  - authorization
 """
-
+import webmachine.exc
 from webmachine.resource.base import Resource, RESOURCE_METHODS
 
 try:
@@ -227,7 +227,7 @@ class RouteResource(Resource):
     def created_location(self, req, resp):
         return resp.location
 
-    def process_post(self, res, resp):
+    def process_post(self, req, resp):
         return self.accept_body(req, resp)
 
     def multiple_choices(self, req, resp):
