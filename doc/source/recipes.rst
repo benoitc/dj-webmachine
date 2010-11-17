@@ -57,7 +57,7 @@ Handle POST using the resource
         def allowed_methods(self, req, resp):
             return ['POST']
         
-        def accepted_content_types(self, req, resp):
+        def content_types_accepted(self, req, resp):
             return [('application/json', self.to_json)]
 
         def to_json(self, req, resp):
