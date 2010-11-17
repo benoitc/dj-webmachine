@@ -107,14 +107,14 @@ requests:</p>
 </div>
 <div class="section" id="handle-get-using-the-decorator">
 <h2>Handle GET using the decorator<a class="headerlink" href="#handle-get-using-the-decorator" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre># with teh decorator
-@wm.route(r"taroute$",
-          methods=['GET', 'HEAD'],
-          provided=[('text/html', 'text/plain')])
-def fetched(req, resp):
-    if resp.content_type = "text/html":
-        return "&lt;html&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;"
-    return "Hello World!"</pre>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@wm.route</span><span class="p">(</span><span class="s">r&quot;taroute$&quot;</span><span class="p">,</span>
+          <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;GET&#39;</span><span class="p">,</span> <span class="s">&#39;HEAD&#39;</span><span class="p">],</span>
+          <span class="n">provided</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;text/html&#39;</span><span class="p">,</span> <span class="s">&#39;text/plain&#39;</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">fetched</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">content_type</span> <span class="o">==</span> <span class="s">&quot;text/html&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;&quot;</span>
+    <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="handle-post-using-the-decorator">
