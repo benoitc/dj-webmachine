@@ -57,6 +57,36 @@ using the <tt class="docutils literal"><span class="pre">url_kwargs</span></tt> 
 </pre></div>
 </div>
 </div>
+<div class="section" id="simplest-working-resource">
+<h2>Simplest working resource<a class="headerlink" href="#simplest-working-resource" title="Permalink to this headline">¶</a></h2>
+<p>This simple resource only return HTML</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="return-different-content-types-on-get">
+<h2>Return different content types on GET<a class="headerlink" href="#return-different-content-types-on-get" title="Permalink to this headline">¶</a></h2>
+<p>Suppose you want to serve plaintexts and html clients on valid GET
+requests:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">content_types_provided</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s">&quot;text/html&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_html</span><span class="p">),</span>
+            <span class="p">(</span><span class="s">&quot;text/plain&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_text</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">to_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="handle-post-using-the-resource">
 <h2>Handle POST using the resource<a class="headerlink" href="#handle-post-using-the-resource" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-python"><pre>class MyResource(Resource):
@@ -105,6 +135,8 @@ using the <tt class="docutils literal"><span class="pre">url_kwargs</span></tt> 
   <ul>
 <li><a class="reference internal" href="#">Recipes</a><ul>
 <li><a class="reference internal" href="#get-path-named-arguments">Get path named arguments</a></li>
+<li><a class="reference internal" href="#simplest-working-resource">Simplest working resource</a></li>
+<li><a class="reference internal" href="#return-different-content-types-on-get">Return different content types on GET</a></li>
 <li><a class="reference internal" href="#handle-post-using-the-resource">Handle POST using the resource</a></li>
 <li><a class="reference internal" href="#handle-post-using-the-decorator">Handle POST using the decorator</a></li>
 </ul>

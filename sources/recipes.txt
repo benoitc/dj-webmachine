@@ -13,6 +13,40 @@ using the ``url_kwargs`` member of the req object::
 
     kwargs = req.url_kwargs
 
+Simplest working resource
++++++++++++++++++++++++++
+
+This simple resource only return HTML
+
+.. code-block:: python
+
+    class MyResource(Resource):
+        
+        def to_html(self, req, resp):
+            return "<html><h1>Hello World!</h1></html>"
+
+Return different content types on GET
++++++++++++++++++++++++++++++++++++++
+
+Suppose you want to serve plaintexts and html clients on valid GET
+requests:
+
+.. code-block:: python
+
+    class MyResource(Resource):
+        
+        def content_types_provided(self, req, resp):
+            return [
+                ("text/html", self.to_html),
+                ("text/plain", self.to_text)
+            ]
+
+        def to_html(self, req, resp):
+            return "<html><h1>Hello World!</h1></html>"
+
+        def to_text(self, req, resp):
+            return "Hello World!"
+
 Handle POST using the resource
 ++++++++++++++++++++++++++++++
 
