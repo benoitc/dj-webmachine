@@ -587,6 +587,7 @@ class Resource(object):
         try:
             state = b13
             while not isinstance(state, int):
+                print state
                 if state(self, req, resp):
                     state = TRANSITIONS[state][0]
                 else:
@@ -621,6 +622,7 @@ class Resource(object):
         if resp.location is not None:
             resp['Location'] = resp.location
 
+        print resp.content
         return resp
 
     def __call__(self, request, *args, **kwargs):

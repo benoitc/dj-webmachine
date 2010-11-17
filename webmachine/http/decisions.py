@@ -272,9 +272,10 @@ def n11(res, req, resp):
             raise webmachine.exc.HTTPInternalServerError("Failed to process POST.")
         return False
     resp.location = res.created_location(req, resp)
-    if resp.location:
-        return True
-    return False
+    if not resp.location:
+        return False     
+    return True
+
 
 def n16(res, req, resp):
     "POST?"
@@ -293,7 +294,7 @@ def o16(res, req, resp):
 
 def o18(res, req, resp):
     "Multiple representations? (Build GET/HEAD body)"
-    if req.method not in ["GET", "HEAD", "DELETE"]:
+    if req.method not in ["GET", "HEAD"]:
         return res.multiple_choices(req, resp)
 
     handle_response_body(res, req, resp)
@@ -313,7 +314,9 @@ def p03(res, req, resp):
 
 def p11(res, req, resp):
     "New resource?"
-    return resp.location is not None
+    if not resp.location:
+        return False
+    return True
 
 def first_match(func, req, resp, expect):
     for (key, value) in func(req, resp):
@@ -340,12 +343,12 @@ def handle_response_body(res, req, resp):
     func = first_match(res.content_types_provided, req, resp, resp.content_type)
     if func is None:
         raise webmachine.exc.HTTPInternalServerError()
-    
+   
     body = func(req, resp)
 
     # If we're using a charset, make sure to use unicode_body.    
     if resp.charset:
-        resp.unicode_body = unicode(body)
+        resp.body = unicode(body)
     else:
         resp.body = body
 

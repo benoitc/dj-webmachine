@@ -57,13 +57,17 @@ resource:
 
 from webmachine.resource.base import Resource, RESOURCE_METHODS
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 def validate_ctype(value):
     if isinstance(value, basestring):
         return [value]
     elif not isinstance(value, list) and value is not None:
         raise TypeError("'%s' should be a list or a string, got %s" %
                 (value, type(value)))
-
     return value
 
 
@@ -72,21 +76,13 @@ def serializer_cb(serializer, method):
         return getattr(serializer, method)
     return serializer
 
-def wrap_ctype(fun, cb):
-    def _wrapped(req, resp):
-        if req.method == "DELETE":
-            return cb(resp._container)
-        return cb(fun(req, resp))
-    return _wrapped
-
-def build_ctypes(ctypes, fun, method):
-
+def build_ctypes(ctypes,method):
     for ctype in ctypes:
         if isinstance(ctype, tuple):
             cb = serializer_cb(ctype[1], method) 
-            yield ctype[0], wrap_ctype(fun, cb)
+            yield ctype[0], cb
         else:
-            yield ctype, fun
+            yield ctype, lambda v: v
 
 
 class RouteResource(Resource):
@@ -109,13 +105,11 @@ class RouteResource(Resource):
         # build content provided list
         provided = validate_ctype(kwargs.get('provided') or \
                 ['text/html'])
-        self.provided = list(build_ctypes(provided, fun, "serialize"))
+        self.provided = list(build_ctypes(provided, "serialize"))
 
         # build content accepted list
-        accepted = validate_ctype(kwargs.get('accepted'))
-        if accepted is not None:
-            self.accepted = list(build_ctypes(accepted, fun, "unserialize"))
-
+        accepted = validate_ctype(kwargs.get('accepted')) or []
+        self.accepted = list(build_ctypes(accepted, "unserialize"))
         self.kwargs = kwargs
 
         # override method if needed
@@ -134,25 +128,65 @@ class RouteResource(Resource):
             raise TypeError("methods should be list or a tuple, '%s' provided" % type(methods))
 
         # associate methods to the function
-        self.methods = {}
         for m in methods:
             self.methods[m.upper()] = fun
 
         # we probably should merge here
         provided = validate_ctype(kwargs.get('provided'))
         if provided is not None:
-            provided = list(build_ctypes(provided, fun, "serialize"))
+            provided = list(build_ctypes(provided, "serialize"))
             self.provided.extend(provided)
         
         accepted = validate_ctype(kwargs.get('accepted'))
         if accepted is not None:
-            accepted = list(build_ctypes(accepted, fun, "unserialize"))
+            accepted = list(build_ctypes(accepted, "unserialize"))
             self.accepted.extend(accepted)
 
-    def wrap(self, f,):
+
+    def wrap(self, f, cb=None):
         def _wrapped(req, resp):
+            if cb is not None:
+                return cb(f(req, resp))
             return f(req, resp)
         return _wrapped
+
+    def first_match(self, media, expect):
+        for key, value in media:
+            if key == expect:
+                return value
+        return None
+
+    def accept_body(self, req, resp):
+        ctype = req.content_type or "application/octet-stream"
+        mtype = ctype.split(";", 1)[0]
+        funload = self.first_match(self.accepted, mtype)
+        if funload is None:
+            raise webmachine.exc.HTTPUnsupportedMediaType()
+        req._raw_post_data = funload(req.raw_post_data)
+        if isinstance(req._raw_post_data, basestring):
+            req._stream = StringIO(req._raw_post_data)
+
+        fun = self.methods[req.method]
+        body = fun(req, resp)
+        if isinstance(body, tuple):
+            resp._container, resp.location = body
+        else:
+           resp._container = body
+
+        return self.return_body(req, resp)
+
+    def return_body(self, req, resp):
+        fundump = self.first_match(self.provided, resp.content_type)
+        if fundump is None:
+            raise webmachine.exc.HTTPInternalServerError()
+        resp._container = fundump(resp._container)
+        if not isinstance(resp._container, basestring):
+            resp._is_tring = False
+        else:
+            resp._container = [resp._container]
+            resp._is_string = True
+        return resp._container
+
 
     #### resources methods
 
@@ -165,29 +199,42 @@ class RouteResource(Resource):
         return []
 
     def content_types_accepted(self, req, resp):
-        if not self.accepted and req.method not in self.methods:
-            return None
-
-        fun = self.methods[req.method]
         if not self.accepted:
-            return [("text/html", self.wrap(fun))]
-       
-        return [(c, self.wrap(f)) for c, f in self.accepted]
+            return None
+        return [(c, self.accept_body) for c, f in self.accepted]
         
     def content_types_provided(self, req, resp):
         fun = self.methods[req.method]
         if not self.provided:
             return [("text/html", self.wrap(fun))]
 
-        return [(c, self.wrap(f)) for c, f in self.provided]
+        return [(c, self.wrap(fun, f)) for c, f in self.provided]
 
-    def delete(self, req, resp):
+    def delete_resource(self, req, resp):
         fun = self.methods['DELETE']
-        ret = self.wrap(fun)
-        if isinstance(ret, basestring):
+        print self.methods
+        ret = fun(req, resp)
+        print "ret %s" % ret
+        if isinstance(ret, basestring) or hasattr(ret, '__iter__'):
+            print "la"
             resp._container = ret
+            self.return_body(req, resp)
             return True
-        return ret
+        return False
+
+    def post_is_create(self, req, resp):
+        if req.method == 'POST':
+            return True
+        return False
+
+    def created_location(self, req, resp):
+        return resp.location
+
+    def process_post(self, res, resp):
+        return self.accept_body(req, resp)
+
+    def multiple_choices(self, req, resp):
+        return False
 
     def get_urls(self):
         from django.conf.urls.defaults import patterns, url
