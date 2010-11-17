@@ -52,7 +52,7 @@ We will quickly create an Hello world accepting HTML and JSON.
     $ cd helloworld
     $ python manage.py startapp hello
 
-In the hello folder create a file named ``resource.p```::
+In the hello folder create a file named ``resources.py``::
 
     import json
     from webmachine import Resource

@@ -212,11 +212,8 @@ class RouteResource(Resource):
 
     def delete_resource(self, req, resp):
         fun = self.methods['DELETE']
-        print self.methods
         ret = fun(req, resp)
-        print "ret %s" % ret
         if isinstance(ret, basestring) or hasattr(ret, '__iter__'):
-            print "la"
             resp._container = ret
             self.return_body(req, resp)
             return True
