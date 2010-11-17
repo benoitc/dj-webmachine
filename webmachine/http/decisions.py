@@ -5,7 +5,7 @@
 
 import datetime
 
-from webmachine.util.datetime_util import UTC
+from webob.datetime_utils import UTC
 import webmachine.exc
 
 def b03(res, req, resp):

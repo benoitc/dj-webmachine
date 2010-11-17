@@ -42,14 +42,9 @@ string_concat
 from django.utils.encoding import smart_str, force_unicode
 
 from webmachine.exc import HTTPException, HTTPInternalServerError
-from webmachine.http.acceptparse import get_accept_hdr, MIMEAccept, \
-        MIMENilAccept, NoAccept
 from webmachine.http.wrappers import WMRequest, WMResponse
 from webmachine.http.decisions import b13, TRANSITIONS, first_match
-from webmachine.http.etag import get_etag, AnyETag, NoETag
 from webmachine.util import coerce_put_post, serialize_list
-from webmachine.util.datetime_util import parse_date
-
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 get_verbose_name = lambda class_name: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).lower().strip()
