@@ -11,4 +11,4 @@ Documentation
    wm
    auth
    throttling
-   recipe
+   recipes
