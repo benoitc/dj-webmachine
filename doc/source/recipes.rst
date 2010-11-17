@@ -3,7 +3,7 @@
 Recipes
 -------
 
-Some quick recipe to show the dj-webmachine usage.
+Some quick recipes to show the dj-webmachine usage.
 
 Get path named arguments
 ++++++++++++++++++++++++
