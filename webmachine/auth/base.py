@@ -30,7 +30,7 @@ class BasicAuth(Auth):
     def authorized(self, req, resp):
         auth_str = req.META.get("HTTP_AUTHORIZATION")
         if not auth_str:
-            return False
+            return 'Basic realm="%s"' % self.realm
 
         try:
             (meth, auth) = auth_str.split(" ", 1)
