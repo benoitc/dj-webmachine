@@ -91,7 +91,7 @@ need to add the oauth resource to your <tt class="docutils literal"><span class=
 </pre></div>
 </div>
 <p>Then like with the basic authentification add the class
-<tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth.Oauth</span></tt> in your resource:</p>
+<a class="reference internal" href="#webmachine.auth.oauth.Oauth" title="webmachine.auth.oauth.Oauth"><tt class="xref py py-class docutils literal"><span class="pre">webmachine.auth.oauth.Oauth</span></tt></a> in your resource:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
 <span class="kn">from</span> <span class="nn">webmachine.authoauth</span> <span class="kn">import</span> <span class="n">Oauth</span>
 
@@ -179,7 +179,7 @@ then test if you are authorized. Without the acces token:</p>
 <h3>Basic authentification<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="webmachine.auth.BasicAuth">
-<em class="property">class </em><tt class="descclassname">webmachine.auth.</tt><tt class="descname">BasicAuth</tt><big>(</big><em>func=&lt;function authenticate at 0x23f2b90&gt;</em>, <em>realm='API'</em><big>)</big><a class="headerlink" href="#webmachine.auth.BasicAuth" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">webmachine.auth.</tt><tt class="descname">BasicAuth</tt><big>(</big><em>func=&lt;function authenticate at 0x370db90&gt;</em>, <em>realm='API'</em><big>)</big><a class="headerlink" href="#webmachine.auth.BasicAuth" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="webmachine.auth.BasicAuth.authorized">
 <tt class="descname">authorized</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.auth.BasicAuth.authorized" title="Permalink to this definition">¶</a></dt>
@@ -190,6 +190,16 @@ then test if you are authorized. Without the acces token:</p>
 </div>
 <div class="section" id="oauth-authentification">
 <h3>Oauth authentification<a class="headerlink" href="#oauth-authentification" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="webmachine.auth.oauth.Oauth">
+<em class="property">class </em><tt class="descclassname">webmachine.auth.oauth.</tt><tt class="descname">Oauth</tt><big>(</big><em>realm='OAuth'</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth.html#Oauth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth.Oauth" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="webmachine.auth.oauth.Oauth.authorized">
+<tt class="descname">authorized</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="reference internal" href="modules/webmachine/auth/oauth.html#Oauth.authorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.auth.oauth.Oauth.authorized" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="datastore">
 <h3>Datastore<a class="headerlink" href="#datastore" title="Permalink to this headline">¶</a></h3>

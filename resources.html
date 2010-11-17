@@ -265,7 +265,7 @@ return [(&#8220;identity&#8221;, lambda x: x)]</blockquote>
 <dl class="method">
 <dt id="webmachine.Resource.finish_request">
 <tt class="descname">finish_request</tt><big>(</big><em>req</em>, <em>resp</em><big>)</big><a class="headerlink" href="#webmachine.Resource.finish_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function, if exported, is called just before the final 
+<dd><p>This function, if defined, is called just before the final 
 response is constructed and sent. The Result is ignored, so
 any effect of this function must be by returning a modified 
 request.</p>
@@ -515,7 +515,7 @@ in the response.</p>
 <dd><p>If POST requests should be treated as a request to put content
 into a (potentially new) resource as opposed to being a generic 
 submission for processing, then this function should return true. 
-If it does return true, then create_path will be called and the 
+If it does return true, then created_location will be called and the 
 rest of the request will be treated much like a PUT to the Path 
 entry returned by that call.</p>
 <table class="docutils field-list" frame="void" rules="none">

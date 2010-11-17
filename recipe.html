@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Recipes &mdash; dj-webmachine v0.2.0 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="dj-webmachine v0.2.0 documentation" href="index.html" />
+    <link rel="up" title="Documentation" href="docs.html" />
+    <link rel="prev" title="Throttling" href="throttling.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="throttling.html" title="Throttling"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
+          <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="recipes">
+<span id="recipe"></span><h1>Recipes<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h1>
+<p>Some quick recipe to show the dj-webmachine usage.</p>
+<div class="section" id="get-path-named-arguments">
+<h2>Get path named arguments<a class="headerlink" href="#get-path-named-arguments" title="Permalink to this headline">¶</a></h2>
+<p>if you have some named arguments in your url pattern, you can get them
+using the <tt class="docutils literal"><span class="pre">url_kwargs</span></tt> member of the req object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">kwargs</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">url_kwargs</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="handle-post-using-the-resource">
+<h2>Handle POST using the resource<a class="headerlink" href="#handle-post-using-the-resource" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre>class MyResource(Resource):
+
+    def allowed_methods(self, req, resp):
+        return ['POST']
+
+    def accepted_content_types(self, req, resp):
+        return [('application/json', to_json)]
+
+    def to_json(self, req, resp):
+        body = json.loads(req.raw_post_data)
+        resp.content = json.dumps(json.dumps(body)
+
+    def post_is_create(self, req, resp):
+        return True</pre>
+</div>
+</div>
+<div class="section" id="handle-post-using-the-decorator">
+<h2>Handle POST using the decorator<a class="headerlink" href="#handle-post-using-the-decorator" title="Permalink to this headline">¶</a></h2>
+<p>Same code for other methods. You can check the method using
+<tt class="docutils literal"><span class="pre">req.method</span></tt></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># with teh decorator</span>
+<span class="nd">@wm.route</span><span class="p">(</span><span class="s">r&quot;taroute$&quot;</span><span class="p">,</span>
+          <span class="n">methods</span><span class="o">=</span><span class="s">&quot;POST&quot;</span><span class="p">,</span>
+          <span class="n">accepted</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;application/json&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">)],</span>
+          <span class="n">provided</span><span class="o">=</span><span class="p">[(</span><span class="s">&#39;application/json&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">)])</span>
+<span class="k">def</span> <span class="nf">posted</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="c"># my body has been deserialized</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">raw_post_data</span>
+
+    <span class="c"># my body will be serialized</span>
+    <span class="k">return</span> <span class="n">body</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Recipes</a><ul>
+<li><a class="reference internal" href="#get-path-named-arguments">Get path named arguments</a></li>
+<li><a class="reference internal" href="#handle-post-using-the-resource">Handle POST using the resource</a></li>
+<li><a class="reference internal" href="#handle-post-using-the-decorator">Handle POST using the decorator</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="throttling.html"
+                        title="previous chapter">Throttling</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="sources/recipe.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="throttling.html" title="Throttling"
+             >previous</a> |</li>
+        <li><a href="index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
+          <li><a href="docs.html" >Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+    </div>
+  </body>
+</html>

@@ -94,7 +94,7 @@ Ex for urls.py:
     from django.conf.urls.defaults import *
 
     import webmachine
-    webmachine.autodicover()
+    webmachine.autodiscover()
 
     urlpatterns = patterns('',
         (r'^wm/', include(webmachine.wm.urls)),
