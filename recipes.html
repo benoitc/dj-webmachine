@@ -89,20 +89,21 @@ requests:</p>
 </div>
 <div class="section" id="handle-post-using-the-resource">
 <h2>Handle POST using the resource<a class="headerlink" href="#handle-post-using-the-resource" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-python"><pre>class MyResource(Resource):
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
 
-    def allowed_methods(self, req, resp):
-        return ['POST']
+    <span class="k">def</span> <span class="nf">allowed_methods</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s">&#39;POST&#39;</span><span class="p">]</span>
 
-    def accepted_content_types(self, req, resp):
-        return [('application/json', to_json)]
+    <span class="k">def</span> <span class="nf">accepted_content_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="s">&#39;application/json&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">)]</span>
 
-    def to_json(self, req, resp):
-        body = json.loads(req.raw_post_data)
-        resp.content = json.dumps(json.dumps(body)
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">req</span><span class="o">.</span><span class="n">raw_post_data</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">body</span><span class="p">))</span>
 
-    def post_is_create(self, req, resp):
-        return True</pre>
+    <span class="k">def</span> <span class="nf">post_is_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="handle-get-using-the-decorator">

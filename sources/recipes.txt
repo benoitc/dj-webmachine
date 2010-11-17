@@ -58,11 +58,11 @@ Handle POST using the resource
             return ['POST']
         
         def accepted_content_types(self, req, resp):
-            return [('application/json', to_json)]
+            return [('application/json', self.to_json)]
 
         def to_json(self, req, resp):
             body = json.loads(req.raw_post_data)
-            resp.content = json.dumps(json.dumps(body)
+            resp.content = json.dumps(json.dumps(body))
 
         def post_is_create(self, req, resp):
             return True
