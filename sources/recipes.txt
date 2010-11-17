@@ -67,7 +67,20 @@ Handle POST using the resource
         def post_is_create(self, req, resp):
             return True
 
+Handle GET using the decorator
+++++++++++++++++++++++++++++++
 
+.. code-block:: python
+
+    # with teh decorator
+    @wm.route(r"taroute$", 
+              methods=['GET', 'HEAD'],
+              provided=[('text/html', 'text/plain')])
+    def fetched(req, resp):
+        if resp.content_type = "text/html":
+            return "<html><h1>Hello World!</h1></html>"
+        return "Hello World!"
+        
 Handle POST using the decorator
 +++++++++++++++++++++++++++++++
 

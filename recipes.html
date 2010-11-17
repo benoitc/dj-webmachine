@@ -105,6 +105,18 @@ requests:</p>
         return True</pre>
 </div>
 </div>
+<div class="section" id="handle-get-using-the-decorator">
+<h2>Handle GET using the decorator<a class="headerlink" href="#handle-get-using-the-decorator" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><pre># with teh decorator
+@wm.route(r"taroute$",
+          methods=['GET', 'HEAD'],
+          provided=[('text/html', 'text/plain')])
+def fetched(req, resp):
+    if resp.content_type = "text/html":
+        return "&lt;html&gt;&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;/html&gt;"
+    return "Hello World!"</pre>
+</div>
+</div>
 <div class="section" id="handle-post-using-the-decorator">
 <h2>Handle POST using the decorator<a class="headerlink" href="#handle-post-using-the-decorator" title="Permalink to this headline">¶</a></h2>
 <p>Same code for other methods. You can check the method using
@@ -138,6 +150,7 @@ requests:</p>
 <li><a class="reference internal" href="#simplest-working-resource">Simplest working resource</a></li>
 <li><a class="reference internal" href="#return-different-content-types-on-get">Return different content types on GET</a></li>
 <li><a class="reference internal" href="#handle-post-using-the-resource">Handle POST using the resource</a></li>
+<li><a class="reference internal" href="#handle-get-using-the-decorator">Handle GET using the decorator</a></li>
 <li><a class="reference internal" href="#handle-post-using-the-decorator">Handle POST using the decorator</a></li>
 </ul>
 </li>
