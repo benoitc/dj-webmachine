@@ -294,7 +294,7 @@ class Resource(object):
     
     def finish_request(self, req, resp):
         """
-        This function, if exported, is called just before the final 
+        This function, if defined, is called just before the final 
         response is constructed and sent. The Result is ignored, so
         any effect of this function must be by returning a modified 
         request.
@@ -620,7 +620,8 @@ class Resource(object):
 
         if resp.location is not None:
             resp['Location'] = resp.location
-
+         
+        self.finish_request(req, resp)
         return resp
 
     def __call__(self, request, *args, **kwargs):
