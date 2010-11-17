@@ -1,6 +1,6 @@
 .. _wm:
 
-Simple Routing / Minimal API building
+Simple Routing
 +++++++++++++++++++++++++++++++++++++
 
 Combinating the power of Django and the :ref:`resources <resources>` it's relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using the ``route`` decorator.
@@ -78,6 +78,62 @@ serialized using the ``json.dumps`` function associated to the json
 content-type. Easy isn't it ? You can pass any :ref:`resource methods <resources>`
 to the decorator.
 
+Mapping a resource
+------------------
+
+You can also map your :ref:`Resources classes<resources>` using the wm
+object and the method :func:`webmachine.api.WM.add_resource`
+
+If a pattern is given, the path will be
+``/<wmpath>/<app_label>/pattern/resource urls``. if no pattern is given the resource_name will be used.
+
+Ex for urls.py:
+
+.. code-block:: python
+
+    from django.conf.urls.defaults import *
+
+    import webmachine
+    webmachine.autodicover()
+
+    urlpatterns = patterns('',
+        (r'^wm/', include(webmachine.wm.urls)),
+
+    )
+
+and a resources.py file in one django app named hello
+
+.. code-block:: python
+
+    from webmachine import Resource
+    from webmachine import wm
+
+    class Hello(Resource):
+
+        def to_html(self, req, resp):
+            return "<html><body>Hello world!</body></html>\n"
+
+
+    # available at wm/hello
+    wm.add_resource(Hello, r"^hello")
+
+    # available at wm/helloworld/hello
+    wm.add_resource(Hello)
+
+You can then access to /wm/hello and /wm/hello/hello pathes
+automatically.
+
+You can also override the resource path by using the Meta class:
+
+.. code-block:: python
+
+    class Hello(Resource):
+        class Meta:
+            resource_path = ""
+
+If you set the resource path, the resource url added to the
+**WM** instance i
+``/<wmpath>/<app_label>/<resource_path>/resource_urls`` .
 
 Custom WM instance
 ------------------

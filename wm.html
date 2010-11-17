@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Simple Routing / Minimal API building &mdash; dj-webmachine v0.1.0 documentation</title>
+    <title>Simple Routing &mdash; dj-webmachine v0.2.0 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0',
+        VERSION:     '0.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="dj-webmachine v0.1.0 documentation" href="index.html" />
+    <link rel="top" title="dj-webmachine v0.2.0 documentation" href="index.html" />
     <link rel="up" title="Documentation" href="docs.html" />
     <link rel="next" title="Handle authorization" href="auth.html" />
     <link rel="prev" title="dj-webmachine Resource object methods" href="resources.html" /> 
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
           <li><a href="docs.html" accesskey="U">Documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -50,8 +50,8 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="simple-routing-minimal-api-building">
-<span id="wm"></span><h1>Simple Routing / Minimal API building<a class="headerlink" href="#simple-routing-minimal-api-building" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="simple-routing">
+<span id="wm"></span><h1>Simple Routing<a class="headerlink" href="#simple-routing" title="Permalink to this headline">¶</a></h1>
 <p>Combinating the power of Django and the <a class="reference internal" href="resources.html#resources"><em>resources</em></a> it&#8217;s relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using the <tt class="docutils literal"><span class="pre">route</span></tt> decorator.</p>
 <p>Using this decorator, our helloworld example can be rewritten like that:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine.ap</span> <span class="kn">import</span> <span class="n">wm</span>
@@ -117,6 +117,53 @@ type depending on the HTTP requests. The response is then automatically
 serialized using the <tt class="docutils literal"><span class="pre">json.dumps</span></tt> function associated to the json
 content-type. Easy isn&#8217;t it ? You can pass any <a class="reference internal" href="resources.html#resources"><em>resource methods</em></a>
 to the decorator.</p>
+<div class="section" id="mapping-a-resource">
+<h2>Mapping a resource<a class="headerlink" href="#mapping-a-resource" title="Permalink to this headline">¶</a></h2>
+<p>You can also map your <a class="reference internal" href="resources.html#resources"><em>Resources classes</em></a> using the wm
+object and the method <a class="reference internal" href="#webmachine.api.WM.add_resource" title="webmachine.api.WM.add_resource"><tt class="xref py py-func docutils literal"><span class="pre">webmachine.api.WM.add_resource()</span></tt></a></p>
+<p>If a pattern is given, the path will be
+<tt class="docutils literal"><span class="pre">/&lt;wmpath&gt;/&lt;app_label&gt;/pattern/resource</span> <span class="pre">urls</span></tt>. if no pattern is given the resource_name will be used.</p>
+<p>Ex for urls.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf.urls.defaults</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">webmachine</span>
+<span class="n">webmachine</span><span class="o">.</span><span class="n">autodicover</span><span class="p">()</span>
+
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span>
+    <span class="p">(</span><span class="s">r&#39;^wm/&#39;</span><span class="p">,</span> <span class="n">include</span><span class="p">(</span><span class="n">webmachine</span><span class="o">.</span><span class="n">wm</span><span class="o">.</span><span class="n">urls</span><span class="p">)),</span>
+
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>and a resources.py file in one django app named hello</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">webmachine</span> <span class="kn">import</span> <span class="n">wm</span>
+
+<span class="k">class</span> <span class="nc">Hello</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;html&gt;&lt;body&gt;Hello world!&lt;/body&gt;&lt;/html&gt;</span><span class="se">\n</span><span class="s">&quot;</span>
+
+
+<span class="c"># available at wm/hello</span>
+<span class="n">wm</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">Hello</span><span class="p">,</span> <span class="s">r&quot;^hello&quot;</span><span class="p">)</span>
+
+<span class="c"># available at wm/helloworld/hello</span>
+<span class="n">wm</span><span class="o">.</span><span class="n">add_resource</span><span class="p">(</span><span class="n">Hello</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can then access to /wm/hello and /wm/hello/hello pathes
+automatically.</p>
+<p>You can also override the resource path by using the Meta class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Hello</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">resource_path</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>If you set the resource path, the resource url added to the
+<strong>WM</strong> instance i
+<tt class="docutils literal"><span class="pre">/&lt;wmpath&gt;/&lt;app_label&gt;/&lt;resource_path&gt;/resource_urls</span></tt> .</p>
+</div>
 <div class="section" id="custom-wm-instance">
 <h2>Custom WM instance<a class="headerlink" href="#custom-wm-instance" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes you want to create custom WM instance instead to use the
@@ -126,6 +173,33 @@ global one provided. For that you can import the class
 <dt id="webmachine.api.WM">
 <em class="property">class </em><tt class="descclassname">webmachine.api.</tt><tt class="descname">WM</tt><big>(</big><em>name='webmachine'</em>, <em>version=None</em><big>)</big><a class="reference internal" href="modules/webmachine/api.html#WM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.api.WM" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
+<dt id="webmachine.api.WM.add_resource">
+<tt class="descname">add_resource</tt><big>(</big><em>klass</em>, <em>pattern=None</em><big>)</big><a class="reference internal" href="modules/webmachine/api.html#WM.add_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.api.WM.add_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>add one <em class="xref std std-ref">Resource class</em> to the routing.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Attr klass:</th><td class="field-body">class inheriting from :class:webmachine.Resource</td>
+</tr>
+<tr class="field"><th class="field-name">Attr pattern:</th><td class="field-body">regexp.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="webmachine.api.WM.add_resources">
+<tt class="descname">add_resources</tt><big>(</big><em>*klasses</em><big>)</big><a class="reference internal" href="modules/webmachine/api.html#WM.add_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.api.WM.add_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>allows you to add multiple Resource classes to the WM instance. You
+can also pass a pattern by using a tupple instead of simply
+provided the Resource class. Ex:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">(</span><span class="n">MyResource</span><span class="p">,</span> <span class="s">r&quot;^some/path$&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="webmachine.api.WM.add_route">
 <tt class="descname">add_route</tt><big>(</big><em>pattern</em>, <em>func</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="modules/webmachine/api.html#WM.add_route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#webmachine.api.WM.add_route" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -234,7 +308,8 @@ taking a request and a response as arguments:</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Simple Routing / Minimal API building</a><ul>
+<li><a class="reference internal" href="#">Simple Routing</a><ul>
+<li><a class="reference internal" href="#mapping-a-resource">Mapping a resource</a></li>
 <li><a class="reference internal" href="#custom-wm-instance">Custom WM instance</a></li>
 </ul>
 </li>
@@ -280,13 +355,13 @@ taking a request and a response as arguments:</p>
         <li class="right" >
           <a href="resources.html" title="dj-webmachine Resource object methods"
              >previous</a> |</li>
-        <li><a href="index.html">dj-webmachine v0.1.0 documentation</a> &raquo;</li>
+        <li><a href="index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
           <li><a href="docs.html" >Documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
     </div>
   </body>
 </html>
