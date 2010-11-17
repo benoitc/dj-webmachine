@@ -333,7 +333,6 @@ def handle_request_body(res, req, resp):
         func = first_match(res.content_types_accepted, req, resp, "")
         if func is None:
             raise webmachine.exc.HTTPUnsupportedMediaType()
-
     return func(req, resp)
 
 def handle_response_body(res, req, resp):
