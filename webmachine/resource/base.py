@@ -431,7 +431,7 @@ class Resource(object):
         If POST requests should be treated as a request to put content
         into a (potentially new) resource as opposed to being a generic 
         submission for processing, then this function should return true. 
-        If it does return true, then create_path will be called and the 
+        If it does return true, then created_location will be called and the 
         rest of the request will be treated much like a PUT to the Path 
         entry returned by that call.
 
