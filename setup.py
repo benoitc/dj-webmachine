@@ -83,7 +83,8 @@ setup(
     
     install_requires = [
         'setuptools',
-        'django'
+        'Django',
+        'webob'
     ],
     
     test_suite = 'nose.collector',

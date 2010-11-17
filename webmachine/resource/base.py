@@ -44,6 +44,7 @@ from django.utils.encoding import smart_str, force_unicode
 from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.http.acceptparse import get_accept_hdr, MIMEAccept, \
         MIMENilAccept, NoAccept
+from webmachine.http.wrappers import WMRequest, WMResponse
 from webmachine.http.decisions import b13, TRANSITIONS, first_match
 from webmachine.http.etag import get_etag, AnyETag, NoETag
 from webmachine.util import coerce_put_post, serialize_list
@@ -525,12 +526,10 @@ class Resource(object):
     def _process(self, req, *args, **kwargs):
         """ Process request and return the response """
 
-        # initialize response object
-        resp = HttpResponse()
+        req = WMRequest(req.environ, *args, **kwargs)
 
-        # add path args args to the request
-        setattr(req, "url_args", args or [])
-        setattr(req, "url_kwargs", kwargs or {})
+        # initialize response object
+        resp = WMResponse(request=req)
 
         # force format ?
         url_parts = req.path.rsplit(".", 1)
@@ -544,42 +543,7 @@ class Resource(object):
             pass
 
 
-        # django isn't restful
-        req.method = req.method.upper()
-        if req.method == "PUT":
-            coerce_put_post(req)
-
-        # add content_type to the request
-        req_ctype = req.META.get('CONTENT_TYPE', '').split(';', 1)[0]
-        setattr(req, "content_type", req_ctype)
-
-        # accept properties
-        req.accept = get_accept_hdr(req, 'HTTP_ACCEPT', MIMEAccept, MIMENilAccept, 
-                'MIME Accept')
-        req.accept_charset = get_accept_hdr(req, 'HTTP_ACCEPT_CHARSET')
-        req.accept_encoding = get_accept_hdr(req, 'HTTP_ACCEPT_ENCODING', 
-                NilClass=NoAccept)
-        req.accept_language = get_accept_hdr(req, 'HTTP_ACCEPT_LANGUAGE')
-
-        # cache properties
-        req.if_match = get_etag(req, 'HTTP_IF_MATCH', AnyETag)
-        req.if_none_match = get_etag(req, 'HTTP_IF_NONE_MATCH', NoETag)
-        req.date = parse_date(req.META.get('HTTP_DATE'))
-        req.if_modified_since = parse_date(req.META.get('HTTP_IF_MODIFIED_SINCE'))
-        req.if_unmodified_since = parse_date(req.META.get('HTTP_IF_UNMODIFIED_SINCE'))
-        req.pragma = req.META.get('pragma')
-
-                
-        # add missing features we need in response
-        resp.content_encoding = None
-        resp.content_type = None 
-        resp.vary = []
-        resp.charset = None
-        resp.etag = None
-        resp.last_modified = None
-        resp.expires = None
-        resp.location = None
-
+  
         ctypes = [ct for (ct, func) in (self.content_types_provided(req, resp) or [])]
         if len(ctypes):
             resp.content_type = ctypes[0]
@@ -599,27 +563,6 @@ class Resource(object):
             # Error while processing request
             # Return HTTP response
             return e
-
-        # set other headers 
-        for attr_name in ('vary', 'etag', 'content_type', \
-                'content_encoding', 'last_modified', 'expires'):
-           
-            val = serialize_list(getattr(resp, attr_name))
-            if val and val is not None:
-                header_name = attr_name.replace('_', '-').title()
-                resp[header_name] = val 
-
-        if resp.charset is not None:
-            header = resp.get('Content-Type')
-            if header is not None:
-                match = CHARSET_RE.search(header)
-                if match:
-                    header = header[:match.start()] + header[match.end():]
-                header += '; charset=%s' % resp.charset
-                resp['Content-Type'] = header
-
-        if resp.location is not None:
-            resp['Location'] = resp.location
          
         self.finish_request(req, resp)
         return resp
