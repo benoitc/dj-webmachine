@@ -7,13 +7,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>webmachine.api &mdash; dj-webmachine v0.2.0 documentation</title>
+    <title>webmachine.api &mdash; dj-webmachine v0.2.1 documentation</title>
     <link rel="stylesheet" href="../../static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.0',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -22,7 +22,7 @@
     <script type="text/javascript" src="../../static/jquery.js"></script>
     <script type="text/javascript" src="../../static/underscore.js"></script>
     <script type="text/javascript" src="../../static/doctools.js"></script>
-    <link rel="top" title="dj-webmachine v0.2.0 documentation" href="../../index.html" />
+    <link rel="top" title="dj-webmachine v0.2.1 documentation" href="../../index.html" />
     <link rel="up" title="webmachine" href="../webmachine.html" /> 
   </head>
   <body>
@@ -32,7 +32,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="../../index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">dj-webmachine v0.2.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../webmachine.html" accesskey="U">webmachine</a> &raquo;</li> 
       </ul>
@@ -100,7 +100,7 @@
 <span class="sd"> - throttling</span>
 <span class="sd"> - authorization</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="kn">import</span> <span class="nn">webmachine.exc</span>
 <span class="kn">from</span> <span class="nn">webmachine.resource.base</span> <span class="kn">import</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">RESOURCE_METHODS</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -273,7 +273,7 @@
     <span class="k">def</span> <span class="nf">created_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">location</span>
 
-    <span class="k">def</span> <span class="nf">process_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">process_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept_body</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">multiple_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">):</span>
@@ -452,14 +452,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="../../index.html">dj-webmachine v0.2.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">dj-webmachine v0.2.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li>
           <li><a href="../webmachine.html" >webmachine</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Benoît Chesnea &lt;benoitc@e-engura.org&gt;u.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.5.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.4.
     </div>
   </body>
 </html>
