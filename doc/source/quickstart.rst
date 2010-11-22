@@ -84,7 +84,7 @@ Put your the Hello resource in your ``urls.py``:
 
     from django.conf.urls.defaults import *
 
-    from helloworld.hello.resource import Hello
+    from helloworld.hello.resources import Hello
 
     urlpatterns = patterns('',
         (r'^$', Hello()),
