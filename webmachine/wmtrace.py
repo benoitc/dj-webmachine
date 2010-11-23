@@ -22,8 +22,10 @@ def update_trace(state, req, resp, trace):
                 "url_kwarg": req.url_kwargs
             },
             "response": {
+                "code": resp.status_code,
                 "headers": resp.headerlist
             }
+
     }
 
     if hasattr(req, 'session'):
