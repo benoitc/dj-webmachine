@@ -107,9 +107,7 @@ class XMLSerializer(Serializer):
 
     def parse_xml(self, xml, data):
         if isinstance(data, (list, tuple,)):
-            
             self.parse_list(xml, data)
-            
         elif isinstance(data, dict):
             for k, v in data.iteritems():
                 self.add_element(xml, k, v)
@@ -160,41 +158,54 @@ def relm_to_emittable(value):
 def fk_to_emittable(value, field):
     return value_to_emittable(getattr(value, field.name))
 
-def rel_to_emittable(value):
-    return [model_to_emittable(m) for m in value.iterator()]
 
 def m2m_to_emittable(value, field):
-    return [model_to_emittable(m, fields) for m in getattr(value, field.name).iterator() ]
+    return [model_to_emittable(m) for m in getattr(value, field.name).iterator() ]
 
 def qs_to_emittable(value, fields=None, exclude=None):
     return [value_to_emittable(v, fields=fields, exclude=exclude) for v in value]
 
 def model_to_emittable(instance, fields=None, exclude=None):
     meta = instance._meta
-    fields_iter = iter(meta.fields + meta.many_to_many)
-    fields_list = []
-    for f in fields_iter:
-        value = None
-        if fields and not f.name in fields:
-            continue
-        if exclude and f.name in exclude:
-            continue
-        if f in meta.many_to_many:
-            value = m2m_to_emittable(instance, f)
-        else:
-            if f.serialize:
-                if not f.rel:
-                    value = value_to_emittable(getattr(instance,
-                        f.attname))
-                else:
-                    value = rel_to_emittable(instance, f)
+    if not fields and not exclude:
+        ret = {}
+        for f in meta.fields:
+            ret[f.attname] = value_to_emittable(getattr(instance,
+                f.attname))
 
-        if value is None:
-            continue
+        fields = dir(instance.__class__) + ret.keys()
+        extra = [k for k in dir(instance) if k not in fields]
 
-        fields_list.append((f.name, value))
+        for k in extra:
+            ret[k] = value_to_emittable(getattr(instance, k))
+    else:
+        fields_list = []
+        fields_iter = iter(meta.local_fields + meta.virtual_fields + meta.many_to_many)
+        for f in fields_iter:
+            value = None
+            if fields and not f.name in fields:
+                continue
+            if exclude and f.name in exclude:
+                continue
+            
+            
+            if f in meta.many_to_many:
+                if f.serialize:
+                    value = m2m_to_emittable(instance, f)
+            else:
+                if f.serialize:
+                    if not f.rel:
+                        value = value_to_emittable(getattr(instance,
+                            f.attname))
+                    else:
+                        value = fk_to_emittable(instance, f)
 
-    ret = dict(fields_list)
+            if value is None:
+                continue
+
+            fields_list.append((f.name, value))
+
+        ret = dict(fields_list)
     if ret:
         ret.update({ 
             "meta": {
@@ -208,10 +219,7 @@ def value_to_emittable(value, fields=None, exclude=None):
     """ convert a value to json using appropriate regexp.
 For Dates we use ISO 8601. Decimal are converted to string.
 """
-    if isinstance(value, Model):
-        value = model_to_emittable(value, fields=fields,
-                exclude=exclude)
-    elif isinstance(value, QuerySet):
+    if isinstance(value, QuerySet):
         value = qs_to_emittable(value, fields=fields, exclude=exclude)
     elif isinstance(value, datetime.datetime):
         value = value.replace(microsecond=0).isoformat() + 'Z'
@@ -226,7 +234,11 @@ For Dates we use ISO 8601. Decimal are converted to string.
     elif isinstance(value, dict):
         value = dict_to_emittable(value, fields=fields,
                 exclude=exclude)
-    elif hasattr(value, "all"):
+    elif isinstance(value, Model):
+        value = model_to_emittable(value, fields=fields,
+                exclude=exclude)
+
+    elif repr(value).startswith("<django.db.models.fields.related.RelatedManager"):
         # related managers
         value = relm_to_emittable(value)
     else:

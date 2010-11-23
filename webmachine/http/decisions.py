@@ -73,6 +73,9 @@ def c04(res, req, resp):
     ctype = req.accept.best_match(ctypes)
     if ctype is None:
         return False
+
+    if not ctype:
+        ctype = resp.default_content_type
     resp.content_type = ctype
     return True
 

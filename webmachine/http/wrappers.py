@@ -45,14 +45,17 @@ class WMRequest(WSGIRequest, Request):
 
     def _load_post_and_files(self):
         try:
-            return super(TwodWSGIRequest, self)._load_post_and_files()
+            return WSGIRequest._load_post_and_files(self)
         finally:
             # "Resetting" the input so WebOb will read it:
             self._seek_input()
     
     def _seek_input(self):
         if "wsgi.input" in self.environ:
-            self.environ['wsgi.input'].seek(0)
+            try:
+                self.environ['wsgi.input'].seek(0)
+            except AttributeError:
+                pass
 
 class WMResponse(HttpResponse):
     """ Add some properties to HttpResponse """
@@ -110,6 +113,8 @@ class WMResponse(HttpResponse):
     def __setitem__(self, header, value):
         header, value = self._convert_to_ascii(header, value)
         self._headers[header.lower()] = (header, value)
+        print self._headers.values()
+
         self.headerlist = self._headers.values()
 
     def __delitem__(self, header):
@@ -203,7 +208,7 @@ class WMResponse(HttpResponse):
         match = CHARSET_RE.search(header)
         if match:
             header = header[:match.start()] + header[match.end():]
-        self._headers['content-type'] = hname, header
+        self[hname] = header
 
     charset = property(_charset__get, _charset__set, _charset__del, doc=_charset__get.__doc__)
 
@@ -233,7 +238,7 @@ class WMResponse(HttpResponse):
                 if ';' in header[1]:
                     params = header[1].split(';', 1)[1]
                     value += ';' + params
-        self._headers['content-type'] = 'Content-Type', value
+        self['Content-Type'] = value
 
     def _content_type__del(self):
         try:

@@ -45,6 +45,8 @@ from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.http.wrappers import WMRequest, WMResponse
 from webmachine.http.decisions import b13, TRANSITIONS, first_match
 from webmachine.util import coerce_put_post, serialize_list
+from webmachine.wmtrace import update_trace, update_ex_trace, \
+write_trace
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 get_verbose_name = lambda class_name: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).lower().strip()
@@ -168,6 +170,9 @@ class Resource(object):
     base_url = None
     csrf_exempt = True
     url_regexp = r"^$"
+
+    trace = True
+    trace_path = None
 
     def allowed_methods(self, req, resp):
         """
@@ -541,8 +546,12 @@ class Resource(object):
   
         ctypes = [ct for (ct, func) in (self.content_types_provided(req, resp) or [])]
         if len(ctypes):
-            resp.content_type = ctypes[0]
+            ctype = ctypes[0]
+            if not ctype:
+                ctype = resp.default_content_type 
+            resp.content_type = ctype
 
+        trace = []
         try:
             state = b13
             while not isinstance(state, int):
@@ -550,16 +559,22 @@ class Resource(object):
                     state = TRANSITIONS[state][0]
                 else:
                     state = TRANSITIONS[state][1]
-                if not isinstance(state, (int, types.FunctionType)):
-                    raise HTTPInternalServerError("Invalid state: %r" % state)
 
+                update_trace(state, req, resp, trace)
+                if not isinstance(state, (int, types.FunctionType)):
+                    
+                    raise HTTPInternalServerError("Invalid state: %r" % state)
+                
             resp.status_code = state
         except HTTPException, e:
             # Error while processing request
             # Return HTTP response
+            update_ex_trace(trace, e)
             return e
          
         self.finish_request(req, resp)
+        
+        write_trace(self, trace)
         return resp
 
     def __call__(self, request, *args, **kwargs):
