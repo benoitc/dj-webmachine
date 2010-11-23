@@ -32,9 +32,19 @@ There are over 30 Resource methods you can define, but any of them can
 be omitted as they have reasonable defaults.
 """
 
+from __future__ import with_statement
+from datetime import datetime
+import inspect
+import os
 import re
 import sys
+import traceback
 import types
+
+try:
+    import json
+except ImportError:
+    import django.utils.simplejson as json
 
 from django.http import HttpResponse
 from django.utils.translation import activate, deactivate_all, get_language, \
@@ -45,13 +55,64 @@ from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.http.wrappers import WMRequest, WMResponse
 from webmachine.http.decisions import b13, TRANSITIONS, first_match
 from webmachine.util import coerce_put_post, serialize_list
-from webmachine.wmtrace import update_trace, update_ex_trace, \
-write_trace
+
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
 get_verbose_name = lambda class_name: re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).lower().strip()
 
 DEFAULT_NAMES = ('verbose_name', 'app_label', 'resource_path')
+
+def update_trace(resource, state, req, resp, trace):
+    if not resource.trace:
+        # do nothing
+        return
+
+    infos = {
+            "request": {
+                "headers": req.headers.items(),
+                "get": [(k, req.GET.getlist(k)) for k in req.GET],
+                "post": [(k, req.POST.getlist(k)) for k in req.POST],
+                "cookies": [(k, req.COOKIES.get(k)) for k in req.COOKIES],
+                "url_args": req.url_args,
+                "url_kwarg": req.url_kwargs
+            },
+            "response": {
+                "code": resp.status_code,
+                "headers": resp.headerlist
+            }
+
+    }
+
+    if hasattr(req, 'session'):
+        infos['request'].update({
+            'session': [(k, req.session.get(k)) for k in \
+                    req.session.keys()]
+        })
+
+    if isinstance(state, int):
+        name = str(state)
+    else:
+        name = state.__name__
+
+    trace.append((name, infos))
+
+def update_ex_trace(trace, e):
+    trace.append(("error", traceback.format_exc()))
+
+def write_trace(res, trace):
+    if not res.trace:
+        return
+
+    if not res.trace_path:
+        trace_path = "/tmp"
+
+    now = datetime.now().replace(microsecond=0).isoformat() + 'Z'
+    fname = os.path.join(os.path.abspath(trace_path),
+            "wmtrace-%s-%s.json" % (res.__class__.__name__, now))
+
+    with open(fname, "w+b") as f:
+        f.write(json.dumps(trace))
+
 
 class Options(object):
     """ class based on django.db.models.options. We only keep
@@ -171,7 +232,7 @@ class Resource(object):
     csrf_exempt = True
     url_regexp = r"^$"
 
-    trace = True
+    trace = False
     trace_path = None
 
     def allowed_methods(self, req, resp):

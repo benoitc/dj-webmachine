@@ -1,0 +1,13 @@
+{% extends "wm/base.html" %}
+
+{% block title %}Trace List for {{ path }}{% endblock %}
+
+{% block content %}
+<h1>Traces in {{path}}</h1>
+
+<ul>
+    {% for file in files %}
+    <li><a href="{% url wmtrace  file=file %}">wmtrace-{{ file }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

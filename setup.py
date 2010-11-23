@@ -4,6 +4,7 @@
 # This file is part of dj-webmachine released under the Apache 2 license. 
 # See the NOTICE for more information.
 
+from distutils.command.install_data import install_data
 import os
 import sys
 
@@ -14,45 +15,25 @@ from setuptools import setup, find_packages
 
 from webmachine import __version__
 
-popen3 = None
-try:#python 2.6, use subprocess
-    import subprocess
-    subprocess.Popen  # trigger ImportError early
-    closefds = os.name == 'posix'
-    
-    def popen3(cmd, mode='t', bufsize=0):
-        p = subprocess.Popen(cmd, shell=True, bufsize=bufsize,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
-            close_fds=closefds)
-        p.wait()
-        return (p.stdin, p.stdout, p.stderr)
-except ImportError:
-    subprocess = None
-    try:
-        popen3 = os.popen3
-    except ImportError:
-        popen3 = None
 
-DEVELOP = "develop" in sys.argv
-
-version = __version__
-if DEVELOP and popen3 is not None:
-    minor_tag = ""
-    try:
-        stdin, stdout, stderr = popen3("git rev-parse --short HEAD --")
-        error = stderr.read()
-        if not error:
-            git_tag = stdout.read()[:-1]
-            minor_tag = ".%s-git" % git_tag
-    except OSError:        
-        pass
-    version = "%s%s" % (version, minor_tag)
-
-
+data_files = []
+for root in ('webmachine/media', 'webmachine/templates'):
+    for dir, dirs, files in os.walk(root):
+        dirs[:] = [x for x in dirs if not x.startswith('.')]
+        files = [x for x in files if not x.startswith('.')]
+        data_files.append((os.path.join('webmachine', dir),
+                          [os.path.join(dir, file_) for file_ in files]))
+                          
+class install_package_data(install_data):
+    def finalize_options(self):
+        self.set_undefined_options('install',
+                                   ('install_lib', 'install_dir'))
+        install_data.finalize_options(self)
+cmdclass = {'install_data': install_package_data }
 
 setup(
     name = 'dj-webmachine',
-    version = version,
+    version = __version__,
     description = 'Minimal Django Resource framework.',
     long_description = file(
         os.path.join(
@@ -80,7 +61,8 @@ setup(
     zip_safe = False,
     packages = find_packages(),
     include_package_data = True,
-    
+    data_files = data_files,
+    cmdclass=cmdclass,
     install_requires = [
         'setuptools',
         'Django',
