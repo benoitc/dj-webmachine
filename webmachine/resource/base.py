@@ -560,11 +560,9 @@ class Resource(object):
                 else:
                     state = TRANSITIONS[state][1]
 
-                update_trace(state, req, resp, trace)
                 if not isinstance(state, (int, types.FunctionType)):
-                    
                     raise HTTPInternalServerError("Invalid state: %r" % state)
-                
+                update_trace(self, state, req, resp, trace)                
             resp.status_code = state
         except HTTPException, e:
             # Error while processing request
@@ -573,8 +571,17 @@ class Resource(object):
             return e
          
         self.finish_request(req, resp)
-        
+       
+        # write the trace if needed
         write_trace(self, trace)
+
+        # hack, django try to cache all the response and put it in
+        # pickle rather than just caching needed infos.
+        # since request object isn't pickable, remove it before
+        # returning.
+        del resp.request
+        
+        # return final response.
         return resp
 
     def __call__(self, request, *args, **kwargs):

@@ -89,7 +89,7 @@ class WMResponse(HttpResponse):
         """
         The list of response headers
         """
-        return self._headerlist
+        return self._headers.values()
 
     def _headerlist__set(self, value):
         self._headers = {}
@@ -100,7 +100,7 @@ class WMResponse(HttpResponse):
         
         headers = ResponseHeaders.view_list(self.headerlist)
         for hname in headers.keys():
-            self._headers[hname.lower()] = headers[hname]
+            self._headers[hname.lower()] = (hname, headers[hname])
         self._headerlist = value
 
 
@@ -113,16 +113,12 @@ class WMResponse(HttpResponse):
     def __setitem__(self, header, value):
         header, value = self._convert_to_ascii(header, value)
         self._headers[header.lower()] = (header, value)
-        print self._headers.values()
-
-        self.headerlist = self._headers.values()
 
     def __delitem__(self, header):
         try:
             del self._headers[header.lower()]
         except KeyError:
             return
-        self.headerlist = self._headers.values()
 
     def __getitem__(self, header):
         return self._headers[header.lower()][1]
@@ -227,6 +223,7 @@ class WMResponse(HttpResponse):
         otherwise they will be preserved.
         """
         header = self._headers.get('content-type')
+
         if not header:
             return None
         return header[1].split(';', 1)[0]

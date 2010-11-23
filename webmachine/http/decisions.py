@@ -73,9 +73,6 @@ def c04(res, req, resp):
     ctype = req.accept.best_match(ctypes)
     if ctype is None:
         return False
-
-    if not ctype:
-        ctype = resp.default_content_type
     resp.content_type = ctype
     return True
 
@@ -347,14 +344,13 @@ def handle_response_body(res, req, resp):
     func = first_match(res.content_types_provided, req, resp, resp.content_type)
     if func is None:
         raise webmachine.exc.HTTPInternalServerError()
-   
+  
     body = func(req, resp)
 
-    # If we're using a charset, make sure to use unicode_body.    
-    if resp.charset:
-        resp.body = unicode(body)
-    else:
-        resp.body = body
+    if not resp.content_type:
+        resp.content_type = "text/plain" 
+
+    
 
     # Handle our content encoding.
     encoding = resp.content_encoding
@@ -365,12 +361,11 @@ def handle_response_body(res, req, resp):
         resp.body = func(resp.body)
         resp['Content-Encoding'] = encoding
 
-    if not isinstance(resp.body, basestring) and hasattr(resp.body, '__iter__'):
-        resp._container = resp.body
+    if not isinstance(body, basestring) and hasattr(body, '__iter__'):
+        resp._container = body
         resp._is_string = False
     else:
-        resp._container = [resp.body]
-        
+        resp._container = [body]
         resp._is_string = True
 
 

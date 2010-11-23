@@ -11,7 +11,11 @@ import os
 import json
 import traceback
 
-def update_trace(state, req, resp, trace):
+def update_trace(resource, state, req, resp, trace):
+    if not resource.trace:
+        # do nothing
+        return
+
     infos = {
             "request": {
                 "headers": req.headers.items(),
