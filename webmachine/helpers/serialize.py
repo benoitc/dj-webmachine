@@ -210,13 +210,6 @@ def model_to_emittable(instance, fields=None, exclude=None):
             fields_list.append((f.name, value))
 
         ret = dict(fields_list)
-    if ret:
-        ret.update({ 
-            "meta": {
-                "model": smart_unicode(instance._meta),
-                "pk":smart_unicode(instance._get_pk_val(), strings_only=True)
-            }
-        })
     return ret
 
 def value_to_emittable(value, fields=None, exclude=None):
