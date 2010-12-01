@@ -52,8 +52,8 @@ string_concat
 from django.utils.encoding import smart_str, force_unicode
 
 from webmachine.exc import HTTPException, HTTPInternalServerError
-from webmachine.http.wrappers import WMRequest, WMResponse
-from webmachine.http.decisions import b13, TRANSITIONS, first_match
+from webmachine.wrappers import WMRequest, WMResponse
+from webmachine.decisions import b13, TRANSITIONS, first_match
 from webmachine.util import coerce_put_post, serialize_list
 
 

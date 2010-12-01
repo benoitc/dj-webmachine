@@ -9,7 +9,7 @@ __version__ = ".".join(map(str, version_info))
 
 
 try:
-    from webmachine.api import WM, wm
+    from webmachine.route import WM, wm
     from webmachine.resource import Resource
 except ImportError:
     import traceback

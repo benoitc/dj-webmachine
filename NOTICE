@@ -7,7 +7,6 @@ dj-webmachine
 dj-webmachine is released under the MIT license. See the LICENSE
 file for the complete license.
 
-
 decisions.py
 ------------
 Adapted from py-webmachine under MIT license.

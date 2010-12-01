@@ -53,6 +53,8 @@ except ImportError:
 
 class Serializer(object):
 
+    def __init__(self, includes
+
     def _to_string(self, value):
         return value
 
@@ -142,6 +144,8 @@ class JSONSerializer(Serializer):
 
     def _to_python(self, value):
         return json.load(value)
+
+
 
 def dict_to_emittable(value, fields=None, exclude=None):
     """ convert a dict to json """

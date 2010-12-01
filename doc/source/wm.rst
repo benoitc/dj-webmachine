@@ -10,7 +10,7 @@ Using this decorator, our helloworld example can be rewritten like that:
 .. code-block:: python
 
 
-    from webmachine.ap import wm
+    from webmachine.route import wm
 
     import json
     @wm.route(r"^$")
@@ -82,7 +82,7 @@ Mapping a resource
 ------------------
 
 You can also map your :ref:`Resources classes<resources>` using the wm
-object and the method :func:`webmachine.api.WM.add_resource`
+object and the method :func:`webmachine.route.WM.add_resource`
 
 If a pattern is given, the path will be
 ``/<wmpath>/<app_label>/pattern/resource urls``. if no pattern is given the resource_name will be used.
@@ -140,9 +140,9 @@ Custom WM instance
 
 Sometimes you want to create custom WM instance instead to use the
 global one provided. For that you can import the class
-:class:`webmachine.api.WM`:
+:class:`webmachine.route.WM`:
 
-.. autoclass:: webmachine.api.WM
+.. autoclass:: webmachine.route.WM
    :members:
    :undoc-members:
 

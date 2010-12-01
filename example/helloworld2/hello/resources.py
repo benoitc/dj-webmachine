@@ -1,4 +1,4 @@
-from webmachine.api import wm
+from webmachine import wm
 
 import json
 @wm.route(r"^$")

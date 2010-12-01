@@ -4,8 +4,8 @@
 # See the NOTICE for more information.
 
 """
-Minimal API building
-++++++++++++++++++++
+Minimal Route handling 
+++++++++++++++++++++++
 
 Combinating the power of Django and the :ref:`resources <resources>` it's relatively easy to buid an api. The process is also eased using the WM object. dj-webmachine offer a way to create automatically resources by using the ``route`` decorator.
 
@@ -14,7 +14,7 @@ Using this decorator, our helloworld example can be rewritten like that:
 .. code-block:: python
 
 
-    from webmachine.ap import wm
+    from webmachine import wm
 
     import json
     @wm.route(r"^$")
@@ -55,7 +55,7 @@ resource:
  - authorization
 """
 import webmachine.exc
-from webmachine.resource.base import Resource, RESOURCE_METHODS
+from webmachine.resource import Resource, RESOURCE_METHODS
 
 try:
     from cStringIO import StringIO
