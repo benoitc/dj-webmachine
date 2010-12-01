@@ -20,16 +20,6 @@ try:
 except ImportError:
     from webob.statusreasons import status_reasons
 
-try:
-    from lxml import etree
-except ImportError:
-    try:
-        from xml.etree.ElementTree import Element
-    except ImportError:
-        try:
-            from elementtree.ElementTree import Element
-        except ImportError:
-            raise ImportError("You need lxml or elementtree installed.")
 
 re_date = re.compile('^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$')
 re_time = re.compile('^([01]\d|2[0-3])\D?([0-5]\d)\D?([0-5]\d)?\D?(\d{3})?$')
@@ -37,8 +27,8 @@ re_datetime = re.compile('^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])(\D?
 re_decimal = re.compile('^(\d+)\.(\d+)$')
 
 
-__all__ = ['Serializer', 'XMLSerializer', 'JSONSerializer',
-'value_to_emittable', 'value_to_python']
+__all__ = ['Serializer', 'JSONSerializer', 'value_to_emittable',
+'value_to_python']
 
 try:
     import json
@@ -53,7 +43,9 @@ except ImportError:
 
 class Serializer(object):
 
-    def __init__(self, includes
+    def __init__(self, fields=None, exclude=None):
+        self.fields = fields
+        self.exclude = exclude
 
     def _to_string(self, value):
         return value
@@ -62,78 +54,15 @@ class Serializer(object):
         return value
 
     def serialize(self, value):
-        value = value_to_emittable(value)
+        value = value_to_emittable(value, fields=self.fields,
+                exclude=self.exclude)
         return self._to_string(value)
 
     def unserialize(self, value):
         if isinstance(value, basestring):
             value = StringIO.StringIO(value)
 
-        # make sure we have loaded the models
-        models.get_apps()
         return value_to_python(self._to_python(value))
-
-
-class XMLSerializer(Serializer):
-
-    def __init__(self, root="response", version="1.0"):
-        self.root = root
-        self.version = version
-
-    def add_element(self, xml, name, value, **attrs):
-        if isinstance(value, dict) and "meta" in value:
-            meta = value.pop('meta')
-            xml.startElement(name, {
-                "model": meta.get('model'),
-                "pk": smart_unicode(meta.get('pk') or '')
-            })
-        else:
-            xml.startElement(name, attrs)
-        self.parse_xml(xml, value)
-        xml.endElement(name)
-
-    def parse_list(self, xml, data):
-        for item in data:
-            if isinstance(item, dict) and 'meta' in item:
-                meta = item.pop('meta')
-                name = meta['model'].rsplit(".", 1)[1]
-                xml.startElement(name, {
-                    "model": meta.get('model'),
-                    "pk": smart_unicode(meta.get('pk') or '')
-                })
-            else:
-                name = "entity"
-                xml.startElement(name, {})
-            self.parse_xml(xml, item)
-            xml.endElement(name)
-
-    def parse_xml(self, xml, data):
-        if isinstance(data, (list, tuple,)):
-            self.parse_list(xml, data)
-        elif isinstance(data, dict):
-            for k, v in data.iteritems():
-                self.add_element(xml, k, v)
-        else:
-            xml.characters(smart_unicode(data))
-
-    def _to_string(self, value):
-        stream = StringIO.StringIO()
-        xml = SimplerXMLGenerator(stream, "utf-8")
-        xml.startDocument()
-        xml.startElement(self.root, {"version": self.version})
-        self.parse_xml(xml, value)
-        xml.endElement(self.root)
-        xml.endDocument()
-        return stream.getvalue()
-
-    def _to_python(self, value):
-        ctx = etree.iterparse(value, events=("start", "end"))
-        obj = {}
-        for action, elem in ctx:
-            obj[elem.tag]  = ctx
-
-            print("%s: %s" % (action, elem.tag))
-        return value
 
 class JSONSerializer(Serializer):
 
@@ -310,26 +239,5 @@ def list_to_python(value, convert_decimal=True,
 def dict_to_python(value, convert_decimal=True,
         convert_number=True):
     """ convert a json object values to python dict """
-    ret = dict([(k, value_to_python(v,  convert_decimal=convert_decimal, \
-        convert_number=convert_number)) for k, v in value.iteritems()])
-
-    # this is a model, try to recreate it
-    if "meta" in ret:
-        meta = ret.pop('meta')
-        models.get_apps()
-        try:
-            Model = models.get_model(*meta["model"].split("."))
-        except TypeError:
-            Model = None
-        if Model is not None:
-            instance = Model()
-            if "pk" in meta:
-                setattr(instance, Model._meta.pk.attname,
-                    Model._meta.pk.to_python(meta["pk"]))
-                for (fname, fvalue) in ret.items():    
-                    setattr(instance, fname, fvalue)
-            return instance
-    return ret
-
-
-
+    return dict([(k, value_to_python(v,  convert_decimal=convert_decimal, \
+        convert_number=convert_number)) for k, v in value.iteritems()]) 
