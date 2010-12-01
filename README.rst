@@ -7,6 +7,11 @@ your applications' behavior. dj-webmachine also offers you the
 possibility to build simple API based on your model and the tools to
 create automatically docs and clients from it (work in progress).
 
+dj-webmachine is released under the MIT license. See the LICENSE
+file for the complete license.
+
+Copyright (c) 2010 Benoit Chesneau <benoitc@e-engura.org>
+Copyright 2010 (c) Hyperweek - http://hyperweek.net
 
 
 Install
