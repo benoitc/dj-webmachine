@@ -78,22 +78,24 @@ class JSONSerializer(Serializer):
 
 def dict_to_emittable(value, fields=None, exclude=None):
     """ convert a dict to json """
-    return dict([(k, value_to_emittable(v)) for k, v in value.iteritems()])
+    return dict([(k, value_to_emittable(v, fields=fields,
+        exclude=exclude)) for k, v in value.iteritems()])
 
 def list_to_emittable(value, fields=None, exclude=None):
     """ convert a list to json """
-    return [value_to_emittable(item) for item in value]
+    return [value_to_emittable(item, fields=fields, exclude=exclude) for item in value]
 
 def relm_to_emittable(value):
     return value_to_emittable(value.all())
 
 
-def fk_to_emittable(value, field):
+def fk_to_emittable(value, field, fields=None, exclude=None):
     return value_to_emittable(getattr(value, field.name))
 
 
-def m2m_to_emittable(value, field):
-    return [model_to_emittable(m) for m in getattr(value, field.name).iterator() ]
+def m2m_to_emittable(value, field, fields=None, exclude=None):
+    return [model_to_emittable(m, fields=fields, exclude=exclude) \
+            for m in getattr(value, field.name).iterator() ]
 
 def qs_to_emittable(value, fields=None, exclude=None):
     return [value_to_emittable(v, fields=fields, exclude=exclude) for v in value]
@@ -116,22 +118,25 @@ def model_to_emittable(instance, fields=None, exclude=None):
         fields_iter = iter(meta.local_fields + meta.virtual_fields + meta.many_to_many)
         for f in fields_iter:
             value = None
-            if fields and not f.name in fields:
+            print f.name
+            if fields is not None and not f.name in fields:
                 continue
-            if exclude and f.name in exclude:
+            if exclude is not None and f.name in exclude:
                 continue
             
             
             if f in meta.many_to_many:
                 if f.serialize:
-                    value = m2m_to_emittable(instance, f)
+                    value = m2m_to_emittable(instance, f, fields=fields,
+                            exclude=exclude)
             else:
                 if f.serialize:
                     if not f.rel:
                         value = value_to_emittable(getattr(instance,
-                            f.attname))
+                            f.attname), fields=fields, exclude=exclude)
                     else:
-                        value = fk_to_emittable(instance, f)
+                        value = fk_to_emittable(instance, f,
+                                fields=fields, exclude=exclude)
 
             if value is None:
                 continue
@@ -146,6 +151,7 @@ def value_to_emittable(value, fields=None, exclude=None):
 For Dates we use ISO 8601. Decimal are converted to string.
 """
     if isinstance(value, QuerySet):
+        print "ici %s" % exclude
         value = qs_to_emittable(value, fields=fields, exclude=exclude)
     elif isinstance(value, datetime.datetime):
         value = value.replace(microsecond=0).isoformat() + 'Z'
