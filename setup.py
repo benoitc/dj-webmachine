@@ -65,7 +65,6 @@ setup(
     cmdclass=cmdclass,
     install_requires = [
         'setuptools',
-        'Django',
         'webob'
     ],
     
