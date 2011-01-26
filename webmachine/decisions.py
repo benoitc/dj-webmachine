@@ -165,6 +165,9 @@ def h11(res, req, resp):
 
 def h12(res, req, resp):
     "Last-Modified > If-Unmodified-Since?"
+    if not req.if_unmodified_since:
+        return True
+
     resp.last_modified = res.last_modified(req, resp)
     return resp.last_modified > req.if_unmodified_since
 
