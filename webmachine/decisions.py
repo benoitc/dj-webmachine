@@ -238,6 +238,8 @@ def l15(res, req, resp):
 
 def l17(res, req, resp):
     "Last-Modified > If-Modified-Since?"
+    if not req.if_modified_since:
+        return True
     resp.last_modified = res.last_modified(req, resp)
     return resp.last_modified > req.if_modified_since
 
