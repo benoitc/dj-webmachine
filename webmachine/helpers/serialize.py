@@ -3,22 +3,14 @@
 # This file is part of dj-webmachine released under the MIT license. 
 # See the NOTICE for more information.
 
-from calendar import timegm
 import decimal
 import datetime
 import re
 import time
 
-from django.core import serializers
-from django.db import models
 from django.db.models import Model
 from django.db.models.query import QuerySet
-from django.utils.xmlutils import SimplerXMLGenerator
 from django.utils.encoding import smart_unicode
-try:
-    from webob.util import status_reasons
-except ImportError:
-    from webob.statusreasons import status_reasons
 
 
 re_date = re.compile('^(\d{4})\D?(0[1-9]|1[0-2])\D?([12]\d|0[1-9]|3[01])$')
@@ -116,15 +108,14 @@ def model_to_emittable(instance, fields=None, exclude=None):
     else:
         fields_list = []
         fields_iter = iter(meta.local_fields + meta.virtual_fields + meta.many_to_many)
+        # fields_iter = iter(meta.fields + meta.many_to_many)
         for f in fields_iter:
             value = None
-            print f.name
             if fields is not None and not f.name in fields:
                 continue
             if exclude is not None and f.name in exclude:
                 continue
-            
-            
+
             if f in meta.many_to_many:
                 if f.serialize:
                     value = m2m_to_emittable(instance, f, fields=fields,
@@ -151,7 +142,6 @@ def value_to_emittable(value, fields=None, exclude=None):
 For Dates we use ISO 8601. Decimal are converted to string.
 """
     if isinstance(value, QuerySet):
-        print "ici %s" % exclude
         value = qs_to_emittable(value, fields=fields, exclude=exclude)
     elif isinstance(value, datetime.datetime):
         value = value.replace(microsecond=0).isoformat() + 'Z'
