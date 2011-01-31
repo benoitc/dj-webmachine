@@ -275,7 +275,6 @@ def n11(res, req, resp):
             raise webmachine.exc.HTTPInternalServerError("Failed to process POST.")
         return False
     resp.location = res.created_location(req, resp)
-    print resp.location
     if resp.location:
         return True     
     return False
@@ -306,7 +305,7 @@ def o18(res, req, resp):
 
 def o20(res, req, resp):
     "Response includes entity?"
-    return bool(resp._container or resp.body)
+    return bool(resp._container)
 
 def p03(res, req, resp):
     "Conflict?"
