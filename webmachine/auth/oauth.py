@@ -8,9 +8,9 @@ from django.conf import settings
 from django.utils.importlib import import_module
 
 try:
-    from restkit.util import oauth2
+    from restkit import oauth2
 except ImportError:
-    raise ImportError("restkit packages is needed for auth.")
+    raise ImportError("restkit>=3.0.2 package is needed for auth.")
 
 from webmachine.auth.base import Auth
 from webmachine.util.const import TOKEN_REQUEST, TOKEN_ACCESS
