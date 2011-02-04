@@ -7,9 +7,9 @@ from django.template import loader, RequestContext
 from django.utils.encoding import iri_to_uri
 
 try:
-    from restkit.util import oauth2
+    from restkit import oauth2
 except ImportError:
-    raise ImportError("restkit packages is needed for auth.")
+    raise ImportError("restkit>=3.0.2 package is needed for auth.")
 
 from webmachine.auth.oauth import OAuthServer, load_oauth_datastore
 from webmachine.forms import OAuthAuthenticationForm
