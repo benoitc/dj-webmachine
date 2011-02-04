@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-webmachine released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license.
 # See the NOTICE for more information.
 
 from django.contrib.auth.models import AnonymousUser
@@ -8,6 +8,7 @@ from django.contrib.auth.models import AnonymousUser
 from webmachine.models import Nonce, Consumer, Token
 from webmachine.util import generate_random
 from webmachine.util.const import VERIFIER_SIZE, TOKEN_REQUEST, TOKEN_ACCESS
+
 
 class OAuthDataStore(object):
     """A database abstraction used to lookup consumers and tokens."""
@@ -39,7 +40,6 @@ class OAuthDataStore(object):
         raise NotImplementedError
 
 
-
 class DataStore(OAuthDataStore):
 
     def lookup_consumer(self, key):
@@ -52,9 +52,8 @@ class DataStore(OAuthDataStore):
     def lookup_token(self, token_type, key):
         try:
             self.request_token = Token.objects.get(
-                    token_type=token_type, 
-                    key=key
-            )
+                token_type=token_type,
+                key=key)
         except Consumer.DoesNotExist:
             return None
         return self.request_token
@@ -64,10 +63,9 @@ class DataStore(OAuthDataStore):
             return
 
         nonce, created = Nonce.objects.get_or_create(
-                consumer_key=consumer.key,
-                token_key=token.key,
-                nonce=nonce
-        )
+            consumer_key=consumer.key,
+            token_key=token.key,
+            nonce=nonce)
 
         if created:
             return None
@@ -76,14 +74,13 @@ class DataStore(OAuthDataStore):
     def fetch_request_token(self, consumer, callback, timestamp):
         if consumer.key == self.consumer.key:
             request_token = Token.objects.create_token(
-                    consumer=self.consumer,
-                    token_type=TOKEN_REQUEST,
-                    timestamp=timestamp
-            )
-                
+                consumer=self.consumer,
+                token_type=TOKEN_REQUEST,
+                timestamp=timestamp)
+
             if callback:
                 self.request_token.set_callback(callback)
-            
+
             self.request_token = request_token
             return request_token
         return None

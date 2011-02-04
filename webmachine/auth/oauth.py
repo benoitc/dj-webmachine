@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -
 #
-# This file is part of dj-webmachine released under the MIT license. 
+# This file is part of dj-webmachine released under the MIT license.
 # See the NOTICE for more information.
 
 from django.core.exceptions import ImproperlyConfigured
@@ -17,7 +17,7 @@ from webmachine.util.const import TOKEN_REQUEST, TOKEN_ACCESS
 
 
 def load_oauth_datastore():
-    datastore = getattr(settings, 'OAUTH_DATASTORE', 
+    datastore = getattr(settings, 'OAUTH_DATASTORE',
             'webmachine.auth.oauth_store.DataStore')
     i = datastore.rfind('.')
     module, clsname = datastore[:i], datastore[i+1:]
@@ -57,7 +57,7 @@ class OAuthServer(oauth2.Server):
                 callback = None # 1.0, no callback specified.
 
             #hack
-            
+
             self._check_signature(oauth_request, consumer, None)
             # Fetch a new token.
             token = self.datastore.fetch_request_token(consumer,
@@ -121,6 +121,7 @@ class OAuthServer(oauth2.Server):
     def _get_timestamp(self, oauth_request):
         return int(oauth_request.get_parameter('oauth_timestamp'))
 
+
 class Oauth(Auth):
 
     def __init__(self, realm="OAuth"):
@@ -141,7 +142,7 @@ class Oauth(Auth):
             headers['Authorization'] = req.META.get('HTTP_AUTHORIZATION')
 
 
-        oauth_request = oauth2.Request.from_request(req.method, 
+        oauth_request = oauth2.Request.from_request(req.method,
             req.build_absolute_uri(), headers=headers,
             parameters=params,
             query_string=req.META.get('QUERY_STRING'))
@@ -153,7 +154,7 @@ class Oauth(Auth):
             consumer, token, params = self.oauth_server.verify_request(oauth_request)
         except oauth2.Error, err:
             resp.content = str(err)
-            return 'OAuth realm="%s"' % self.realm 
-       
+            return 'OAuth realm="%s"' % self.realm
+
         req.user = consumer.user
         return True
