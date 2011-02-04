@@ -1,5 +1,5 @@
 #! /usr/bin/env python
- 
+
 import optparse as op
 import os
 import sys
@@ -8,6 +8,7 @@ import shutil
 
 class NoDirectoriesError(Exception):
     "Error thrown when no directories starting with an underscore are found"
+
 
 class DirHelper(object):
 
@@ -18,6 +19,7 @@ class DirHelper(object):
         self.walk = walk
         self.rmtree = rmtree
 
+
 class FileSystemHelper(object):
 
     def __init__(self, open_, path_join, move, exists):
@@ -26,6 +28,7 @@ class FileSystemHelper(object):
         self.path_join = path_join
         self.move = move
         self.exists = exists
+
 
 class Replacer(object):
     "Encapsulates a simple text replace"
@@ -37,7 +40,8 @@ class Replacer(object):
 
     def process(self, text):
 
-        return text.replace( self.from_, self.to )
+        return text.replace(self.from_, self.to)
+
 
 class FileHandler(object):
     "Applies a series of replacements the contents of a file inplace"
@@ -53,9 +57,10 @@ class FileHandler(object):
         text = self.opener(self.name).read()
 
         for replacer in self.replacers:
-            text = replacer.process( text )
+            text = replacer.process(text)
 
         self.opener(self.name, "w").write(text)
+
 
 class Remover(object):
 
@@ -68,6 +73,7 @@ class Remover(object):
         if self.exists(name):
             self.remove(name)
 
+
 class ForceRename(object):
 
     def __init__(self, renamer, remove):
@@ -79,6 +85,7 @@ class ForceRename(object):
 
         self.remove(to)
         self.renamer(from_, to)
+
 
 class VerboseRename(object):
 
@@ -108,7 +115,7 @@ class DirectoryHandler(object):
         self.renamer = renamer
 
     def path(self):
-        
+
         return os.path.join(self.root, self.name)
 
     def relative_path(self, directory, filename):
@@ -181,7 +188,8 @@ class Layout(object):
 class LayoutFactory(object):
     "Creates a layout object"
 
-    def __init__(self, operations_factory, handler_factory, file_helper, dir_helper, verbose, stream, force):
+    def __init__(self, operations_factory, handler_factory, file_helper,
+                 dir_helper, verbose, stream, force):
 
         self.operations_factory = operations_factory
         self.handler_factory = handler_factory
@@ -201,10 +209,10 @@ class LayoutFactory(object):
 
         if self.force:
             remove = self.operations_factory.create_remover(self.file_helper.exists, self.dir_helper.rmtree)
-            renamer = self.operations_factory.create_force_rename(renamer, remove) 
+            renamer = self.operations_factory.create_force_rename(renamer, remove)
 
         if self.verbose:
-            renamer = self.operations_factory.create_verbose_rename(renamer, self.output_stream) 
+            renamer = self.operations_factory.create_verbose_rename(renamer, self.output_stream)
 
         # Build list of directories to process
         directories = [d for d in contents if self.is_underscore_dir(path, d)]
@@ -256,16 +264,15 @@ class LayoutFactory(object):
             and directory.startswith("_"))
 
 
-
 def sphinx_extension(app, exception):
     "Wrapped up as a Sphinx Extension"
 
     # This code is sadly untestable in its current state
     # It would be helped if there was some function for loading extension
-    # specific data on to the app object and the app object providing 
+    # specific data on to the app object and the app object providing
     # a file-like object for writing to standard out.
     # The former is doable, but not officially supported (as far as I know)
-    # so I wouldn't know where to stash the data. 
+    # so I wouldn't know where to stash the data.
 
     if app.builder.name != "html":
         return
@@ -293,7 +300,7 @@ def sphinx_extension(app, exception):
             shutil.move,
             os.path.exists
             )
-    
+
     operations_factory = OperationsFactory()
     handler_factory = HandlerFactory()
 
@@ -323,8 +330,8 @@ def setup(app):
 def main(args):
 
     usage = "usage: %prog [options] <html directory>"
-    parser = OptionParser(usage=usage)
-    parser.add_option("-v","--verbose", action="store_true",
+    parser = op.OptionParser(usage=usage)
+    parser.add_option("-v", "--verbose", action="store_true",
             dest="verbose", default=False, help="Provides verbose output")
     opts, args = parser.parse_args(args)
 
@@ -350,7 +357,7 @@ def main(args):
             shutil.move,
             os.path.exists
             )
-    
+
     operations_factory = OperationsFactory()
     handler_factory = HandlerFactory()
 
@@ -374,11 +381,6 @@ def main(args):
         return
 
     layout.process()
-    
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-
-
