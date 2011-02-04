@@ -277,9 +277,9 @@ def n11(res, req, resp):
             raise webmachine.exc.HTTPInternalServerError("Failed to process POST.")
         return False
     resp.location = res.created_location(req, resp)
-    if not resp.location:
-        return False     
-    return True
+    if resp.location:
+        return True     
+    return False
 
 
 def n16(res, req, resp):
@@ -335,10 +335,8 @@ def handle_request_body(res, req, resp):
 
     func = first_match(res.content_types_accepted, req, resp, mtype)
     if func is None:
-        func = first_match(res.content_types_accepted, req, resp, "")
-        if func is None:
-            raise webmachine.exc.HTTPUnsupportedMediaType()
-    return func(req, resp)
+        raise webmachine.exc.HTTPUnsupportedMediaType()
+    func(req, resp)
 
 def handle_response_body(res, req, resp):
     resp.etag = res.generate_etag(req, resp)
@@ -354,8 +352,6 @@ def handle_response_body(res, req, resp):
 
     if not resp.content_type:
         resp.content_type = "text/plain" 
-
-    
 
     # Handle our content encoding.
     encoding = resp.content_encoding

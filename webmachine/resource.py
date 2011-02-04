@@ -286,7 +286,7 @@ class Resource(object):
 
         :return: [(MediaType, Handler)] or None
         """
-        return None
+        return []
 
     def content_types_provided(self, req, resp):
         """
