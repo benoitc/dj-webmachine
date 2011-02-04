@@ -34,7 +34,6 @@ be omitted as they have reasonable defaults.
 
 from __future__ import with_statement
 from datetime import datetime
-import inspect
 import os
 import re
 import sys
@@ -46,7 +45,6 @@ try:
 except ImportError:
     import django.utils.simplejson as json
 
-from django.http import HttpResponse
 from django.utils.translation import activate, deactivate_all, get_language, \
 string_concat
 from django.utils.encoding import smart_str, force_unicode
@@ -54,7 +52,6 @@ from django.utils.encoding import smart_str, force_unicode
 from webmachine.exc import HTTPException, HTTPInternalServerError
 from webmachine.wrappers import WMRequest, WMResponse
 from webmachine.decisions import b13, TRANSITIONS, first_match
-from webmachine.util import coerce_put_post, serialize_list
 
 
 CHARSET_RE = re.compile(r';\s*charset=([^;]*)', re.I)
