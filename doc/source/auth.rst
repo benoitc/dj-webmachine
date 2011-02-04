@@ -3,8 +3,8 @@
 Handle authorization
 --------------------
 
-webmachine offer mechanism to authenticate via basic authentification or
-oauth. All authentification module should inherit from
+webmachine offer mechanism to authenticate via basic authentication or
+oauth. All authentication module should inherit from
 :class:`webmachine.auth.base.Auth`.
 
 .. code-block:: python
@@ -17,7 +17,7 @@ oauth. All authentification module should inherit from
 Basic Authentification
 ++++++++++++++++++++++
 
-To handle basic authentification just do this in your ``Resource``
+To handle basic authentication just do this in your ``Resource``
 class:
 
 .. code-block:: python
@@ -35,23 +35,27 @@ class:
 OAUTH
 +++++
 
+.. warning::
+
+    You need to install restkit_ >= 3.0.2 to have oauth in your application.
+
+.. _restkit: http://benoitc.github.com/restkit
+
 It's easy to handle oauth in your dj-webmachine application. First you
 need to add the oauth resource to your ``urls.py`` file:
 
 .. code-block:: python
 
-    
     from webmachine.auth import oauth_res
 
     urlpatterns = patterns('',
-       
+
         ...
 
         (r'^auth/', include(oauth_res.OauthResource().get_urls())),
     )
 
-
-Then like with the basic authentification add the class 
+Then like with the basic authentication add the class
 :class:`webmachine.auth.oauth.Oauth` in your resource:
 
 .. code-block:: python
@@ -73,8 +77,8 @@ Create a consumer
 
 .. code-block:: python
 
-    >> from webmachine.models import Consumer
-    >> consumer = Consumer.objects.create_consumer()
+    >>> from webmachine.models import Consumer
+    >>> consumer = Consumer.objects.create_consumer()
 
 
 Request a token for this consumer. We use the restkit_ client to do that.
@@ -84,8 +88,7 @@ Request a token for this consumer. We use the restkit_ client to do that.
 
     >>> from restkit import request
     >>> from restkit.filters import OAuthFilter
-    >>> from restkit.util.oauth2 import Token
-    >>> import urlparse
+    >>> from restkit.oauth2 import Token
     >>> resp = request("http://127.0.0.1:8000/auth/request_token", 
     filters=[OAuthFilter("*", consumer)])
     >>> resp.status_int
@@ -96,8 +99,9 @@ the client side:
 
 .. code-block:: python
 
+    >>> import urlparse
     >>> qs = urlparse.parse_qs(resp.body_string())
-    >> request_token = Token(qs['oauth_token'][0], qs['oauth_token_secret'][0])
+    >>> request_token = Token(qs['oauth_token'][0], qs['oauth_token_secret'][0])
 
 Now we need to authorize our client:
 
@@ -152,26 +156,18 @@ Using the access token:
     "<html><p>I'm protected you know.</p></html>"
 
 
-.. note::
-
-    You need to install restkit_ to have oauth in your application.
-
-
-.. _restkit: http://benoitc.github.com/restkit
-
-
 AUTH classes description
 ++++++++++++++++++++++++
 
-Basic authentification
-~~~~~~~~~~~~~~~~~~~~~~
+Basic authentication
+~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: webmachine.auth.BasicAuth
    :members:
    :undoc-members:
 
-Oauth authentification
-~~~~~~~~~~~~~~~~~~~~~~
+Oauth authentication
+~~~~~~~~~~~~~~~~~~~~
 
 .. autoclass:: webmachine.auth.oauth.Oauth
    :members:
@@ -190,7 +186,6 @@ example. To use you own class add it to your settings:
 
     OAUTH_DATASTORE = 'webmachine.auth.oauth_store.DataStore'
 
-
 .. autoclass:: webmachine.auth.oauth_store.OAuthDataStore
    :members:
    :undoc-members:
@@ -198,5 +193,3 @@ example. To use you own class add it to your settings:
 .. autoclass:: webmachine.auth.oauth_store.DataStore
    :members:
    :undoc-members:
-
-   

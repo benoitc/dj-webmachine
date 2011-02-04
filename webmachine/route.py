@@ -49,10 +49,11 @@ This decorator works differently though. It creates full
 object. So we are abble to provide all the features available in a
 resource:
 
- - settings which content is accepted, provided
- - assiciate serializers to the content types
- - throttling
- - authorization
+    * settings which content is accepted, provided
+    * assiciate serializers to the content types
+    * throttling
+    * authorization
+
 """
 import webmachine.exc
 from webmachine.resource import Resource, RESOURCE_METHODS
@@ -254,7 +255,8 @@ class WM(object):
         self.routes = []
 
     def route(self, pattern, **kwargs):
-        """ A decorator that is used to register a new resource using
+        """
+        A decorator that is used to register a new resource using
         this function to return response.
 
         **Parameters**
@@ -320,8 +322,9 @@ class WM(object):
         return _wrapped
 
     def add_resource(self, klass, pattern=None):
-        """add one :ref:`Resource class<resource>` to the routing.
-        
+        """
+        Add one :ref:`Resource class<resource>` to the routing.
+
         :attr klass: class inheriting from :class:webmachine.Resource
         :attr pattern: regexp.
 
@@ -340,11 +343,13 @@ class WM(object):
         self.resources[pattern] = res
 
     def add_resources(self, *klasses):
-        """ allows you to add multiple Resource classes to the WM instance. You
+        """
+        Allows you to add multiple Resource classes to the WM instance. You
         can also pass a pattern by using a tupple instead of simply
-        provided the Resource class. Ex::
+        provided the Resource class. Example::
 
             (MyResource, r"^some/path$")
+
         """
         for klass in klasses:
             if isinstance(klass, tuple):
