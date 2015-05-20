@@ -80,7 +80,7 @@ class WMResponse(HttpResponse):
         self.request = request
         self._headerlist = []
 
-        HttpResponse.__init__(self, content=content, mimetype=mimetype, 
+        HttpResponse.__init__(self, content=content,
                 status=status_code, content_type=content_type)
 
         
