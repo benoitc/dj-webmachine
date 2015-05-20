@@ -164,6 +164,11 @@ class WMResponse(HttpResponse):
 
     server = header_getter('Server', '14.38')
 
+    def _convert_to_ascii(self, header, value):
+        def convert(s):
+            return s.decode('ascii')
+        return convert(header), convert(value)
+
     #
     # charset
     #
