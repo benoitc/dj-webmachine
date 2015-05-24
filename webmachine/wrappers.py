@@ -80,7 +80,7 @@ class WMResponse(HttpResponse):
         self.request = request
         self._headerlist = []
 
-        HttpResponse.__init__(self, content=content, mimetype=mimetype, 
+        HttpResponse.__init__(self, content=content,
                 status=status_code, content_type=content_type)
 
         
@@ -163,6 +163,11 @@ class WMResponse(HttpResponse):
         parse_date_delta, serialize_date_delta, 'HTTP date or delta seconds')
 
     server = header_getter('Server', '14.38')
+
+    def _convert_to_ascii(self, header, value):
+        def convert(s):
+            return s.decode('ascii')
+        return convert(header), convert(value)
 
     #
     # charset
