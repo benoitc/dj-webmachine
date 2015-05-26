@@ -166,7 +166,10 @@ class WMResponse(HttpResponse):
 
     def _convert_to_ascii(self, header, value):
         def convert(s):
-            return s.decode('ascii')
+            try:
+                return s.decode('ascii')
+            except AttributeError:
+                return s
         return convert(header), convert(value)
 
     #
